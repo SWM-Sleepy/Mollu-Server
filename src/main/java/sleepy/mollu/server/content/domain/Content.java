@@ -18,11 +18,11 @@ public class Content extends BaseEntity {
     private ContentTag contentTag;
 
     @Embedded
-    @AttributeOverride(name = "source", column = @Column(name = "frontContentSource"))
+    @AttributeOverride(name = "value", column = @Column(name = "front_content_source"))
     private ContentSource frontContentSource;
 
     @Embedded
-    @AttributeOverride(name = "source", column = @Column(name = "backContentSource"))
+    @AttributeOverride(name = "value", column = @Column(name = "back_content_source"))
     private ContentSource backContentSource;
 
     @Embedded

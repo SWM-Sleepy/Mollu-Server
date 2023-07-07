@@ -1,5 +1,6 @@
 package sleepy.mollu.server.content.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,8 @@ import sleepy.mollu.server.content.exception.ContentTagBadRequestException;
 public class ContentTag {
 
     public static final int MAX_CONTENT_TAG_LENGTH = 10;
+
+    @Column(name = "tag")
     private String value;
 
     public ContentTag(String value) {
