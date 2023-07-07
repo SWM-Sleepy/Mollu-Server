@@ -4,6 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import sleepy.mollu.server.content.exception.ContentTagBadRequestException;
 
 import java.util.stream.Stream;
 
@@ -31,7 +32,7 @@ class ContentTagTest {
     @MethodSource("invalidContentTag")
     @NullAndEmptySource
     void 태그_객체가_유효하지_않은_값이_생성될_때_예외를_던진다(String value) {
-        assertThatThrownBy(() -> new ContentTag(value)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new ContentTag(value)).isInstanceOf(ContentTagBadRequestException.class);
     }
 
     @ParameterizedTest
