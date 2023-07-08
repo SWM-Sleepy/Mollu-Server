@@ -25,6 +25,6 @@ public class ContentController {
     @InternalServerErrorResponse
     @GetMapping("/contents/group")
     public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@RequestParam("page") int page) {
-        return ResponseEntity.ok().body(contentService.searchGroupFeed(CustomPageRequest.of(page)));
+        return ResponseEntity.ok(contentService.searchGroupFeed(CustomPageRequest.of(page)));
     }
 }
