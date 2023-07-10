@@ -27,6 +27,7 @@ public class ContentController {
     @InternalServerErrorResponse
     @GetMapping("/contents/group")
     public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@RequestParam("page") int page) {
+
         return ResponseEntity.ok(contentService.searchGroupFeed(CustomPageRequest.of(page)));
     }
 
@@ -35,7 +36,9 @@ public class ContentController {
     @InternalServerErrorResponse
     @PostMapping("/contents")
     public ResponseEntity<Void> createContent(@ModelAttribute @Valid CreateContentRequest request) {
-//        contentService.createContent(request);
+
+        contentService.createContent(request);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

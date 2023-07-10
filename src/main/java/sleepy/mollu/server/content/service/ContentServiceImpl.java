@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.file.ContentFile;
@@ -56,20 +57,29 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void createContent(CreateContentRequest request) {
 
-        final Content content = Content.builder()
-                .id(idConstructor.create())
-                .location(request.location())
-                .contentTag(request.tag())
-                .build();
+        final Content content = getContent(request);
 
-        final ContentFile frontContentFile = new ImageContentFile(request.frontContentFile());
-        final ContentFile backContentFile = new ImageContentFile(request.backContentFile());
-
-        final String frontContentFileUrl = fileHandler.upload(frontContentFile);
-        final String backContentFileUrl = fileHandler.upload(backContentFile);
+        final String frontContentFileUrl = uploadContent(request.frontContentFile());
+        final String backContentFileUrl = uploadContent(request.backContentFile());
 
         content.updateUrl(frontContentFileUrl, backContentFileUrl);
 
         contentRepository.save(content);
+    }
+
+    private Content getContent(CreateContentRequest request) {
+
+        return Content.builder()
+                .id(idConstructor.create())
+                .location(request.location())
+                .contentTag(request.tag())
+                .build();
+    }
+
+    private String uploadContent(MultipartFile file) {
+
+        final ContentFile frontContentFile = new ImageContentFile(file);
+
+        return fileHandler.upload(frontContentFile);
     }
 }
