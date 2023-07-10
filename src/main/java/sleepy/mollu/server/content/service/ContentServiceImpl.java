@@ -38,12 +38,16 @@ public class ContentServiceImpl implements ContentService {
 
         return new GroupSearchFeedResponse(contents.stream()
                 .map(content -> {
+                    final String memberUUID = "memberUUID";
+                    final String memberId = "memberId";
                     final String memberName = "memberName";
                     final String groupName = "groupName";
                     final LocalDateTime limitDateTime = LocalDateTime.now();
 
                     return new GroupSearchContentResponse(
                             content.getId(),
+                            memberUUID,
+                            memberId,
                             memberName,
                             content.getLocation(),
                             groupName,

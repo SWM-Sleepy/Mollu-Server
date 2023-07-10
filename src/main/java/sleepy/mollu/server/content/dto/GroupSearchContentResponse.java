@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 public record GroupSearchContentResponse(
         String contentId,
+        String memberUUID,
+        String memberId,
         String memberName,
         String location,
         String groupName,
