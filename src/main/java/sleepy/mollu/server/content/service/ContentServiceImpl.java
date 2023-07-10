@@ -2,9 +2,7 @@ package sleepy.mollu.server.content.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sleepy.mollu.server.content.domain.Content;
 import sleepy.mollu.server.content.dto.GroupSearchContentResponse;
@@ -22,8 +20,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public GroupSearchFeedResponse searchGroupFeed(Pageable pageable) {
 
-        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-        final Page<Content> contents = contentRepository.findAll(pageRequest);
+        final Page<Content> contents = contentRepository.findAll(pageable);
 
         return getGroupSearchFeedResponse(contents);
     }
