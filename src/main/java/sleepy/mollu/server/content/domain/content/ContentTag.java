@@ -1,4 +1,4 @@
-package sleepy.mollu.server.content.domain;
+package sleepy.mollu.server.content.domain.content;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -1,4 +1,4 @@
-package sleepy.mollu.server.content.domain;
+package sleepy.mollu.server.content.domain.content;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -29,13 +29,12 @@ public class Content extends BaseEntity {
     private Location location;
 
     @Builder
-    public Content(String id, ContentTag contentTag, ContentSource frontContentSource, ContentSource backContentSource,
-                   Location location) {
+    public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location) {
         this.id = id;
-        this.contentTag = contentTag;
-        this.frontContentSource = frontContentSource;
-        this.backContentSource = backContentSource;
-        this.location = location;
+        this.contentTag = new ContentTag(contentTag);
+        this.frontContentSource = new ContentSource(frontContentSource);
+        this.backContentSource = new ContentSource(backContentSource);
+        this.location = new Location(location);
     }
 
     public String getContentTag() {
@@ -52,5 +51,10 @@ public class Content extends BaseEntity {
 
     public String getLocation() {
         return location.getValue();
+    }
+
+    public void updateUrl(String frontContentSource, String backContentSource) {
+        this.frontContentSource = new ContentSource(frontContentSource);
+        this.backContentSource = new ContentSource(backContentSource);
     }
 }

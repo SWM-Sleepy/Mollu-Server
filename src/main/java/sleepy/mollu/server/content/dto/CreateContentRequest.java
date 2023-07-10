@@ -17,9 +17,8 @@ public record CreateContentRequest(
         String tag,
 
         @NotNull
-        MultipartFile frontContent,
+        MultipartFile frontContentFile,
 
         @NotNull
-        MultipartFile backContent
-) {
+        MultipartFile backContentFile) {
 }
