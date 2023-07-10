@@ -25,6 +25,7 @@ public class ContentServiceImpl implements ContentService {
     private final IdConstructor idConstructor;
     private final FileHandler fileHandler;
 
+    // TODO: 로직 수정 및 테스트 코드 작성
     @Override
     public GroupSearchFeedResponse searchGroupFeed(Pageable pageable) {
 
@@ -54,6 +55,7 @@ public class ContentServiceImpl implements ContentService {
                 }).toList());
     }
 
+    // TODO: 로직 수정 및 테스트 코드 작성
     @Override
     public void createContent(CreateContentRequest request) {
 
