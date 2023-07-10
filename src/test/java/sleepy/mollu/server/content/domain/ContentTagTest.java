@@ -1,5 +1,6 @@
 package sleepy.mollu.server.content.domain;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,13 +33,15 @@ class ContentTagTest {
     @ParameterizedTest
     @MethodSource("invalidContentTag")
     @NullAndEmptySource
-    void 태그_객체가_유효하지_않은_값이_생성될_때_예외를_던진다(String value) {
+    @DisplayName("태그 객체가 유효하지 않은 값이 생성될 때 예외를 던진다")
+    void test1(String value) {
         assertThatThrownBy(() -> new ContentTag(value)).isInstanceOf(ContentTagBadRequestException.class);
     }
 
     @ParameterizedTest
     @MethodSource("validContentTag")
-    void 태그_객체가_성공적으로_생성된다(String value) {
+    @DisplayName("태그 객체가 성공적으로 생성된다")
+    void test2(String value) {
         assertThatCode(() -> new ContentTag(value)).doesNotThrowAnyException();
     }
 

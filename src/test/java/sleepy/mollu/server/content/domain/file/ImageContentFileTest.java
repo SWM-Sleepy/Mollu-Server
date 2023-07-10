@@ -1,5 +1,6 @@
 package sleepy.mollu.server.content.domain.file;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,7 +16,8 @@ class ImageContentFileTest {
     @ParameterizedTest
     @ValueSource(strings = {"text/plain", "text/html", "application/octet-stream", "image/gif"})
     @NullAndEmptySource
-    void 유효하지_않은_파일을_받으면_예외를_던진다(String contentType) {
+    @DisplayName("유효하지 않은 파일을 받으면 예외를 던진다")
+    void test(String contentType) {
         // given
         final MultipartFile mockFile = new MockMultipartFile("photo", "file.png", contentType,
                 "Spring Framework".getBytes());
@@ -27,7 +29,8 @@ class ImageContentFileTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"image/png", "image/bmp", "image/jpeg"})
-    void 이미지_파일을_받으면_객체를_생성한다(String contentType) {
+    @DisplayName("유효한 이미지 파일을 받으면 객체를 생성한다")
+    void test2(String contentType) {
         // given
         final MultipartFile mockFile = new MockMultipartFile("photo", "file.png", contentType,
                 "Spring Framework".getBytes());
