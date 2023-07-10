@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
@@ -12,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.content.service.ContentService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,11 +43,27 @@ class ContentControllerTest {
     }
 
     @Test
-    void ContentControllerTest2() {
+    @DisplayName("컨텐츠 업로드 API를 호출하면 201을 반환한다.")
+    void ContentControllerTest2() throws Exception {
         // given
+        final MockMultipartFile frontContentFile = new MockMultipartFile("frontContentFile", "test_file.png",
+                "image/png", "Spring Framework".getBytes());
+        final MockMultipartFile backContentFile = new MockMultipartFile("backContentFile", "test_file.png",
+                "image/png", "Spring Framework".getBytes());
+
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("location", "서울 도봉구");
+        params.add("groupIds", "1, 2, 3");
+        params.add("tag", "태그");
 
         // when
+        final ResultActions resultActions = mockMvc.perform(multipart("/contents")
+                .file(frontContentFile)
+                .file(backContentFile)
+                .params(params));
 
         // then
+        resultActions.andExpect(status().isCreated())
+                .andDo(print());
     }
 }
