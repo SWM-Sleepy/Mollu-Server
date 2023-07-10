@@ -2,9 +2,20 @@
 springdoc:
   swagger-ui:
     path: "/swagger"
+
 server:
   servlet:
     context-path: "/api"
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ap-northeast-2
 
 ---
 
