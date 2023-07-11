@@ -17,6 +17,7 @@ import sleepy.mollu.server.swagger.OkResponse;
 
 @Tag(name = "컨텐츠 관련 API")
 @RestController
+@RequestMapping("/contents")
 @RequiredArgsConstructor
 public class ContentController {
 
@@ -25,7 +26,7 @@ public class ContentController {
     @Operation(summary = "그룹 피드 검색")
     @OkResponse
     @InternalServerErrorResponse
-    @GetMapping("/contents/group")
+    @GetMapping("/group")
     public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@RequestParam("page") int page) {
 
         return ResponseEntity.ok(contentService.searchGroupFeed(CustomPageRequest.of(page)));
@@ -34,7 +35,7 @@ public class ContentController {
     @Operation(summary = "컨텐츠 업로드")
     @CreatedResponse
     @InternalServerErrorResponse
-    @PostMapping("/contents")
+    @PostMapping
     public ResponseEntity<Void> createContent(@ModelAttribute @Valid CreateContentRequest request) {
 
         contentService.createContent(request);

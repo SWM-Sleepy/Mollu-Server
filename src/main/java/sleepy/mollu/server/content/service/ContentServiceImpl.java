@@ -1,5 +1,6 @@
 package sleepy.mollu.server.content.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import sleepy.mollu.server.content.repository.ContentRepository;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ContentServiceImpl implements ContentService {
 
