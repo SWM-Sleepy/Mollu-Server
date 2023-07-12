@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor
 public class Content extends BaseEntity {
 
