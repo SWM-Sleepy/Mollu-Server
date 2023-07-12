@@ -17,6 +17,14 @@ cloud:
     region:
       static: ap-northeast-2
 
+oauth2:
+  google:
+    clientId:
+      ios: ${GOOGLE_CLIENT_ID_IOS}
+      android: ${GOOGLE_CLIENT_ID_ANDROID}
+      web: ${GOOGLE_CLIENT_ID_WEB}
+
+
 ---
 
 # Local Configuration

@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.exception.FileHandlerServerException;
@@ -14,8 +14,8 @@ import sleepy.mollu.server.content.exception.FileHandlerServerException;
 import java.io.InputStream;
 import java.util.UUID;
 
+@Service
 @RequiredArgsConstructor
-@Component
 public class S3FileHandler implements FileHandler {
 
     private final AmazonS3 amazonS3;
