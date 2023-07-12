@@ -1,5 +1,6 @@
 package sleepy.mollu.server.member.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ public class Name {
 
     private static final int MAX_NAME_LENGTH = 10;
 
+    @Column(name = "name")
     private String value;
 
     public Name(String value) {
