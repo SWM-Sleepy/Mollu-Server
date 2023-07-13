@@ -134,6 +134,7 @@ class OAuth2ServiceImplTest {
 
             final String accessToken = "accessToken";
             final String refreshToken = "refreshToken";
+            final String noToken = null;
 
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
             given(memberRepository.existsById(memberId)).willReturn(false);
