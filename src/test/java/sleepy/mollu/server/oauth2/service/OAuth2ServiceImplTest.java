@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
-import sleepy.mollu.server.oauth2.dto.SocialLoginResponse;
+import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -85,12 +85,12 @@ class OAuth2ServiceImplTest {
                     .build());
 
             // when
-            final SocialLoginResponse socialLoginResponse = oAuth2Service.login(type, socialToken);
+            final TokenResponse tokenResponse = oAuth2Service.login(type, socialToken);
 
             // then
             assertAll(
-                    () -> assertThat(socialLoginResponse.accessToken()).isEqualTo(accessToken),
-                    () -> assertThat(socialLoginResponse.refreshToken()).isEqualTo(refreshToken)
+                    () -> assertThat(tokenResponse.accessToken()).isEqualTo(accessToken),
+                    () -> assertThat(tokenResponse.refreshToken()).isEqualTo(refreshToken)
             );
         }
     }
