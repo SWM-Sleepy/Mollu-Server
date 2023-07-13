@@ -10,8 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
 
@@ -38,13 +36,13 @@ class OAuth2ControllerTest {
     class socialLoginTest {
 
         @Test
-        @DisplayName("파라미터를 설정하지 않으면 400을 반환한다")
+        @DisplayName("파라미터를 설정하지 않으면 다른 API를 호출하므로 404를 반환한다")
         void OAuth2ControllerTest() throws Exception {
             // given & when
             final ResultActions resultActions = mockMvc.perform(get("/auth/login"));
 
             // then
-            resultActions.andExpect(status().isBadRequest())
+            resultActions.andExpect(status().isNotFound())
                     .andDo(print());
         }
 
@@ -52,15 +50,11 @@ class OAuth2ControllerTest {
         @DisplayName("호출에 성공하면 200을 반환한다")
         void OAuth2ControllerTest2() throws Exception {
             // given
-            final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("type", "google");
-
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + "test_token");
 
             // when
-            final ResultActions resultActions = mockMvc.perform(get("/auth/login")
-                    .params(params)
+            final ResultActions resultActions = mockMvc.perform(get("/auth/login/google")
                     .headers(headers));
 
             // then
@@ -77,8 +71,6 @@ class OAuth2ControllerTest {
         @DisplayName("호출에 성공하면 201을 반환한다")
         void socialSignupTest1() throws Exception {
             // given
-            final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("type", "google");
 
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + "test_token");
@@ -87,8 +79,7 @@ class OAuth2ControllerTest {
             final String requestBody = objectMapper.writeValueAsString(request);
 
             // when
-            final ResultActions resultActions = mockMvc.perform(get("/auth/signup")
-                    .params(params)
+            final ResultActions resultActions = mockMvc.perform(get("/auth/signup/google")
                     .headers(headers)
                     .contentType("application/json")
                     .content(requestBody));
