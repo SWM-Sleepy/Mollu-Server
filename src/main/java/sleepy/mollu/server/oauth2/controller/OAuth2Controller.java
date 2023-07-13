@@ -20,7 +20,7 @@ public class OAuth2Controller {
 
     private final OAuth2Service oauth2Service;
 
-    @RequestMapping("/login/{type}")
+    @PostMapping("/login/{type}")
     public ResponseEntity<TokenResponse> login(
             @PathVariable String type,
             @SocialToken String socialToken) throws GeneralSecurityException, IOException {
@@ -28,7 +28,7 @@ public class OAuth2Controller {
         return ResponseEntity.ok(oauth2Service.login(type, socialToken));
     }
 
-    @RequestMapping("/signup/{type}")
+    @PostMapping("/signup/{type}")
     public ResponseEntity<TokenResponse> signup(
             @PathVariable String type,
             @SocialToken String socialToken,
