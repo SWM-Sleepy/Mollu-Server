@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.oauth2.domain.SocialToken;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
@@ -23,17 +20,17 @@ public class OAuth2Controller {
 
     private final OAuth2Service oauth2Service;
 
-    @RequestMapping("/login")
+    @RequestMapping("/login/{type}")
     public ResponseEntity<TokenResponse> login(
-            @RequestParam("type") String type,
+            @PathVariable String type,
             @SocialToken String socialToken) throws GeneralSecurityException, IOException {
 
         return ResponseEntity.ok(oauth2Service.login(type, socialToken));
     }
 
-    @RequestMapping("/signup")
+    @RequestMapping("/signup/{type}")
     public ResponseEntity<TokenResponse> signup(
-            @RequestParam("type") String type,
+            @PathVariable String type,
             @SocialToken String socialToken,
             @RequestBody @Valid SignupRequest request) throws GeneralSecurityException, IOException {
 
