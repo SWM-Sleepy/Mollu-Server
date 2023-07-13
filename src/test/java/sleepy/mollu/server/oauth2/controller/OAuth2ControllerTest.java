@@ -15,7 +15,7 @@ import sleepy.mollu.server.oauth2.service.OAuth2Service;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +39,7 @@ class OAuth2ControllerTest {
         @DisplayName("파라미터를 설정하지 않으면 다른 API를 호출하므로 404를 반환한다")
         void OAuth2ControllerTest() throws Exception {
             // given & when
-            final ResultActions resultActions = mockMvc.perform(get("/auth/login"));
+            final ResultActions resultActions = mockMvc.perform(post("/auth/login"));
 
             // then
             resultActions.andExpect(status().isNotFound())
@@ -54,7 +54,7 @@ class OAuth2ControllerTest {
             headers.add("Authorization", "Bearer " + "test_token");
 
             // when
-            final ResultActions resultActions = mockMvc.perform(get("/auth/login/google")
+            final ResultActions resultActions = mockMvc.perform(post("/auth/login/google")
                     .headers(headers));
 
             // then
@@ -79,7 +79,7 @@ class OAuth2ControllerTest {
             final String requestBody = objectMapper.writeValueAsString(request);
 
             // when
-            final ResultActions resultActions = mockMvc.perform(get("/auth/signup/google")
+            final ResultActions resultActions = mockMvc.perform(post("/auth/signup/google")
                     .headers(headers)
                     .contentType("application/json")
                     .content(requestBody));

@@ -1,15 +1,15 @@
 package sleepy.mollu.server.oauth2.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleepy.mollu.server.oauth2.domain.SocialToken;
 
-@Configuration
+@Component
 public class SocialTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
