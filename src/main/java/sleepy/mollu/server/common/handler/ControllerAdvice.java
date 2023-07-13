@@ -1,5 +1,6 @@
 package sleepy.mollu.server.common.handler;
 
+import jakarta.servlet.ServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,12 @@ public class ControllerAdvice {
     public ResponseEntity<ExceptionResponse> handleNotFoundException(NotFoundException exception) {
         logger.warn(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("요청한 리소스를 찾을 수 없습니다."));
+    }
+
+    @ExceptionHandler(ServletException.class)
+    public ResponseEntity<ExceptionResponse> handleServletException(Exception exception) {
+        logger.warn(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse(BAD_REQUEST_ERROR_MESSAGE));
     }
 
     @ExceptionHandler(ServerException.class)

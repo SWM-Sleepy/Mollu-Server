@@ -3,7 +3,6 @@ package sleepy.mollu.server.member.domain;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,9 +20,6 @@ public class Member {
     @Embedded
     private Name name;
 
-    @Email
-    private String email;
-
     @Embedded
     private MolluId molluId;
 
@@ -31,10 +27,9 @@ public class Member {
     private Birthday birthday;
 
     @Builder
-    public Member(String id, String name, String email, String molluId, LocalDate birthday) {
+    public Member(String id, String name, String molluId, LocalDate birthday) {
         this.id = id;
         this.name = new Name(name);
-        this.email = email;
         this.molluId = new MolluId(molluId);
         this.birthday = new Birthday(birthday);
     }
