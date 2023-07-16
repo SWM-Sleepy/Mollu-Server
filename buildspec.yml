@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo Build started on $(TZ=Asia/Seoul date)
+      - chmod +x ./gradlew
+      - ./gradlew build
+  post_build:
+    commands:
+      - echo $(basename ./build/libs/*.jar)
+      - pwd
+
+artifacts:
+  files:
+    - appspec.yml
+    - deploy.sh
+    - build/libs/*.jar
+
+  discard-paths: yes
+  name: my-app-$(TZ=Asia/Seoul date +%Y-%m-%d-%H-%M-%S)-$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8).zip
+
+
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
