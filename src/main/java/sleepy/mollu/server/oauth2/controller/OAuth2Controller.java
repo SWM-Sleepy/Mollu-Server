@@ -25,7 +25,7 @@ public class OAuth2Controller {
             @PathVariable String type,
             @SocialToken String socialToken) throws GeneralSecurityException, IOException {
 
-        return ResponseEntity.ok(oauth2Service.login(type, socialToken));
+        return ResponseEntity.status(HttpStatus.CREATED).body(oauth2Service.login(type, socialToken));
     }
 
     @PostMapping("/signup/{type}")
