@@ -47,7 +47,7 @@ class OAuth2ControllerTest {
         }
 
         @Test
-        @DisplayName("호출에 성공하면 200을 반환한다")
+        @DisplayName("호출에 성공하면 201을 반환한다")
         void OAuth2ControllerTest2() throws Exception {
             // given
             final HttpHeaders headers = new HttpHeaders();
@@ -58,7 +58,7 @@ class OAuth2ControllerTest {
                     .headers(headers));
 
             // then
-            resultActions.andExpect(status().isOk())
+            resultActions.andExpect(status().isCreated())
                     .andDo(print());
         }
     }
