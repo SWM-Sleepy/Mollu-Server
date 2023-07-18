@@ -1,12 +1,14 @@
 package sleepy.mollu.server.oauth2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import online.partyrun.jwtmanager.config.JwtConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -20,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OAuth2Controller.class)
+@Import(JwtConfig.class)
 class OAuth2ControllerTest {
 
     @Autowired
@@ -33,7 +36,7 @@ class OAuth2ControllerTest {
 
     @Nested
     @DisplayName("[소셜 로그인 API 호출 시] ")
-    class socialLoginTest {
+    class SocialLoginTest {
 
         @Test
         @DisplayName("파라미터를 설정하지 않으면 다른 API를 호출하므로 404를 반환한다")
@@ -65,7 +68,7 @@ class OAuth2ControllerTest {
 
     @Nested
     @DisplayName("[소셜 회원가입 API 호출 시] ")
-    class socialSignupTest {
+    class SocialSignupTest {
 
         @Test
         @DisplayName("호출에 성공하면 201을 반환한다")
