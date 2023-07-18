@@ -1,4 +1,4 @@
-package sleepy.mollu.server.oauth2.resolver;
+package sleepy.mollu.server.oauth2.controller.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -7,7 +7,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import sleepy.mollu.server.oauth2.domain.SocialToken;
+import sleepy.mollu.server.oauth2.controller.parser.AuthorizationHeaderParser;
+import sleepy.mollu.server.oauth2.controller.annotation.SocialToken;
 
 @Component
 public class SocialTokenArgumentResolver implements HandlerMethodArgumentResolver {
@@ -19,12 +20,6 @@ public class SocialTokenArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring("Bearer ".length());
-        }
-
-        return token;
+        return AuthorizationHeaderParser.parse((HttpServletRequest) webRequest.getNativeRequest());
     }
 }
