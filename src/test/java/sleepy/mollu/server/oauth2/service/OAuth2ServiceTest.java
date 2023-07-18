@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-class OAuth2ServiceImplTest {
+class OAuth2ServiceTest {
 
     private OAuth2Service oAuth2Service;
 
