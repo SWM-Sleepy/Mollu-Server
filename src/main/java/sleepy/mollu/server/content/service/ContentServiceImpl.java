@@ -14,7 +14,9 @@ import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchContentResponse;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
+import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.repository.ContentRepository;
+import sleepy.mollu.server.member.exception.MemberAuthorizationException;
 
 import java.time.LocalDateTime;
 
@@ -89,5 +91,18 @@ public class ContentServiceImpl implements ContentService {
         final ContentFile frontContentFile = new ImageContentFile(file);
 
         return fileHandler.upload(frontContentFile);
+    }
+
+    @Override
+    public void deleteContent(String memberId, String contentId) {
+
+        final Content content = contentRepository.findById(contentId)
+                .orElseThrow(() -> new ContentNotFoundException("[" + contentId + "] 는 존재하지 않는 컨텐츠입니다."));
+
+        if (!content.isOwner(memberId)) {
+            throw new MemberAuthorizationException("[" + memberId + "] 는 [" + contentId + "] 의 소유자가 아닙니다.");
+        }
+
+        contentRepository.delete(content);
     }
 }

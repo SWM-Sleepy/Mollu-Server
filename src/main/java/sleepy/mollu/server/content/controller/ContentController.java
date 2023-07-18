@@ -11,8 +11,10 @@ import sleepy.mollu.server.common.domain.CustomPageRequest;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.service.ContentService;
+import sleepy.mollu.server.oauth2.controller.annotation.Login;
 import sleepy.mollu.server.swagger.CreatedResponse;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
+import sleepy.mollu.server.swagger.NoContentResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
 @Tag(name = "컨텐츠 관련 API")
@@ -43,4 +45,14 @@ public class ContentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "컨텐츠 삭제")
+    @NoContentResponse
+    @InternalServerErrorResponse
+    @DeleteMapping("/{contentId}")
+    public ResponseEntity<Void> deleteContent(@Login String memberId, @PathVariable String contentId) {
+
+        contentService.deleteContent(memberId, contentId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
