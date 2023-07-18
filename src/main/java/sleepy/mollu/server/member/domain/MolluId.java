@@ -25,7 +25,7 @@ public class MolluId {
             throw new IllegalArgumentException("MolluId는 null이거나 공백일 수 없습니다.");
         }
 
-        if(value.length() > MAX_MOLLU_ID_LENGTH) {
+        if (value.length() > MAX_MOLLU_ID_LENGTH) {
             throw new IllegalArgumentException("MolluId는 " + MAX_MOLLU_ID_LENGTH + "자를 초과할 수 없습니다.");
         }
     }

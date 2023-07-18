@@ -1,6 +1,5 @@
 package sleepy.mollu.server.content.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,13 +12,11 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberAuthorizationException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;

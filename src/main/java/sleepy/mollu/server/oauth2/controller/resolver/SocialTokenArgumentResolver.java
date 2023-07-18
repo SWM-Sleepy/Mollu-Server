@@ -7,8 +7,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import sleepy.mollu.server.oauth2.controller.parser.AuthorizationHeaderParser;
 import sleepy.mollu.server.oauth2.controller.annotation.SocialToken;
+import sleepy.mollu.server.oauth2.controller.parser.AuthorizationHeaderParser;
 
 @Component
 public class SocialTokenArgumentResolver implements HandlerMethodArgumentResolver {
