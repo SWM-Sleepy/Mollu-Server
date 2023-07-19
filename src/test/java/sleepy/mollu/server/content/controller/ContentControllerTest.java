@@ -1,6 +1,7 @@
 package sleepy.mollu.server.content.controller;
 
-import online.partyrun.jwtmanager.config.JwtConfig;
+import online.partyrun.jwtmanager.JwtExtractor;
+import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
 import online.partyrun.jwtmanager.manager.JwtManager;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.content.service.ContentService;
+import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
 
 import java.util.Set;
 
@@ -24,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ContentController.class)
-@Import(JwtConfig.class)
+@Import(CustomJwtConfig.class)
 class ContentControllerTest {
 
     @Autowired
@@ -34,7 +36,7 @@ class ContentControllerTest {
     private ContentService contentService;
 
     @Autowired
-    private JwtManager jwtManager;
+    private JwtGenerator jwtGenerator;
 
     @Test
     @DisplayName("그룹 피드 검색 API를 호출하면 200을 반환한다.")
@@ -44,7 +46,7 @@ class ContentControllerTest {
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("page", "1");
 
-        final JwtToken jwtToken = jwtManager.generate("memberId", Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
         final String accessToken = jwtToken.accessToken();
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -74,7 +76,7 @@ class ContentControllerTest {
         params.add("groupIds", "1, 2, 3");
         params.add("tag", "태그");
 
-        final JwtToken jwtToken = jwtManager.generate("memberId", Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
         final String accessToken = jwtToken.accessToken();
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -96,7 +98,7 @@ class ContentControllerTest {
     void ContentControllerTest3() throws Exception {
 
         // given
-        final JwtToken jwtToken = jwtManager.generate("memberId", Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
         final String accessToken = jwtToken.accessToken();
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
