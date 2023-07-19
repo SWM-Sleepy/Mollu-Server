@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
-import sleepy.mollu.server.swagger.BadRequestResponse;
-import sleepy.mollu.server.swagger.InternalServerErrorResponse;
-import sleepy.mollu.server.swagger.OkResponse;
+import sleepy.mollu.server.swagger.*;
 
 @Tag(name = "알림 설정 관련 API")
 @RestController
@@ -27,6 +25,8 @@ public class PreferenceController {
     @Operation(summary = "알림 설정 변경")
     @OkResponse
     @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
     @InternalServerErrorResponse
     @PutMapping
     public ResponseEntity<Void> updatePreference(@Login String memberId, @RequestBody @Valid PreferenceRequest request) {
