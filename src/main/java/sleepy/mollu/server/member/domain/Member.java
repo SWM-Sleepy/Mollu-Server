@@ -30,6 +30,10 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Content> contents;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "preference_id")
+    private Preference preference;
+
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday) {
         this.id = id;

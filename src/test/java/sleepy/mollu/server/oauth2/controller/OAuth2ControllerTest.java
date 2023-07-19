@@ -1,7 +1,6 @@
 package sleepy.mollu.server.oauth2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import online.partyrun.jwtmanager.config.JwtConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.member.dto.SignupRequest;
+import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
 
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OAuth2Controller.class)
-@Import(JwtConfig.class)
+@Import(CustomJwtConfig.class)
 class OAuth2ControllerTest {
 
     @Autowired

@@ -24,6 +24,9 @@ oauth2:
       android: ${GOOGLE_CLIENT_ID_ANDROID}
       web: ${GOOGLE_CLIENT_ID_WEB}
 
+spring:
+  main:
+    allow-bean-definition-overriding: true
 
 ---
 
