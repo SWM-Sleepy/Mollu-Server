@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +29,10 @@ public class PreferenceController {
     @BadRequestResponse
     @InternalServerErrorResponse
     @PutMapping
-    public void updatePreference(@Login String memberId, @RequestBody @Valid PreferenceRequest request) {
+    public ResponseEntity<Void> updatePreference(@Login String memberId, @RequestBody @Valid PreferenceRequest request) {
 
         preferenceService.updatePreference(memberId, request);
 
+        return ResponseEntity.ok().build();
     }
 }
