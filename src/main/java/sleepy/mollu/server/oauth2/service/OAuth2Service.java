@@ -9,5 +9,6 @@ import java.security.GeneralSecurityException;
 public interface OAuth2Service {
 
     TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException;
+
     TokenResponse signup(String type, String socialToken, SignupRequest request) throws GeneralSecurityException, IOException;
 }

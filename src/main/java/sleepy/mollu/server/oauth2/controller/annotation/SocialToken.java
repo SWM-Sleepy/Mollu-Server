@@ -1,4 +1,4 @@
-package sleepy.mollu.server.oauth2.domain;
+package sleepy.mollu.server.oauth2.controller.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

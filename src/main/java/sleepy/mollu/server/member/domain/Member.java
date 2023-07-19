@@ -1,13 +1,13 @@
 package sleepy.mollu.server.member.domain;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleepy.mollu.server.content.domain.content.Content;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class Member {
 
     @Id
+    @Column(name = "member_id")
     private String id;
 
     @Embedded
@@ -26,11 +27,18 @@ public class Member {
     @Embedded
     private Birthday birthday;
 
+    @OneToMany(mappedBy = "member")
+    private List<Content> contents;
+
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
         this.birthday = new Birthday(birthday);
+    }
+
+    public boolean isSameId(String id) {
+        return this.id.equals(id);
     }
 }
