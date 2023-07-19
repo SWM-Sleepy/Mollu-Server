@@ -6,6 +6,7 @@ phases:
       - echo Build started on $(TZ=Asia/Seoul date)
       - chmod +x ./gradlew
       - ./gradlew build
+
   post_build:
     commands:
       - echo $(basename ./build/libs/*.jar)
