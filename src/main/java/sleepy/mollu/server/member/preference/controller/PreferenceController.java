@@ -5,11 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
+import sleepy.mollu.server.member.preference.dto.PreferenceResponse;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
 import sleepy.mollu.server.swagger.*;
@@ -34,5 +32,17 @@ public class PreferenceController {
         preferenceService.updatePreference(memberId, request);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "알림 설정 조회")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping
+    public ResponseEntity<PreferenceResponse> searchPreference(@Login String memberId) {
+
+        return ResponseEntity.ok().body(preferenceService.searchPreference(memberId));
     }
 }
