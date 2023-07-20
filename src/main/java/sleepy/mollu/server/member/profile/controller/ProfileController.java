@@ -14,7 +14,7 @@ import sleepy.mollu.server.swagger.*;
 
 @RestController
 @Tag(name = "알림 설정 관련 API")
-@RequestMapping("/members/preference")
+@RequestMapping("/members/profile")
 @RequiredArgsConstructor
 public class ProfileController {
 
