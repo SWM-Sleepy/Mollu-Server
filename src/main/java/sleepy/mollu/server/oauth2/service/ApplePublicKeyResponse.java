@@ -12,6 +12,12 @@ public class ApplePublicKeyResponse {
 
     private List<Key> keys;
 
+    public Optional<Key> getMatchedKeyBy(String kid, String alg) {
+        return this.keys.stream()
+                .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
+                .findFirst();
+    }
+
     @Getter
     public static class Key {
         private String kty;
@@ -20,11 +26,5 @@ public class ApplePublicKeyResponse {
         private String alg;
         private String n;
         private String e;
-    }
-
-    public Optional<Key> getMatchedKeyBy(String kid, String alg) {
-        return this.keys.stream()
-                .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
-                .findFirst();
     }
 }

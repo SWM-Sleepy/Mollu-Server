@@ -30,16 +30,22 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Content> contents;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "preference_id")
     private Preference preference;
 
     @Builder
-    public Member(String id, String name, String molluId, LocalDate birthday) {
+    public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
         this.birthday = new Birthday(birthday);
+        setPreference(preference);
+    }
+
+    private void setPreference(Preference preference) {
+        this.preference = preference;
+        preference.setMember(this);
     }
 
     public boolean isSameId(String id) {

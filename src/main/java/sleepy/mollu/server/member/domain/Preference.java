@@ -33,4 +33,8 @@ public class Preference {
         this.molluAlarm = molluAlarm;
         this.contentAlarm = contentAlarm;
     }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

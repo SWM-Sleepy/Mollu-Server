@@ -6,6 +6,7 @@ import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
 import org.springframework.stereotype.Service;
 import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.dto.MemberBadRequestException;
 import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
@@ -58,11 +59,18 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
-        saveMember(memberId, request.name(), request.birthday(), request.molluId());
+        final Preference preference = getPreference();
+        saveMember(memberId, preference, request.name(), request.birthday(), request.molluId());
 
         final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
-
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
+    }
+
+    private Preference getPreference() {
+        return Preference.builder()
+                .molluAlarm(false)
+                .contentAlarm(false)
+                .build();
     }
 
     private void validateMemberExists(String memberId) {
@@ -71,13 +79,14 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         }
     }
 
-    private void saveMember(String memberId, String name, LocalDate birthday, String molluId) {
+    private void saveMember(String memberId, Preference preference, String name, LocalDate birthday, String molluId) {
 
         memberRepository.save(Member.builder()
                 .id(memberId)
                 .name(name)
                 .birthday(birthday)
                 .molluId(molluId)
+                .preference(preference)
                 .build());
     }
 }
