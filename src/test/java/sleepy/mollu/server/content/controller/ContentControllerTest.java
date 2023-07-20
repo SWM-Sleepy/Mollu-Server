@@ -1,9 +1,7 @@
 package sleepy.mollu.server.content.controller;
 
-import online.partyrun.jwtmanager.JwtExtractor;
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
-import online.partyrun.jwtmanager.manager.JwtManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
