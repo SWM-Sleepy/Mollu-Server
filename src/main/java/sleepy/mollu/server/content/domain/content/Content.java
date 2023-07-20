@@ -13,6 +13,7 @@ import sleepy.mollu.server.member.domain.Member;
 public class Content extends BaseEntity {
 
     @Id
+    @Column(name = "content_id")
     private String id;
 
     @Embedded

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.domain.content.ContentSource;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +27,10 @@ public class Member {
 
     @Embedded
     private Birthday birthday;
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
+    private ContentSource profileSource;
 
     @OneToMany(mappedBy = "member")
     private List<Content> contents;
@@ -62,5 +67,25 @@ public class Member {
 
     public LocalDate getBirthday() {
         return this.birthday.getDate();
+    }
+
+    public String getProfileSource() {
+        return this.profileSource.getValue();
+    }
+
+    public void updateMolluId(String molluId) {
+        this.molluId = new MolluId(molluId);
+    }
+
+    public void updateName(String name) {
+        this.name = new Name(name);
+    }
+
+    public void updateBirthday(LocalDate birthday) {
+        this.birthday = new Birthday(birthday);
+    }
+
+    public void updateProfileSource(String profileSource) {
+        this.profileSource = new ContentSource(profileSource);
     }
 }
