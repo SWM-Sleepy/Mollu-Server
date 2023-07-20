@@ -51,4 +51,16 @@ public class Member {
     public boolean isSameId(String id) {
         return this.id.equals(id);
     }
+
+    public String getName() {
+        return this.name.getValue();
+    }
+
+    public String getMolluId() {
+        return this.molluId.getValue();
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday.getDate();
+    }
 }
