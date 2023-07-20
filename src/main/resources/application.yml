@@ -1,4 +1,5 @@
 # Global Configuration
+
 springdoc:
   swagger-ui:
     path: "/swagger"
@@ -27,6 +28,8 @@ oauth2:
 spring:
   main:
     allow-bean-definition-overriding: true
+  profiles:
+    active: local
 
 ---
 
