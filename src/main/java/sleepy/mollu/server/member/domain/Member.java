@@ -30,7 +30,7 @@ public class Member {
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
-    private ContentSource profileSource;
+    private ContentSource profileSource = new ContentSource("");
 
     @OneToMany(mappedBy = "member")
     private List<Content> contents;
