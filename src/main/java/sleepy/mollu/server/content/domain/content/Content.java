@@ -5,7 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
+import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.member.domain.Member;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,6 +37,10 @@ public class Content extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "content")
+    private List<ContentReport> reports = new ArrayList<>();
+
 
     @Builder
     public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member) {
