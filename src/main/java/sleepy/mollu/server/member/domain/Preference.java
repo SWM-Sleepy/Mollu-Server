@@ -35,7 +35,7 @@ public class Preference extends BaseEntity {
         this.contentAlarm = contentAlarm;
     }
 
-    public void setMember(Member member) {
+    public void assignMember(Member member) {
         this.member = member;
     }
 }
