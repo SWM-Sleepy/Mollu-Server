@@ -5,7 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
+import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.member.domain.Member;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,6 +38,10 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
+    private List<ContentReport> reports = new ArrayList<>();
+
+
     @Builder
     public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member) {
         this.id = id;
@@ -60,6 +68,11 @@ public class Content extends BaseEntity {
         return location.getValue();
     }
 
+    public void addReport(ContentReport report) {
+        this.reports.add(report);
+        report.assignContent(this);
+    }
+
     public void updateUrl(String frontContentSource, String backContentSource) {
         this.frontContentSource = new ContentSource(frontContentSource);
         this.backContentSource = new ContentSource(backContentSource);
@@ -67,5 +80,9 @@ public class Content extends BaseEntity {
 
     public boolean isOwner(String memberId) {
         return this.member.isSameId(memberId);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member == member;
     }
 }

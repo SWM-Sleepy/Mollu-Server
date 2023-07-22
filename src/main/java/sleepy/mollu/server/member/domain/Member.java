@@ -4,16 +4,20 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.content.ContentSource;
+import sleepy.mollu.server.content.report.domain.ContentReport;
+import sleepy.mollu.server.content.report.domain.Report;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @Column(name = "member_id")
@@ -33,11 +37,14 @@ public class Member {
     private ContentSource profileSource = new ContentSource("");
 
     @OneToMany(mappedBy = "member")
-    private List<Content> contents;
+    private List<Content> contents = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "preference_id")
     private Preference preference;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Report> contentReports = new ArrayList<>();
 
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
@@ -50,7 +57,12 @@ public class Member {
 
     private void setPreference(Preference preference) {
         this.preference = preference;
-        preference.setMember(this);
+        preference.assignMember(this);
+    }
+
+    public void addContentReport(ContentReport contentReport) {
+        this.contentReports.add(contentReport);
+        contentReport.assignMember(this);
     }
 
     public boolean isSameId(String id) {
