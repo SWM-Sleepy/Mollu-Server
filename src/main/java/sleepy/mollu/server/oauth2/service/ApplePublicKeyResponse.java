@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Getter
 @NoArgsConstructor
@@ -12,10 +12,11 @@ public class ApplePublicKeyResponse {
 
     private List<Key> keys;
 
-    public Optional<Key> getMatchedKeyBy(String kid, String alg) {
+    public Key getMatchedPublicKeyBy(String kid, String alg) {
         return this.keys.stream()
                 .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("매칭되는 키를 찾을 수 없습니다."));
     }
 
     @Getter

@@ -1,5 +1,7 @@
 package sleepy.mollu.server.oauth2.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -13,7 +15,9 @@ import sleepy.mollu.server.oauth2.exception.TokenAuthenticationException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Map;
@@ -27,29 +31,13 @@ public class AppleIdentityTokenVerifier {
     public Claims verify(String socialToken) {
 
         try {
-            ApplePublicKeyResponse response = appleClient.getPublicKey();
+            Map<String, String> header = extractJwtHeader(socialToken);
+            final ApplePublicKeyResponse response = appleClient.getPublicKey();
+            ApplePublicKeyResponse.Key key = response.getMatchedPublicKeyBy(header.get("kid"), header.get("alg"));
 
-            String headerOfIdentityToken = socialToken.substring(0, socialToken.indexOf("."));
-            Map<String, String> header = new ObjectMapper()
-                    .readValue(new String(Base64.getDecoder().decode(headerOfIdentityToken), StandardCharsets.UTF_8), Map.class);
-            ApplePublicKeyResponse.Key key = response.getMatchedKeyBy(header.get("kid"), header.get("alg"))
-                    .orElseThrow(() -> new NullPointerException("Failed get public key from apple's id server."));
+            final PublicKey rsaPublicKey = getAppleRSAPublicKey(key.getN(), key.getE(), key.getKty());
 
-            byte[] nBytes = Base64.getUrlDecoder().decode(key.getN());
-            byte[] eBytes = Base64.getUrlDecoder().decode(key.getE());
-
-            BigInteger n = new BigInteger(1, nBytes);
-            BigInteger e = new BigInteger(1, eBytes);
-
-            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
-            KeyFactory keyFactory = KeyFactory.getInstance(key.getKty());
-            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-
-            return Jwts.parserBuilder()
-                    .setSigningKey(publicKey)
-                    .build()
-                    .parseClaimsJws(socialToken)
-                    .getBody();
+            return validateJwt(socialToken, rsaPublicKey);
 
         } catch (MalformedJwtException e) {
             throw new TokenAuthenticationException("유효하지 않은 토큰입니다.");
@@ -60,4 +48,34 @@ public class AppleIdentityTokenVerifier {
         }
     }
 
+    private Map<String, String> extractJwtHeader(String socialToken) throws JsonProcessingException {
+        final String jwtTokenHeader = socialToken.substring(0, socialToken.indexOf("."));
+        final byte[] decodedHeader = Base64.getDecoder().decode(jwtTokenHeader);
+        final String decodedHeaderJson = new String(decodedHeader, StandardCharsets.UTF_8);
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(decodedHeaderJson, new TypeReference<Map<String, String>>() {});
+    }
+
+    private PublicKey getAppleRSAPublicKey(String encodedN, String encodedE, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        final byte[] decodedN = Base64.getUrlDecoder().decode(encodedN);
+        final byte[] decodedE = Base64.getUrlDecoder().decode(encodedE);
+
+        final BigInteger n = new BigInteger(1, decodedN);
+        final BigInteger e = new BigInteger(1, decodedE);
+
+        final RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
+        final KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+
+        return keyFactory.generatePublic(publicKeySpec);
+    }
+
+
+    private Claims validateJwt(String socialToken, PublicKey rsaPublicKey) {
+        return Jwts.parserBuilder()
+                .setSigningKey(rsaPublicKey)
+                .build()
+                .parseClaimsJws(socialToken)
+                .getBody();
+    }
 }
