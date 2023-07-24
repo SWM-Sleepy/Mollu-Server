@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.domain.content.ContentSource;
+import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.domain.Report;
 
@@ -34,7 +34,7 @@ public class Member extends BaseEntity {
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
-    private ContentSource profileSource = new ContentSource("");
+    private FileSource profileSource = new FileSource("");
 
     @OneToMany(mappedBy = "member")
     private List<Content> contents = new ArrayList<>();
@@ -112,7 +112,7 @@ public class Member extends BaseEntity {
 
     private void updateProfileSource(String profileSource) {
         if (profileSource != null) {
-            this.profileSource = new ContentSource(profileSource);
+            this.profileSource = new FileSource(profileSource);
         }
     }
 }

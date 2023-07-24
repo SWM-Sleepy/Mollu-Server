@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
+import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -25,11 +26,11 @@ public class Content extends BaseEntity {
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "front_content_source"))
-    private ContentSource frontContentSource;
+    private FileSource frontContentSource;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "back_content_source"))
-    private ContentSource backContentSource;
+    private FileSource backContentSource;
 
     @Embedded
     private Location location;
@@ -46,8 +47,8 @@ public class Content extends BaseEntity {
     public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member) {
         this.id = id;
         this.contentTag = new ContentTag(contentTag);
-        this.frontContentSource = new ContentSource(frontContentSource);
-        this.backContentSource = new ContentSource(backContentSource);
+        this.frontContentSource = new FileSource(frontContentSource);
+        this.backContentSource = new FileSource(backContentSource);
         this.location = new Location(location);
         this.member = member;
     }
@@ -74,8 +75,8 @@ public class Content extends BaseEntity {
     }
 
     public void updateUrl(String frontContentSource, String backContentSource) {
-        this.frontContentSource = new ContentSource(frontContentSource);
-        this.backContentSource = new ContentSource(backContentSource);
+        this.frontContentSource = new FileSource(frontContentSource);
+        this.backContentSource = new FileSource(backContentSource);
     }
 
     public boolean isOwner(String memberId) {

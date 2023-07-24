@@ -1,4 +1,4 @@
-package sleepy.mollu.server.content.domain.content;
+package sleepy.mollu.server.common.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContentSource {
+public class FileSource {
 
     private String value;
 }
