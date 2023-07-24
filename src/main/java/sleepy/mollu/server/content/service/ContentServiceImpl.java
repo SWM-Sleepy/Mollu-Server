@@ -16,7 +16,7 @@ import sleepy.mollu.server.content.dto.GroupSearchContentResponse;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.member.exception.MemberAuthorizationException;
+import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 
 import java.time.LocalDateTime;
 
@@ -100,7 +100,7 @@ public class ContentServiceImpl implements ContentService {
                 .orElseThrow(() -> new ContentNotFoundException("[" + contentId + "] 는 존재하지 않는 컨텐츠입니다."));
 
         if (!content.isOwner(memberId)) {
-            throw new MemberAuthorizationException("[" + memberId + "] 는 [" + contentId + "] 의 소유자가 아닙니다.");
+            throw new MemberUnAuthorizedException("[" + memberId + "] 는 [" + contentId + "] 의 소유자가 아닙니다.");
         }
 
         contentRepository.delete(content);

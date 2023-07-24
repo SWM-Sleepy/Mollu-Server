@@ -2,13 +2,14 @@ package sleepy.mollu.server.member.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.domain.content.ContentSource;
-import sleepy.mollu.server.content.report.domain.ContentReport;
+import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.report.domain.Report;
+import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class Member extends BaseEntity {
 
     @Id
@@ -34,7 +36,7 @@ public class Member extends BaseEntity {
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
-    private ContentSource profileSource = new ContentSource("");
+    private FileSource profileSource = new FileSource("");
 
     @OneToMany(mappedBy = "member")
     private List<Content> contents = new ArrayList<>();
@@ -43,8 +45,11 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "preference_id")
     private Preference preference;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member")
     private List<Report> contentReports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
@@ -58,11 +63,6 @@ public class Member extends BaseEntity {
     private void setPreference(Preference preference) {
         this.preference = preference;
         preference.assignMember(this);
-    }
-
-    public void addContentReport(ContentReport contentReport) {
-        this.contentReports.add(contentReport);
-        contentReport.assignMember(this);
     }
 
     public boolean isSameId(String id) {
@@ -112,7 +112,15 @@ public class Member extends BaseEntity {
 
     private void updateProfileSource(String profileSource) {
         if (profileSource != null) {
-            this.profileSource = new ContentSource(profileSource);
+            this.profileSource = new FileSource(profileSource);
         }
+    }
+
+    public void addContentReport(Report report) {
+        this.contentReports.add(report);
+    }
+
+    public void addGroupMember(GroupMember groupMember) {
+        this.groupMembers.add(groupMember);
     }
 }

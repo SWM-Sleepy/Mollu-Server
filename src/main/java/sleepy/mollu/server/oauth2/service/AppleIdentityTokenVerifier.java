@@ -10,7 +10,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import sleepy.mollu.server.oauth2.exception.TokenAuthenticationException;
+import sleepy.mollu.server.oauth2.exception.TokenUnAuthenticatedException;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -40,11 +40,11 @@ public class AppleIdentityTokenVerifier {
             return validateJwt(socialToken, rsaPublicKey);
 
         } catch (MalformedJwtException e) {
-            throw new TokenAuthenticationException("유효하지 않은 토큰입니다.");
+            throw new TokenUnAuthenticatedException("유효하지 않은 토큰입니다.");
         } catch (SignatureException | ExpiredJwtException e) {
-            throw new TokenAuthenticationException("토큰이 만료되었습니다.");
+            throw new TokenUnAuthenticatedException("토큰이 만료되었습니다.");
         } catch (Exception e) {
-            throw new TokenAuthenticationException(e.getClass() + " : 토큰 검증에 실패하였습니다.");
+            throw new TokenUnAuthenticatedException(e.getClass() + " : 토큰 검증에 실패하였습니다.");
         }
     }
 

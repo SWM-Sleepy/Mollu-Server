@@ -12,7 +12,7 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.member.exception.MemberAuthorizationException;
+import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 
 import java.util.Optional;
 
@@ -70,7 +70,7 @@ class ContentServiceTest {
 
             // when & then
             assertThatThrownBy(() -> contentService.deleteContent(memberId, contentId))
-                    .isInstanceOf(MemberAuthorizationException.class);
+                    .isInstanceOf(MemberUnAuthorizedException.class);
         }
 
         @Test

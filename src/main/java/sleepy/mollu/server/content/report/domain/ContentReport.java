@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.member.domain.Member;
 
 @Entity
 @Getter
@@ -19,12 +20,13 @@ public class ContentReport extends Report {
     private Content content;
 
     @Builder
-    public ContentReport(String reason, Content content) {
-        super(reason);
-        this.content = content;
+    public ContentReport(String reason, Member member, Content content) {
+        super(reason, member);
+        setContent(content);
     }
 
-    public void assignContent(Content content) {
+    private void setContent(Content content) {
         this.content = content;
+        content.addContentReport(this);
     }
 }

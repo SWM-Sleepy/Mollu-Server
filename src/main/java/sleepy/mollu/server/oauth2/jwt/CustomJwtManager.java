@@ -6,7 +6,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import online.partyrun.jwtmanager.dto.JwtPayload;
 import online.partyrun.jwtmanager.manager.JwtManager;
 import online.partyrun.jwtmanager.manager.TokenManager;
-import sleepy.mollu.server.oauth2.exception.TokenAuthenticationException;
+import sleepy.mollu.server.oauth2.exception.TokenUnAuthenticatedException;
 
 public class CustomJwtManager extends JwtManager {
 
@@ -20,13 +20,13 @@ public class CustomJwtManager extends JwtManager {
         try {
             return super.extract(accessToken);
         } catch (MalformedJwtException e) {
-            throw new TokenAuthenticationException("[" + accessToken + "] 은 잘못된 형식의 토큰입니다.");
+            throw new TokenUnAuthenticatedException("[" + accessToken + "] 은 잘못된 형식의 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            throw new TokenAuthenticationException("[" + accessToken + "] 은 지원되지 않는 형식의 토큰입니다.");
+            throw new TokenUnAuthenticatedException("[" + accessToken + "] 은 지원되지 않는 형식의 토큰입니다.");
         } catch (ExpiredJwtException e) {
-            throw new TokenAuthenticationException("[" + accessToken + "] 은 만료된 토큰입니다.");
+            throw new TokenUnAuthenticatedException("[" + accessToken + "] 은 만료된 토큰입니다.");
         } catch (Exception e) {
-            throw new TokenAuthenticationException(e.getClass() + " [" + accessToken + "] 은 유효하지 않은 토큰입니다.");
+            throw new TokenUnAuthenticatedException(e.getClass() + " [" + accessToken + "] 은 유효하지 않은 토큰입니다.");
         }
     }
 }

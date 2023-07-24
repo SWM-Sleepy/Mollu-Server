@@ -45,14 +45,14 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(new ExceptionResponse(BAD_REQUEST_ERROR_MESSAGE));
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException exception) {
+    @ExceptionHandler(UnAuthenticatedException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthenticationException(UnAuthenticatedException exception) {
         logger.warn(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ExceptionResponse("인증에 실패했습니다."));
     }
 
-    @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<ExceptionResponse> handleAuthorizationException(AuthorizationException exception) {
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthorizationException(UnAuthorizedException exception) {
         logger.warn(exception.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionResponse("권한이 없습니다."));
     }

@@ -24,10 +24,9 @@ public class Preference extends BaseEntity {
     private Member member;
 
     @Builder
-    public Preference(boolean molluAlarm, boolean contentAlarm, Member member) {
+    public Preference(boolean molluAlarm, boolean contentAlarm) {
         this.molluAlarm = molluAlarm;
         this.contentAlarm = contentAlarm;
-        this.member = member;
     }
 
     public void update(boolean molluAlarm, boolean contentAlarm) {
