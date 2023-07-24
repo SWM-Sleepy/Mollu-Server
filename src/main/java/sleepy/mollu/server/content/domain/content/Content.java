@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
+import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -42,15 +43,18 @@ public class Content extends BaseEntity {
     @OneToMany(mappedBy = "content")
     private List<ContentReport> reports = new ArrayList<>();
 
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
+    private List<ContentGroup> contentGroups = new ArrayList<>();
 
     @Builder
-    public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member) {
+    public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member, ContentGroup contentGroup) {
         this.id = id;
         this.contentTag = new ContentTag(contentTag);
         this.frontContentSource = new FileSource(frontContentSource);
         this.backContentSource = new FileSource(backContentSource);
         this.location = new Location(location);
         this.member = member;
+        addContentGroup(contentGroup);
     }
 
     public String getContentTag() {
@@ -84,5 +88,10 @@ public class Content extends BaseEntity {
 
     public void addContentReport(ContentReport contentReport) {
         this.reports.add(contentReport);
+    }
+
+    private void addContentGroup(ContentGroup contentGroup) {
+        this.contentGroups.add(contentGroup);
+        contentGroup.assignContent(this);
     }
 }

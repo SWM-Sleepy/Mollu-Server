@@ -1,7 +1,9 @@
 package sleepy.mollu.server.group.domain.group;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Group {
 
     @Id
@@ -29,6 +32,7 @@ public class Group {
     @OneToMany(mappedBy = "group")
     private List<GroupMember> groupMembers = new ArrayList<>();
 
+    @Builder
     public Group(String id, String name, String introduction, String groupProfileSource) {
         this.id = id;
         this.name = new GroupName(name);

@@ -3,11 +3,13 @@ package sleepy.mollu.server.group.groupmember.domain;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class GroupMember {
 
     @Id
@@ -15,31 +17,31 @@ public class GroupMember {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Enumerated(EnumType.STRING)
     private GroupMemberRole role;
 
     @Builder
-    public GroupMember(String id, Member member, Group group, GroupMemberRole role) {
+    public GroupMember(String id, Group group, Member member, GroupMemberRole role) {
         this.id = id;
-        setMember(member);
         setGroup(group);
+        setMember(member);
         this.role = role;
-    }
-
-    private void setMember(Member member) {
-        this.member = member;
-        member.addGroupMember(this);
     }
 
     private void setGroup(Group group) {
         this.group = group;
         group.addGroupMember(this);
+    }
+
+    private void setMember(Member member) {
+        this.member = member;
+        member.addGroupMember(this);
     }
 }
