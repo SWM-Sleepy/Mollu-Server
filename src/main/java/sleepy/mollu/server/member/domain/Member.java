@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.common.domain.FileSource;
-import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.domain.Report;
 
 import java.time.LocalDate;
@@ -43,7 +42,7 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "preference_id")
     private Preference preference;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member")
     private List<Report> contentReports = new ArrayList<>();
 
     @Builder
@@ -58,11 +57,6 @@ public class Member extends BaseEntity {
     private void setPreference(Preference preference) {
         this.preference = preference;
         preference.assignMember(this);
-    }
-
-    public void addContentReport(ContentReport contentReport) {
-        this.contentReports.add(contentReport);
-        contentReport.assignMember(this);
     }
 
     public boolean isSameId(String id) {
@@ -114,5 +108,9 @@ public class Member extends BaseEntity {
         if (profileSource != null) {
             this.profileSource = new FileSource(profileSource);
         }
+    }
+
+    public void addContentReport(Report report) {
+        this.contentReports.add(report);
     }
 }

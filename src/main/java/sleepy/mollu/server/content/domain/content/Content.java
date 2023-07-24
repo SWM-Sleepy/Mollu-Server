@@ -39,7 +39,7 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "content")
     private List<ContentReport> reports = new ArrayList<>();
 
 
@@ -69,11 +69,6 @@ public class Content extends BaseEntity {
         return location.getValue();
     }
 
-    public void addReport(ContentReport report) {
-        this.reports.add(report);
-        report.assignContent(this);
-    }
-
     public void updateUrl(String frontContentSource, String backContentSource) {
         this.frontContentSource = new FileSource(frontContentSource);
         this.backContentSource = new FileSource(backContentSource);
@@ -85,5 +80,9 @@ public class Content extends BaseEntity {
 
     public boolean isOwner(Member member) {
         return this.member == member;
+    }
+
+    public void addContentReport(ContentReport contentReport) {
+        this.reports.add(contentReport);
     }
 }

@@ -15,21 +15,23 @@ public abstract class Report extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
-    protected Long id;
+    private Long id;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "content_report_reason"))
-    protected Reason reason;
+    private Reason reason;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected Report(String reason) {
+    protected Report(String reason, Member member) {
         this.reason = new Reason(reason);
+        setMember(member);
     }
 
-    public void assignMember(Member member) {
+    private void setMember(Member member) {
         this.member = member;
+        member.addContentReport(this);
     }
 }

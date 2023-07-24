@@ -7,6 +7,7 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.dto.ReportRequest;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
+import sleepy.mollu.server.content.report.repository.ReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
@@ -19,18 +20,16 @@ public class ReportServiceImpl implements ReportService {
 
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
+    private final ReportRepository reportRepository;
 
     @Override
-    public void reportContent(String memberId, String contentId, ReportRequest request) {
+    public Long reportContent(String memberId, String contentId, ReportRequest request) {
 
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
         validateOwner(member, content);
 
-        final ContentReport report = getContentReport(request.reason());
-
-        member.addContentReport(report);
-        content.addReport(report);
+        return saveContentReport(request.reason(), member, content);
     }
 
     private Member getMember(String memberId) {
@@ -49,9 +48,12 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private ContentReport getContentReport(String reason) {
-        return ContentReport.builder()
+    private Long saveContentReport(String reason, Member member, Content content) {
+        return reportRepository.save(ContentReport.builder()
                 .reason(reason)
-                .build();
+                .member(member)
+                .content(content)
+                .build())
+                .getId();
     }
 }

@@ -36,7 +36,6 @@ class ReportServiceIntegrationTest {
 
     @Test
     @DisplayName("[컨텐츠 신고 서비스 호출 시] 신고 엔티티가 저장된다.")
-    @Rollback(false)
     void ReportServiceIntegrationTest() {
         // given
         final Preference preference = Preference.builder()
