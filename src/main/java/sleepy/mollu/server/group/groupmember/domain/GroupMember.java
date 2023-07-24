@@ -44,4 +44,8 @@ public class GroupMember {
         this.member = member;
         member.addGroupMember(this);
     }
+
+    public boolean isSameMember(Member member) {
+        return this.member.equals(member);
+    }
 }

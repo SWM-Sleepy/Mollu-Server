@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
+import sleepy.mollu.server.member.domain.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +43,10 @@ public class Group {
 
     public void addGroupMember(GroupMember groupMember) {
         this.groupMembers.add(groupMember);
+    }
+
+    public boolean hasMember(Member member) {
+        return this.groupMembers.stream()
+                .anyMatch(groupMember -> groupMember.isSameMember(member));
     }
 }
