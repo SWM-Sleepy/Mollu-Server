@@ -12,8 +12,6 @@ import sleepy.mollu.server.member.profile.dto.ProfileRequest;
 import sleepy.mollu.server.member.profile.dto.ProfileResponse;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
-import java.time.LocalDate;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -41,36 +39,17 @@ public class ProfileServiceImpl implements ProfileService {
 
         final Member member = getMember(memberId);
 
-        updateMolluId(member, request.molluId());
-        updateName(member, request.name());
-        updateBirthday(member, request.birthday());
-        updateProfile(member, request.profileFile());
+        final String profileSource = getProfileSource(request.profileFile());
+        member.updateProfile(request.molluId(), request.name(), request.birthday(), profileSource);
     }
 
-    private void updateMolluId(Member member, String molluId) {
-        if (molluId != null) {
-            member.updateMolluId(molluId);
-        }
-    }
-
-    private void updateName(Member member, String name) {
-        if (name != null) {
-            member.updateName(name);
-        }
-    }
-
-    private void updateBirthday(Member member, LocalDate birthday) {
-        if (birthday != null) {
-            member.updateBirthday(birthday);
-        }
-    }
-
-    private void updateProfile(Member member, MultipartFile profileFile) {
+    private String getProfileSource(MultipartFile profileFile) {
         if (profileFile != null) {
             final ImageContentFile contentFile = new ImageContentFile(profileFile);
-            final String profileFileUrl = fileHandler.upload(contentFile);
-            member.updateProfileSource(profileFileUrl);
+            return fileHandler.upload(contentFile);
         }
+
+        return null;
     }
 
 }

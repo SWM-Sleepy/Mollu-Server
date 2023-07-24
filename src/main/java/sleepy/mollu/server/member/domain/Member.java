@@ -85,19 +85,34 @@ public class Member extends BaseEntity {
         return this.profileSource.getValue();
     }
 
-    public void updateMolluId(String molluId) {
-        this.molluId = new MolluId(molluId);
+    public void updateProfile(String molluId, String name, LocalDate birthday, String profileSource) {
+        updateMolluId(molluId);
+        updateName(name);
+        updateBirthday(birthday);
+        updateProfileSource(profileSource);
     }
 
-    public void updateName(String name) {
-        this.name = new Name(name);
+    private void updateMolluId(String molluId) {
+        if (molluId != null) {
+            this.molluId = new MolluId(molluId);
+        }
     }
 
-    public void updateBirthday(LocalDate birthday) {
-        this.birthday = new Birthday(birthday);
+    private void updateName(String name) {
+        if (name != null) {
+            this.name = new Name(name);
+        }
     }
 
-    public void updateProfileSource(String profileSource) {
-        this.profileSource = new ContentSource(profileSource);
+    private void updateBirthday(LocalDate birthday) {
+        if (birthday != null) {
+            this.birthday = new Birthday(birthday);
+        }
+    }
+
+    private void updateProfileSource(String profileSource) {
+        if (profileSource != null) {
+            this.profileSource = new ContentSource(profileSource);
+        }
     }
 }
