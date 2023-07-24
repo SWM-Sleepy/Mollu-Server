@@ -8,6 +8,7 @@ import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.report.domain.Report;
+import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<Report> contentReports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
@@ -112,5 +116,9 @@ public class Member extends BaseEntity {
 
     public void addContentReport(Report report) {
         this.contentReports.add(report);
+    }
+
+    public void addGroupMember(GroupMember groupMember) {
+        this.groupMembers.add(groupMember);
     }
 }
