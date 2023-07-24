@@ -24,6 +24,7 @@ public class GroupServiceImpl implements GroupService {
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
 
+    // TODO: 2023/07/24 그룹 조회시 fetch join을 하여 N+1 문제 해결하기
     @Override
     public GroupMemberSearchResponse searchGroupMembers(String memberId, String groupId) {
 
