@@ -8,7 +8,7 @@ public interface ContentService {
 
     GroupSearchFeedResponse searchGroupFeed(Pageable pageable);
 
-    void createContent(CreateContentRequest request);
+    String createContent(CreateContentRequest request);
 
     void deleteContent(String memberId, String contentId);
 }

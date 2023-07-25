@@ -65,25 +65,23 @@ public class ContentServiceImpl implements ContentService {
 
     // TODO: 로직 수정 및 테스트 코드 작성
     @Override
-    public void createContent(CreateContentRequest request) {
-
-        final Content content = getContent(request);
+    public String createContent(CreateContentRequest request) {
 
         final String frontContentFileUrl = uploadContent(request.frontContentFile());
         final String backContentFileUrl = uploadContent(request.backContentFile());
 
-        content.updateUrl(frontContentFileUrl, backContentFileUrl);
-
-        contentRepository.save(content);
+        return saveContent(request, frontContentFileUrl, backContentFileUrl).getId();
     }
 
-    private Content getContent(CreateContentRequest request) {
+    private Content saveContent(CreateContentRequest request, String frontContentFileUrl, String backContentFileUrl) {
 
-        return Content.builder()
+        return contentRepository.save(Content.builder()
                 .id(idConstructor.create())
                 .location(request.location())
                 .contentTag(request.tag())
-                .build();
+                .frontContentSource(frontContentFileUrl)
+                .backContentSource(backContentFileUrl)
+                .build());
     }
 
     private String uploadContent(MultipartFile file) {
