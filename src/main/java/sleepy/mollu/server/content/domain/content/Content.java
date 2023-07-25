@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
@@ -47,7 +48,7 @@ public class Content extends BaseEntity {
     private List<ContentGroup> contentGroups = new ArrayList<>();
 
     @Builder
-    public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member, ContentGroup contentGroup) {
+    public Content(@NonNull String id, @NonNull String contentTag, @NonNull String frontContentSource, @NonNull String backContentSource, @NonNull String location, @NonNull Member member, @NonNull ContentGroup contentGroup) {
         this.id = id;
         this.contentTag = new ContentTag(contentTag);
         this.frontContentSource = new FileSource(frontContentSource);

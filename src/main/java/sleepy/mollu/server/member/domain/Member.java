@@ -1,13 +1,10 @@
 package sleepy.mollu.server.member.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import sleepy.mollu.server.common.domain.BaseEntity;
-import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.common.domain.FileSource;
+import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.Report;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 
@@ -52,7 +49,7 @@ public class Member extends BaseEntity {
     private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
-    public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
+    public Member(@NonNull String id, @NonNull String name, @NonNull String molluId, @NonNull LocalDate birthday, @NonNull Preference preference) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
