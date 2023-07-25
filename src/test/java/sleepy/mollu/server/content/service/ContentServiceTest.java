@@ -1,10 +1,10 @@
 package sleepy.mollu.server.content.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
@@ -12,7 +12,9 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.repository.ContentRepository;
+import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
+import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.Optional;
 
@@ -24,7 +26,14 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class ContentServiceTest {
 
-    private ContentService contentService;
+    @InjectMocks
+    private ContentServiceImpl contentService;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @Mock
+    private GroupRepository groupRepository;
 
     @Mock
     private ContentRepository contentRepository;
@@ -34,11 +43,6 @@ class ContentServiceTest {
 
     @Mock
     private FileHandler fileHandler;
-
-    @BeforeEach
-    void setUp() {
-        contentService = new ContentServiceImpl(contentRepository, idConstructor, fileHandler);
-    }
 
 
     @Nested
