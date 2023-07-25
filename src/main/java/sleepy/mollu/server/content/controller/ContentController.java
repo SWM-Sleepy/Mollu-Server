@@ -31,18 +31,18 @@ public class ContentController {
     @OkResponse
     @InternalServerErrorResponse
     @GetMapping("/group")
-    public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@RequestParam("page") int page) {
+    public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@Login String memberId, @RequestParam("page") int page) {
 
-        return ResponseEntity.ok(contentService.searchGroupFeed(CustomPageRequest.of(page)));
+        return ResponseEntity.ok(contentService.searchGroupFeed(memberId, CustomPageRequest.of(page)));
     }
 
     @Operation(summary = "컨텐츠 업로드")
     @CreatedResponse
     @InternalServerErrorResponse
     @PostMapping
-    public ResponseEntity<Void> createContent(@ModelAttribute @Valid CreateContentRequest request) {
+    public ResponseEntity<Void> createContent(@Login String memberId, @ModelAttribute @Valid CreateContentRequest request) {
 
-        final String contentId = contentService.createContent(request);
+        final String contentId = contentService.createContent(memberId, request);
         final URI uri = URI.create("/contents/" + contentId);
 
         return ResponseEntity.created(uri).build();
