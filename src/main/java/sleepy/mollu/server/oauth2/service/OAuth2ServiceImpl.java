@@ -5,6 +5,13 @@ import lombok.RequiredArgsConstructor;
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
 import org.springframework.stereotype.Service;
+import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.exception.GroupNotFoundException;
+import sleepy.mollu.server.group.groupmember.domain.GroupMember;
+import sleepy.mollu.server.group.groupmember.domain.GroupMemberRole;
+import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
+import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.dto.MemberBadRequestException;
@@ -27,8 +34,12 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private static final String BEAN_NAME_FORMAT = "OAuth2Client";
 
     private final Map<String, OAuth2Client> oAuth2ClientMap;
-    private final MemberRepository memberRepository;
     private final JwtGenerator jwtGenerator;
+
+    private final MemberRepository memberRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupRepository groupRepository;
+    private final IdConstructor idConstructor;
 
     @Override
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
@@ -59,11 +70,29 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
-        final Preference preference = getPreference();
-        saveMember(memberId, preference, request.name(), request.birthday(), request.molluId());
+        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId());
+
+        // FIXME: 2023/07/25 MVP 이후 삭제
+        joinGroup(member);
 
         final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
+    }
+
+    private void validateMemberExists(String memberId) {
+        if (memberRepository.existsById(memberId)) {
+            throw new MemberBadRequestException("ID가 [" + memberId + "]인 멤버가 이미 존재합니다.");
+        }
+    }
+
+    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId) {
+        return memberRepository.save(Member.builder()
+                .id(memberId)
+                .name(name)
+                .birthday(birthday)
+                .molluId(molluId)
+                .preference(getPreference())
+                .build());
     }
 
     private Preference getPreference() {
@@ -73,20 +102,17 @@ public class OAuth2ServiceImpl implements OAuth2Service {
                 .build();
     }
 
-    private void validateMemberExists(String memberId) {
-        if (memberRepository.existsById(memberId)) {
-            throw new MemberBadRequestException("ID가 [" + memberId + "]인 멤버가 이미 존재합니다.");
-        }
+    private void joinGroup(Member member) {
+        groupMemberRepository.save(GroupMember.builder()
+                .id(idConstructor.create())
+                .group(getGroup())
+                .member(member)
+                .role(GroupMemberRole.MEMBER)
+                .build());
     }
 
-    private void saveMember(String memberId, Preference preference, String name, LocalDate birthday, String molluId) {
-
-        memberRepository.save(Member.builder()
-                .id(memberId)
-                .name(name)
-                .birthday(birthday)
-                .molluId(molluId)
-                .preference(preference)
-                .build());
+    private Group getGroup() {
+        return groupRepository.findDefaultGroup()
+                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹을 찾을 수 없습니다."));
     }
 }

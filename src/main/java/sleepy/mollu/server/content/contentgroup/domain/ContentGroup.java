@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.group.domain.group.Group;
 
@@ -25,7 +26,7 @@ public class ContentGroup {
     private Group group;
 
     @Builder
-    public ContentGroup(String id, Group group) {
+    public ContentGroup(@NonNull String id, @NonNull Group group) {
         this.id = id;
         this.group = group;
     }

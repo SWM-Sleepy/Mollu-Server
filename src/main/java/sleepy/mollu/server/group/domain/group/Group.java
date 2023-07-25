@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.member.domain.Member;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "groups")
 @Getter
 @NoArgsConstructor
 public class Group {
@@ -34,7 +36,7 @@ public class Group {
     private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
-    public Group(String id, String name, String introduction, String groupProfileSource) {
+    public Group(@NonNull String id, @NonNull String name, @NonNull String introduction, @NonNull String groupProfileSource) {
         this.id = id;
         this.name = new GroupName(name);
         this.introduction = new Introduction(introduction);

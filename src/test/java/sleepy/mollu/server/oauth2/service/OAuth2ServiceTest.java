@@ -2,13 +2,17 @@ package sleepy.mollu.server.oauth2.service;
 
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
+import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.dto.MemberBadRequestException;
 import sleepy.mollu.server.member.dto.SignupRequest;
@@ -20,6 +24,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,7 +38,8 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class OAuth2ServiceTest {
 
-    private OAuth2Service oAuth2Service;
+    @InjectMocks
+    private OAuth2ServiceImpl oAuth2Service;
 
     @Mock
     private Map<String, OAuth2Client> oAuth2ClientMap;
@@ -44,10 +50,14 @@ class OAuth2ServiceTest {
     @Mock
     private JwtGenerator jwtGenerator;
 
-    @BeforeEach
-    void setUp() {
-        oAuth2Service = new OAuth2ServiceImpl(oAuth2ClientMap, memberRepository, jwtGenerator);
-    }
+    @Mock
+    private GroupMemberRepository groupMemberRepository;
+
+    @Mock
+    private GroupRepository groupRepository;
+
+    @Mock
+    private IdConstructor idConstructor;
 
     @Nested
     @DisplayName("[소셜 로그인 서비스 호출시]")
@@ -130,17 +140,21 @@ class OAuth2ServiceTest {
         void SocialSignupTest2() throws GeneralSecurityException, IOException {
             // given
             OAuth2Client oAuth2Client = mock(OAuth2Client.class);
-            given(oAuth2ClientMap.get(anyString())).willReturn(oAuth2Client);
-
             final String accessToken = "accessToken";
             final String refreshToken = "refreshToken";
+            final Member member = mock(Member.class);
+            final Group group = mock(Group.class);
 
+            given(oAuth2ClientMap.get(anyString())).willReturn(oAuth2Client);
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
             given(memberRepository.existsById(memberId)).willReturn(false);
             given(jwtGenerator.generate(anyString(), anySet())).willReturn(JwtToken.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build());
+            given(memberRepository.save(any(Member.class))).willReturn(member);
+            given(groupRepository.findDefaultGroup()).willReturn(Optional.of(group));
+            given(idConstructor.create()).willReturn("id");
 
             // when
             final TokenResponse tokenResponse = oAuth2Service.signup(type, socialToken, request);

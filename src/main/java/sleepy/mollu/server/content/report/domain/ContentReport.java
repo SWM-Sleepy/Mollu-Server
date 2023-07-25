@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -20,7 +21,7 @@ public class ContentReport extends Report {
     private Content content;
 
     @Builder
-    public ContentReport(String reason, Member member, Content content) {
+    public ContentReport(String reason, @NonNull Member member, @NonNull Content content) {
         super(reason, member);
         setContent(content);
     }
