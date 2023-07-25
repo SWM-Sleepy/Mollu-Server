@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "groups")
 @Getter
 @NoArgsConstructor
 public class Group {
