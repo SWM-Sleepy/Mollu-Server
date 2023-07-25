@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -29,7 +28,7 @@ public class GroupMember {
     private GroupMemberRole role;
 
     @Builder
-    public GroupMember(@NonNull String id, @NonNull Group group, @NonNull Member member, @NonNull GroupMemberRole role) {
+    public GroupMember(String id, Group group, Member member, GroupMemberRole role) {
         this.id = id;
         setGroup(group);
         setMember(member);

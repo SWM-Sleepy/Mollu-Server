@@ -49,7 +49,7 @@ public class Member extends BaseEntity {
     private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
-    public Member(@NonNull String id, @NonNull String name, @NonNull String molluId, @NonNull LocalDate birthday, @NonNull Preference preference) {
+    public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
