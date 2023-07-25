@@ -6,9 +6,9 @@ import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 
 public interface ContentService {
 
-    GroupSearchFeedResponse searchGroupFeed(Pageable pageable);
+    GroupSearchFeedResponse searchGroupFeed(String memberId, Pageable pageable);
 
-    String createContent(CreateContentRequest request);
+    String createContent(String memberId, CreateContentRequest request);
 
     void deleteContent(String memberId, String contentId);
 }
