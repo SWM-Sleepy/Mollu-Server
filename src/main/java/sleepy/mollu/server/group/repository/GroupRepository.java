@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, String> {
 
-    @Query("select g from Group g where g.name = '디폴트 그룹'")
+    @Query("select g from Group g")
     Optional<Group> findDefaultGroup();
 }

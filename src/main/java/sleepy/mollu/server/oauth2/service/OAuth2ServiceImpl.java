@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
 import org.springframework.stereotype.Service;
+import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
@@ -38,6 +39,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private final MemberRepository memberRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
+    private final IdConstructor idConstructor;
 
     @Override
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
@@ -102,6 +104,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
     private void joinGroup(Member member) {
         groupMemberRepository.save(GroupMember.builder()
+                .id(idConstructor.create())
                 .group(getGroup())
                 .member(member)
                 .role(GroupMemberRole.MEMBER)
