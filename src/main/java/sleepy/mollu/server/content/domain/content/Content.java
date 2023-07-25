@@ -73,11 +73,6 @@ public class Content extends BaseEntity {
         return location.getValue();
     }
 
-    public void updateUrl(String frontContentSource, String backContentSource) {
-        this.frontContentSource = new FileSource(frontContentSource);
-        this.backContentSource = new FileSource(backContentSource);
-    }
-
     public boolean isOwner(String memberId) {
         return this.member.isSameId(memberId);
     }

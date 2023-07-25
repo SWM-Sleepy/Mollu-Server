@@ -17,6 +17,8 @@ import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.NoContentResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
+import java.net.URI;
+
 @Tag(name = "컨텐츠 관련 API")
 @RestController
 @RequestMapping("/contents")
@@ -40,9 +42,10 @@ public class ContentController {
     @PostMapping
     public ResponseEntity<Void> createContent(@ModelAttribute @Valid CreateContentRequest request) {
 
-        contentService.createContent(request);
+        final String contentId = contentService.createContent(request);
+        final URI uri = URI.create("/contents/" + contentId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.created(uri).build();
     }
 
     @Operation(summary = "컨텐츠 삭제")
