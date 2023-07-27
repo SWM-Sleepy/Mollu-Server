@@ -1,6 +1,5 @@
 package sleepy.mollu.server.content.report.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
 import org.junit.jupiter.api.DisplayName;
