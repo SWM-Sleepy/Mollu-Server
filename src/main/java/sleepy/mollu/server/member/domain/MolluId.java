@@ -12,7 +12,7 @@ public class MolluId {
 
     private static final int MAX_MOLLU_ID_LENGTH = 20;
 
-    @Column(name = "mollu_id")
+    @Column(name = "mollu_id", unique = true)
     private String value;
 
     public MolluId(String value) {
