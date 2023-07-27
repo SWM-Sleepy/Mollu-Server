@@ -121,7 +121,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     public CheckResponse checkId(String molluId) {
 
         final boolean existsMemberWithSameMolluId = memberRepository.existsByMolluId(molluId);
-        
+
         return new CheckResponse(!existsMemberWithSameMolluId);
     }
 }

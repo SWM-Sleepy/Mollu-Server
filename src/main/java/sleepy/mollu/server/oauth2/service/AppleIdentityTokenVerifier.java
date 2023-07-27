@@ -54,7 +54,8 @@ public class AppleIdentityTokenVerifier {
         final String decodedHeaderJson = new String(decodedHeader, StandardCharsets.UTF_8);
 
         final ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(decodedHeaderJson, new TypeReference<Map<String, String>>() {});
+        return objectMapper.readValue(decodedHeaderJson, new TypeReference<Map<String, String>>() {
+        });
     }
 
     private PublicKey getAppleRSAPublicKey(String encodedN, String encodedE, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException {

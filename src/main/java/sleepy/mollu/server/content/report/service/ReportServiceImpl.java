@@ -50,10 +50,10 @@ public class ReportServiceImpl implements ReportService {
 
     private Long saveContentReport(String reason, Member member, Content content) {
         return reportRepository.save(ContentReport.builder()
-                .reason(reason)
-                .member(member)
-                .content(content)
-                .build())
+                        .reason(reason)
+                        .member(member)
+                        .content(content)
+                        .build())
                 .getId();
     }
 }

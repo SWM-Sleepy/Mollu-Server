@@ -1,7 +1,10 @@
 package sleepy.mollu.server.member.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.domain.content.Content;
