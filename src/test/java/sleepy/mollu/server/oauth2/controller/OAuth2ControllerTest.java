@@ -17,6 +17,7 @@ import sleepy.mollu.server.oauth2.service.OAuth2Service;
 
 import java.time.LocalDate;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -89,6 +90,34 @@ class OAuth2ControllerTest {
 
             // then
             resultActions.andExpect(status().isCreated())
+                    .andDo(print());
+        }
+    }
+
+    @Nested
+    @DisplayName("[아이디 중복 확인 API 호출 시] ")
+    class CheckIdTest {
+
+        @Test
+        @DisplayName("파라미터를 설정하지 않으면 400을 반환한다")
+        void checkIdTest() throws Exception {
+            // given & when
+            final ResultActions resultActions = mockMvc.perform(get("/auth/check-id"));
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("호출에 성공하면 200을 반환한다")
+        void checkIdTest1() throws Exception {
+            // given & when
+            final ResultActions resultActions = mockMvc.perform(get("/auth/check-id")
+                    .param("molluId", "molluId"));
+
+            // then
+            resultActions.andExpect(status().isOk())
                     .andDo(print());
         }
     }

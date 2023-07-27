@@ -11,6 +11,7 @@ import sleepy.mollu.server.oauth2.controller.annotation.SocialToken;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
+import sleepy.mollu.server.swagger.BadRequestResponse;
 import sleepy.mollu.server.swagger.CreatedResponse;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.OkResponse;
@@ -50,8 +51,9 @@ public class OAuth2Controller {
 
     @Operation(summary = "아이디 중복 확인")
     @OkResponse
+    @BadRequestResponse
     @InternalServerErrorResponse
-    @PostMapping("/check-id")
+    @GetMapping("/check-id")
     public ResponseEntity<CheckResponse> signup(@RequestParam String molluId) {
 
         return ResponseEntity.ok().body(oauth2Service.checkId(molluId));
