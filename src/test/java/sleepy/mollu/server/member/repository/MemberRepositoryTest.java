@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest(includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = MemberRepository.class))
+@DataJpaTest
 class MemberRepositoryTest {
 
     @Autowired
