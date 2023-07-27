@@ -4,5 +4,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record SignupRequest(@NotNull String name, @NotNull LocalDate birthday, @NotNull String molluId) {
+public record SignupRequest(@NotNull String name, @NotNull LocalDate birthday, @NotNull String molluId,
+                            @NotNull String phoneToken) {
 }

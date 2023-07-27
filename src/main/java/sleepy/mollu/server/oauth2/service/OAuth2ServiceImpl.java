@@ -71,7 +71,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
-        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId());
+        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId(), request.phoneToken());
 
         // FIXME: 2023/07/25 MVP 이후 삭제
         joinGroup(member);
@@ -86,12 +86,13 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         }
     }
 
-    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId) {
+    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId, String phoneToken) {
         return memberRepository.save(Member.builder()
                 .id(memberId)
                 .name(name)
                 .birthday(birthday)
                 .molluId(molluId)
+                .phoneToken(phoneToken)
                 .preference(getPreference())
                 .build());
     }

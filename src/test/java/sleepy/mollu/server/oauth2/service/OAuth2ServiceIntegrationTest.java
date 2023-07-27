@@ -31,7 +31,7 @@ class OAuth2ServiceIntegrationTest {
     void OAuth2ServiceIntegrationTest() throws Exception {
         // given
         final String EMPTY_SOURCE = "";
-        final SignupRequest request = new SignupRequest("name", LocalDate.now(), "molluId");
+        final SignupRequest request = new SignupRequest("name", LocalDate.now(), "molluId", "phoneToken");
 
         // when
         oAuth2Service.signup("test", "socialToken", request);
