@@ -18,6 +18,7 @@ import sleepy.mollu.server.member.dto.MemberBadRequestException;
 import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
+import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.io.IOException;
@@ -114,5 +115,13 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private Group getGroup() {
         return groupRepository.findDefaultGroup()
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹을 찾을 수 없습니다."));
+    }
+
+    @Override
+    public CheckResponse checkId(String molluId) {
+
+        final boolean existsMemberWithSameMolluId = memberRepository.existsByMolluId(molluId);
+        
+        return new CheckResponse(!existsMemberWithSameMolluId);
     }
 }
