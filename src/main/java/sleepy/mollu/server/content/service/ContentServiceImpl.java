@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
+import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
@@ -19,6 +20,8 @@ import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
+import sleepy.mollu.server.group.groupmember.domain.GroupMember;
+import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
@@ -26,6 +29,7 @@ import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -35,6 +39,8 @@ public class ContentServiceImpl implements ContentService {
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
     private final GroupRepository groupRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final ContentGroupRepository contentGroupRepository;
 
     private final IdConstructor idConstructor;
     private final FileHandler fileHandler;
@@ -44,7 +50,8 @@ public class ContentServiceImpl implements ContentService {
     public GroupSearchFeedResponse searchGroupFeed(String memberId, Pageable pageable) {
 
         final Member member = getMember(memberId);
-        final Page<Content> contents = contentRepository.findAll(pageable);
+        final List<Group> groups = getGroups(member);
+        final List<Content> contents = getContents(pageable, groups);
 
         return getGroupSearchFeedResponse(member, contents);
     }
@@ -54,26 +61,40 @@ public class ContentServiceImpl implements ContentService {
                 .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "] 는 존재하지 않는 회원입니다."));
     }
 
-    private GroupSearchFeedResponse getGroupSearchFeedResponse(Member member, Page<Content> contents) {
+    private List<Group> getGroups(Member member) {
+        final List<GroupMember> groupMembers = groupMemberRepository.findAllWithGroupByMember(member);
 
+        return groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .toList();
+    }
+
+    private List<Content> getContents(Pageable pageable, List<Group> groups) {
+        final Page<ContentGroup> contentGroups = contentGroupRepository.findAllByGroups(groups, pageable);
+        final List<ContentGroup> contentGroupsWithContent = contentGroupRepository.findAllWithContentByContentGroups(contentGroups.toList());
+
+        return contentGroupsWithContent.stream()
+                .map(ContentGroup::getContent)
+                .toList();
+    }
+
+    private GroupSearchFeedResponse getGroupSearchFeedResponse(Member member, List<Content> contents) {
         return new GroupSearchFeedResponse(contents.stream()
-                .map(content -> {
-                    final String groupName = "groupName";
-                    final LocalDateTime limitDateTime = LocalDateTime.now();
+                .map(content ->
+                        new GroupSearchContentResponse(getMemberResponse(member), getContentResponse(content)))
+                .toList());
+    }
 
-                    return new GroupSearchContentResponse(
-                            content.getId(),
-                            member.getId(),
-                            member.getMolluId(),
-                            member.getName(),
-                            content.getLocation(),
-                            groupName,
-                            limitDateTime,
-                            content.getUpdatedAt(),
-                            content.getContentTag(),
-                            content.getFrontContentSource(),
-                            content.getBackContentSource());
-                }).toList());
+    private GroupSearchContentResponse.Member getMemberResponse(Member member) {
+        return new GroupSearchContentResponse.Member(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource());
+    }
+
+    private GroupSearchContentResponse.Content getContentResponse(Content content) {
+        final String groupName = "groupName";
+        final LocalDateTime limitDateTime = LocalDateTime.now();
+        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), groupName, limitDateTime,
+                content.getCreatedAt(), content.getContentTag(),
+                content.getFrontContentSource(), content.getBackContentSource());
     }
 
     // TODO: 로직 수정 및 테스트 코드 작성

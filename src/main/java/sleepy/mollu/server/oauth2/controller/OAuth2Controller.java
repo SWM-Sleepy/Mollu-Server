@@ -54,7 +54,7 @@ public class OAuth2Controller {
     @BadRequestResponse
     @InternalServerErrorResponse
     @GetMapping("/check-id")
-    public ResponseEntity<CheckResponse> signup(@RequestParam String molluId) {
+    public ResponseEntity<CheckResponse> checkId(@RequestParam String molluId) {
 
         return ResponseEntity.ok().body(oauth2Service.checkId(molluId));
     }
