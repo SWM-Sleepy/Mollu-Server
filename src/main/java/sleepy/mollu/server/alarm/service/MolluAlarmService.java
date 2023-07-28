@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MolluAlarmService implements AlarmService  {
+public class MolluAlarmService implements AlarmService {
 
     private final MolluAlarmRepository molluAlarmRepository;
     private final MemberRepository memberRepository;
@@ -23,11 +23,18 @@ public class MolluAlarmService implements AlarmService  {
 
     @Override
     public void sendAlarm() {
+        sendAlarmToAllowedMembers();
+        checkUpdateComplete();
+    }
+
+    private void sendAlarmToAllowedMembers() {
+        final List<Member> alarmAllowedMembers = memberRepository.findAllByMolluAlarmAllowed();
+        alarmAllowedMembers.forEach(member -> alarmClient.send(member.getPhoneToken()));
+    }
+
+    private void checkUpdateComplete() {
         final MolluAlarm molluAlarm = molluAlarmRepository.findTopByOrderByIdDesc()
                 .orElseThrow(() -> new MolluAlarmNotFoundException("`MolluAlarm`이 존재하지 않습니다."));
         molluAlarm.updateSend();
-
-        final List<Member> alarmAllowedMembers = memberRepository.findAllByMolluAlarmAllowed();
-        alarmAllowedMembers.forEach(member -> alarmClient.send(member.getPhoneToken()));
     }
 }

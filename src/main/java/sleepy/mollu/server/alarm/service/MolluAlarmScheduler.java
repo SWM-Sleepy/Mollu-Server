@@ -17,13 +17,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MolluAlarmScheduler {
 
-    @Value("${spring.profiles.active}")
-    private String profile;
-
     private final MolluAlarmRepository molluAlarmRepository;
     private final TimePicker timePicker;
     private final TaskScheduler taskScheduler;
     private final AlarmService alarmService;
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @PostConstruct
     public void init() {

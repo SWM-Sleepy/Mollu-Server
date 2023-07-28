@@ -44,6 +44,12 @@ class MolluAlarmSchedulerTest {
     @Mock
     private AlarmService alarmService;
 
+    private void reflect(Object object, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+        final Field field = object.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(object, value);
+    }
+
     @Nested
     @DisplayName("[스케쥴러 실행시] ")
     class SchedulerTest {
@@ -142,12 +148,6 @@ class MolluAlarmSchedulerTest {
             // then
             then(alarmService).should(times(1)).sendAlarm();
         }
-    }
-
-    private void reflect(Object object, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
-        final Field field = object.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(object, value);
     }
 
 }

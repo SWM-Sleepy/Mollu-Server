@@ -12,7 +12,8 @@ public class MolluAlarmRange {
     private LocalTime from = LocalTime.of(10, 0);
     private LocalTime to = LocalTime.of(22, 0);
 
-    private MolluAlarmRange() {}
+    private MolluAlarmRange() {
+    }
 
     public static MolluAlarmRange getInstance() {
         return INSTANCE;
