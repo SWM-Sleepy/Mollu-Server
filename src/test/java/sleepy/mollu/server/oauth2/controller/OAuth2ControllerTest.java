@@ -79,7 +79,7 @@ class OAuth2ControllerTest {
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + "test_token");
 
-            final SignupRequest request = new SignupRequest("김준형", LocalDate.now(), "molluId");
+            final SignupRequest request = new SignupRequest("김준형", LocalDate.now(), "molluId", "phoneToken");
             final String requestBody = objectMapper.writeValueAsString(request);
 
             // when

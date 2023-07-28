@@ -116,7 +116,7 @@ class OAuth2ServiceTest {
 
         final String type = "type";
         final String socialToken = "socialToken";
-        final SignupRequest request = new SignupRequest("name", LocalDate.now(), "molluId");
+        final SignupRequest request = new SignupRequest("name", LocalDate.now(), "molluId", "phoneToken");
         final String memberId = "memberId";
 
 

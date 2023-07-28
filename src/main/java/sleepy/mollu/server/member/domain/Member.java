@@ -34,6 +34,8 @@ public class Member extends BaseEntity {
     @Embedded
     private Birthday birthday;
 
+    private String phoneToken;
+
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
     private FileSource profileSource = new FileSource("");
@@ -52,11 +54,12 @@ public class Member extends BaseEntity {
     private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
-    public Member(String id, String name, String molluId, LocalDate birthday, Preference preference) {
+    public Member(String id, String name, String molluId, LocalDate birthday, String phoneToken, Preference preference) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
         this.birthday = new Birthday(birthday);
+        this.phoneToken = phoneToken;
         setPreference(preference);
     }
 

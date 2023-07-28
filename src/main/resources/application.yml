@@ -31,6 +31,10 @@ spring:
   profiles:
     active: local
 
+alarm:
+  fcm:
+    authorization-key: ${FCM_AUTHORIZATION_KEY}
+
 ---
 
 # Local Configuration
