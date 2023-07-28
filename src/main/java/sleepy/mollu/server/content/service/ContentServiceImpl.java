@@ -57,23 +57,21 @@ public class ContentServiceImpl implements ContentService {
     private GroupSearchFeedResponse getGroupSearchFeedResponse(Member member, Page<Content> contents) {
 
         return new GroupSearchFeedResponse(contents.stream()
-                .map(content -> {
-                    final String groupName = "groupName";
-                    final LocalDateTime limitDateTime = LocalDateTime.now();
+                .map(content ->
+                        new GroupSearchContentResponse(getMemberResponse(member), getContentResponse(content))
+                ).toList());
+    }
 
-                    return new GroupSearchContentResponse(
-                            content.getId(),
-                            member.getId(),
-                            member.getMolluId(),
-                            member.getName(),
-                            content.getLocation(),
-                            groupName,
-                            limitDateTime,
-                            content.getUpdatedAt(),
-                            content.getContentTag(),
-                            content.getFrontContentSource(),
-                            content.getBackContentSource());
-                }).toList());
+    private GroupSearchContentResponse.Member getMemberResponse(Member member) {
+        return new GroupSearchContentResponse.Member(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource());
+    }
+
+    private GroupSearchContentResponse.Content getContentResponse(Content content) {
+        final String groupName = "groupName";
+        final LocalDateTime limitDateTime = LocalDateTime.now();
+        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), groupName, limitDateTime,
+                content.getCreatedAt(), content.getContentTag(),
+                content.getFrontContentSource(), content.getBackContentSource());
     }
 
     // TODO: 로직 수정 및 테스트 코드 작성
