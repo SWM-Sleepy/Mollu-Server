@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import sleepy.mollu.server.admin.alarm.dto.MolluRangeRequest;
 import sleepy.mollu.server.admin.alarm.dto.MolluRangeResponse;
+import sleepy.mollu.server.admin.alarm.dto.MolluTimeResponse;
 import sleepy.mollu.server.admin.alarm.service.AdminAlarmService;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.OkResponse;
+
+import java.util.List;
 
 @Tag(name = "알림 어드민 페이지")
 @Controller
@@ -44,5 +47,17 @@ public class AdminAlarmController {
         adminAlarmService.updateMolluAlarmRange(request.from(), request.to());
 
         return "redirect:mollu-range";
+    }
+
+    @Operation(summary = "예약된 mollu 타임 조회")
+    @OkResponse
+    @InternalServerErrorResponse
+    @GetMapping("/mollu-time")
+    public String searchMolluTime(Model model) {
+
+        final List<MolluTimeResponse> molluTimes = adminAlarmService.searchMolluTimes();
+        model.addAttribute("molluTimes", molluTimes);
+
+        return "mollu-time";
     }
 }
