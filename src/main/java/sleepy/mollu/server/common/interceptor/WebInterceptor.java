@@ -21,7 +21,7 @@ public class WebInterceptor implements HandlerInterceptor {
 
         log.info("Request URI: {}, Method: {}", request.getRequestURI(), request.getMethod());
         final Map<String, String[]> parameterMap = request.getParameterMap();
-        parameterMap.forEach((key, value) -> log.info("Request Parameter: {} = {}", key, value));
+        parameterMap.forEach((key, value) -> log.info("Request Parameter: {}, exists: {}", key, value.length != 0));
 
         return true;
     }
