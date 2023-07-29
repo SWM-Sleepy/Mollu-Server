@@ -1,13 +1,23 @@
 package sleepy.mollu.server.admin.alarm.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.admin.alarm.dto.MolluRangeResponse;
+import sleepy.mollu.server.admin.alarm.dto.MolluTimeResponse;
+import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.domain.MolluAlarmRange;
+import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AdminAlarmServiceImpl implements AdminAlarmService {
+
+    private final MolluAlarmRepository molluAlarmRepository;
 
     @Override
     public MolluRangeResponse searchMolluAlarmRange() {
@@ -21,5 +31,14 @@ public class AdminAlarmServiceImpl implements AdminAlarmService {
 
         final MolluAlarmRange range = MolluAlarmRange.getInstance();
         range.update(from, to);
+    }
+
+    @Override
+    public List<MolluTimeResponse> searchMolluTimes() {
+        final List<MolluAlarm> molluAlarms = molluAlarmRepository.findAllByOrderByIdDesc();
+
+        return molluAlarms.stream()
+                .map(molluAlarm -> new MolluTimeResponse(molluAlarm.getId(), molluAlarm.getMolluTime(), molluAlarm.getCreatedAt()))
+                .toList();
     }
 }
