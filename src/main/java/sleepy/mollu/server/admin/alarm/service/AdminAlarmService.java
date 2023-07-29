@@ -13,4 +13,6 @@ public interface AdminAlarmService {
     void updateMolluAlarmRange(LocalTime from, LocalTime to);
 
     List<MolluTimeResponse> searchMolluTimes();
+
+    void sendMolluAlarm();
 }

@@ -8,6 +8,7 @@ import sleepy.mollu.server.admin.alarm.dto.MolluTimeResponse;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.domain.MolluAlarmRange;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
+import sleepy.mollu.server.alarm.service.AlarmService;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 public class AdminAlarmServiceImpl implements AdminAlarmService {
 
     private final MolluAlarmRepository molluAlarmRepository;
+    private final AlarmService alarmService;
 
     @Override
     public MolluRangeResponse searchMolluAlarmRange() {
@@ -40,5 +42,10 @@ public class AdminAlarmServiceImpl implements AdminAlarmService {
         return molluAlarms.stream()
                 .map(molluAlarm -> new MolluTimeResponse(molluAlarm.getId(), molluAlarm.getMolluTime(), molluAlarm.getCreatedAt()))
                 .toList();
+    }
+
+    @Override
+    public void sendMolluAlarm() {
+        alarmService.sendAlarm();
     }
 }

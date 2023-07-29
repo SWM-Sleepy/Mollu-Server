@@ -60,4 +60,24 @@ public class AdminAlarmController {
 
         return "mollu-time";
     }
+
+    @Operation(summary = "알림 수동 전송 페이지")
+    @OkResponse
+    @InternalServerErrorResponse
+    @GetMapping("/mollu-alarm")
+    public String molluAlarmPage() {
+
+        return "mollu-alarm";
+    }
+
+    @Operation(summary = "알림 수동 전송")
+    @OkResponse
+    @InternalServerErrorResponse
+    @PostMapping("/mollu-alarm")
+    public String sendAlarm() {
+
+        adminAlarmService.sendMolluAlarm();
+
+        return "redirect:mollu-alarm";
+    }
 }
