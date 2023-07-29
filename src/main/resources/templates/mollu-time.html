@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello</title>
+</head>
+<body>
+<h1>MoLLU Time</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>MoLLU Time</th>
+        <th>Created At</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="molluTime: ${molluTimes}">
+        <td th:text="${molluTime.id}">ID</td>
+        <td th:text="${molluTime.getMolluTime}">MoLLU Time</td>
+        <td th:text="${molluTime.getCreatedAt}">Created At</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
+
+<style>
+    table {
+        border: 1px solid black;
+    }
+</style>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello</title>
+</head>
+<body>
+<h1>Send MoLLU Alarm</h1>
+<form th:action="@{/admin/alarm/mollu-alarm}" method="post">
+    <input type="submit" value="MoLLU 알림 전송"/>
+</form>
+</body>
+</html>
+
+<style>
+    table {
+        border: 1px solid black;
+    }
+</style>

@@ -30,6 +30,10 @@ spring:
     allow-bean-definition-overriding: true
   profiles:
     active: local
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 50MB
 
 alarm:
   fcm:
