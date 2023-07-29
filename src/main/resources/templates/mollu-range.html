@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello</title>
+</head>
+<body>
+<h1>MoLLU Time 범위</h1>
+<h2 th:text="${molluRange.from} + ' ~ ' + ${molluRange.to}"></h2>
+<form th:action="@{/admin/alarm/mollu-range}" th:object="${molluRange}" method="post">
+    <label>From:
+        <input type="time" th:value="*{fromString} " name="from"/>
+    </label>
+    <br/>
+    <label>To:
+        <input type="time" th:value="*{toString}" name="to"/>
+    </label>
+    <input type="submit" value="Update"/>
+</form>
+</body>
+</html>
+
+<style>
+    input {
+        width: 150px;
+    }
+</style>
