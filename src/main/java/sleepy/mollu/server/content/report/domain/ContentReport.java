@@ -22,11 +22,6 @@ public class ContentReport extends Report {
     @Builder
     public ContentReport(String reason, Member member, Content content) {
         super(reason, member);
-        setContent(content);
-    }
-
-    private void setContent(Content content) {
         this.content = content;
-        content.addContentReport(this);
     }
 }
