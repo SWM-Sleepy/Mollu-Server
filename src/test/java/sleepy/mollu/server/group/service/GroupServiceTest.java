@@ -11,6 +11,7 @@ import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
+import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
@@ -36,10 +37,13 @@ class GroupServiceTest {
     @Mock
     private GroupRepository groupRepository;
 
+    @Mock
+    private GroupMemberRepository groupMemberRepository;
+
 
     @BeforeEach
     void setUp() {
-        groupService = new GroupServiceImpl(memberRepository, groupRepository);
+        groupService = new GroupServiceImpl(memberRepository, groupRepository, groupMemberRepository);
     }
 
     @Nested
@@ -50,6 +54,7 @@ class GroupServiceTest {
         final String groupId = "groupId";
         final Member member = mock(Member.class);
         final Group group = mock(Group.class);
+        final GroupMember groupMember = mock(GroupMember.class);
 
         @Test
         @DisplayName("멤버가 없으면 NotFound 예외를 던진다.")
@@ -80,7 +85,8 @@ class GroupServiceTest {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
-            given(group.hasMember(member)).willReturn(false);
+            given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
+            given(groupMember.isSameMember(member)).willReturn(false);
 
             // when & then
             assertThatThrownBy(() -> groupService.searchGroupMembers(memberId, groupId))
@@ -94,11 +100,9 @@ class GroupServiceTest {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
-            given(group.hasMember(member)).willReturn(true);
-
-            final GroupMember groupMember = mock(GroupMember.class);
-            given(groupMember.getMember()).willReturn(member);
-            given(group.getGroupMembers()).willReturn(List.of(groupMember));
+            given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
+            given(groupMember.isSameMember(member)).willReturn(true);
+            given(groupMember.getMember()).willReturn(member);;
 
             // when
             final GroupMemberSearchResponse response = groupService.searchGroupMembers(memberId, groupId);
