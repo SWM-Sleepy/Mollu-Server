@@ -103,7 +103,7 @@ class ContentControllerTest {
                     .headers(headers));
 
             // then
-            resultActions.andExpect(status().isBadRequest())
+            resultActions.andExpect(status().isCreated())
                     .andDo(print());
         }
 
@@ -118,8 +118,8 @@ class ContentControllerTest {
             final Map<String, String> map = Map.of(
                     "location", "서울 도봉구",
                     "tag", "태그",
-                    "molluDateTime", "2023-07-06 11:45:00",
-                    "uploadDateTime", "2023-07-06 11:45:00"
+                    "molluDateTime", "2023-07-06T11:45:00",
+                    "uploadDateTime", "2023-07-06T11:45:00"
             );
 
             keys.forEach(key -> params.add(key, map.get(key)));
