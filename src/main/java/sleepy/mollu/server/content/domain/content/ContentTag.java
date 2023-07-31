@@ -22,21 +22,10 @@ public class ContentTag {
     }
 
     private void validate(String value) {
-        validateNull(value);
-        validateBlank(value);
-        validateLength(value);
-    }
-
-    private void validateNull(String value) {
         if (value == null) {
-            throw new ContentTagBadRequestException("태그는 null일 수 없습니다.");
+            return;
         }
-    }
-
-    private void validateBlank(String value) {
-        if (value.isBlank()) {
-            throw new ContentTagBadRequestException("태그는 비어있을 수 없습니다.");
-        }
+        validateLength(value);
     }
 
     private void validateLength(String value) {
