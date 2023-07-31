@@ -1,17 +1,15 @@
 package sleepy.mollu.server.content.domain;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.*;
 import sleepy.mollu.server.content.domain.content.ContentTag;
 import sleepy.mollu.server.content.exception.ContentTagBadRequestException;
 
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class ContentTagTest {
 
@@ -42,6 +40,16 @@ class ContentTagTest {
     @DisplayName("태그 객체가 성공적으로 생성된다")
     void test2(String value) {
         assertThatCode(() -> new ContentTag(value)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("null 값이 들어올 경우 빈 문자열로 초기화된다")
+    void ContentTagTest() {
+        // given & when
+        final ContentTag contentTag = new ContentTag(null);
+
+        // then
+        assertThat(contentTag.getValue()).isEmpty();
     }
 
 }
