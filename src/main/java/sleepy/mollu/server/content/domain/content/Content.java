@@ -5,13 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
-import sleepy.mollu.server.common.domain.FileSource;
-import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
-import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.member.domain.Member;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -23,54 +17,45 @@ public class Content extends BaseEntity {
     private String id;
 
     @Embedded
+    private Location location;
+
+    @Embedded
     private ContentTag contentTag;
 
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "front_content_source"))
-    private FileSource frontContentSource;
+    private ContentTime contentTime;
 
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "back_content_source"))
-    private FileSource backContentSource;
-
-    @Embedded
-    private Location location;
+    private ContentSource contentSource;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "content")
-    private List<ContentReport> reports = new ArrayList<>();
-
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
-    private List<ContentGroup> contentGroups = new ArrayList<>();
-
     @Builder
-    public Content(String id, String contentTag, String frontContentSource, String backContentSource, String location, Member member, ContentGroup contentGroup) {
+    public Content(String id, String location, String contentTag, ContentTime contentTime, ContentSource contentSource, Member member) {
         this.id = id;
-        this.contentTag = new ContentTag(contentTag);
-        this.frontContentSource = new FileSource(frontContentSource);
-        this.backContentSource = new FileSource(backContentSource);
         this.location = new Location(location);
+        this.contentTag = new ContentTag(contentTag);
+        this.contentTime = contentTime;
+        this.contentSource = contentSource;
         this.member = member;
-        addContentGroup(contentGroup);
     }
 
     public String getContentTag() {
         return contentTag.getValue();
     }
 
+    public String getLocation() {
+        return location.getValue();
+    }
+
     public String getFrontContentSource() {
-        return frontContentSource.getValue();
+        return contentSource.getFrontContentSource();
     }
 
     public String getBackContentSource() {
-        return backContentSource.getValue();
-    }
-
-    public String getLocation() {
-        return location.getValue();
+        return contentSource.getBackContentSource();
     }
 
     public boolean isOwner(String memberId) {
@@ -79,14 +64,5 @@ public class Content extends BaseEntity {
 
     public boolean isOwner(Member member) {
         return this.member == member;
-    }
-
-    public void addContentReport(ContentReport contentReport) {
-        this.reports.add(contentReport);
-    }
-
-    private void addContentGroup(ContentGroup contentGroup) {
-        this.contentGroups.add(contentGroup);
-        contentGroup.assignContent(this);
     }
 }
