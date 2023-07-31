@@ -30,7 +30,6 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -92,9 +91,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private GroupSearchContentResponse.Content getContentResponse(Content content) {
-        final String groupName = "groupName";
-        final LocalDateTime limitDateTime = LocalDateTime.now();
-        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), groupName, limitDateTime,
+        final Group group = getGroup();
+        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), group.getName(), content.getMolluDateTime(),
                 content.getCreatedAt(), content.getContentTag(),
                 content.getFrontContentSource(), content.getBackContentSource());
     }
@@ -110,6 +108,12 @@ public class ContentServiceImpl implements ContentService {
         saveContentGroup(content);
 
         return content.getId();
+    }
+
+    private String uploadContent(MultipartFile file) {
+        final ContentFile frontContentFile = new ImageContentFile(file);
+
+        return fileHandler.upload(frontContentFile);
     }
 
     private Content saveContent(CreateContentRequest request, String frontContentFileUrl, String backContentFileUrl, Member member) {
@@ -135,12 +139,6 @@ public class ContentServiceImpl implements ContentService {
     private Group getGroup() {
         return groupRepository.findDefaultGroup()
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
-    }
-
-    private String uploadContent(MultipartFile file) {
-        final ContentFile frontContentFile = new ImageContentFile(file);
-
-        return fileHandler.upload(frontContentFile);
     }
 
     @Override

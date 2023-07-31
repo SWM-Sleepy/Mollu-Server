@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.member.domain.Member;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -56,6 +58,10 @@ public class Content extends BaseEntity {
 
     public String getBackContentSource() {
         return contentSource.getBackContentSource();
+    }
+
+    public LocalDateTime getMolluDateTime() {
+        return contentTime.getMolluDateTime();
     }
 
     public boolean isOwner(String memberId) {
