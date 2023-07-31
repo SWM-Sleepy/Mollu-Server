@@ -5,11 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.FileSource;
-import sleepy.mollu.server.group.groupmember.domain.GroupMember;
-import sleepy.mollu.server.member.domain.Member;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "`group`")
@@ -31,9 +26,6 @@ public class Group {
     @AttributeOverride(name = "value", column = @Column(name = "group_profile_source"))
     private FileSource groupProfileSource;
 
-    @OneToMany(mappedBy = "group")
-    private List<GroupMember> groupMembers = new ArrayList<>();
-
     @Builder
     public Group(String id, String name, String introduction, String groupProfileSource) {
         this.id = id;
@@ -42,12 +34,7 @@ public class Group {
         this.groupProfileSource = new FileSource(groupProfileSource);
     }
 
-    public void addGroupMember(GroupMember groupMember) {
-        this.groupMembers.add(groupMember);
-    }
-
-    public boolean hasMember(Member member) {
-        return this.groupMembers.stream()
-                .anyMatch(groupMember -> groupMember.isSameMember(member));
+    public String getName() {
+        return name.getValue();
     }
 }

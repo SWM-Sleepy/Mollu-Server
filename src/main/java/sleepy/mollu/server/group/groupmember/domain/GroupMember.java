@@ -30,14 +30,9 @@ public class GroupMember {
     @Builder
     public GroupMember(String id, Group group, Member member, GroupMemberRole role) {
         this.id = id;
-        setGroup(group);
+        this.group = group;
         setMember(member);
         this.role = role;
-    }
-
-    private void setGroup(Group group) {
-        this.group = group;
-        group.addGroupMember(this);
     }
 
     private void setMember(Member member) {
