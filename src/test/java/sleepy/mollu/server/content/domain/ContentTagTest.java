@@ -18,8 +18,7 @@ class ContentTagTest {
     public static Stream<Arguments> invalidContentTag() {
         return Stream.of(
                 Arguments.of("a".repeat(11)),
-                Arguments.of("박".repeat(11)),
-                Arguments.of(" ")
+                Arguments.of("박".repeat(11))
         );
     }
 
@@ -32,7 +31,6 @@ class ContentTagTest {
 
     @ParameterizedTest
     @MethodSource("invalidContentTag")
-    @NullAndEmptySource
     @DisplayName("태그 객체가 유효하지 않은 값이 생성될 때 예외를 던진다")
     void test1(String value) {
         assertThatThrownBy(() -> new ContentTag(value)).isInstanceOf(ContentTagBadRequestException.class);
@@ -40,6 +38,7 @@ class ContentTagTest {
 
     @ParameterizedTest
     @MethodSource("validContentTag")
+    @NullAndEmptySource
     @DisplayName("태그 객체가 성공적으로 생성된다")
     void test2(String value) {
         assertThatCode(() -> new ContentTag(value)).doesNotThrowAnyException();

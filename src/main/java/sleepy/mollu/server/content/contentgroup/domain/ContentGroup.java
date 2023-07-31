@@ -25,12 +25,9 @@ public class ContentGroup {
     private Group group;
 
     @Builder
-    public ContentGroup(String id, Group group) {
+    public ContentGroup(String id, Content content, Group group) {
         this.id = id;
-        this.group = group;
-    }
-
-    public void assignContent(Content content) {
         this.content = content;
+        this.group = group;
     }
 }

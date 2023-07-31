@@ -10,6 +10,8 @@ import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.domain.content.ContentSource;
+import sleepy.mollu.server.content.domain.content.ContentTime;
 import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
@@ -104,34 +106,35 @@ public class ContentServiceImpl implements ContentService {
         final Member member = getMember(memberId);
         final String frontContentFileUrl = uploadContent(request.frontContentFile());
         final String backContentFileUrl = uploadContent(request.backContentFile());
-        final ContentGroup contentGroup = getContentGroup();
+        final Content content = saveContent(request, frontContentFileUrl, backContentFileUrl, member);
+        saveContentGroup(content);
 
-        return saveContent(request, frontContentFileUrl, backContentFileUrl, member, contentGroup).getId();
+        return content.getId();
     }
 
-    private ContentGroup getContentGroup() {
-        final Group group = getGroup();
-        return ContentGroup.builder()
+    private Content saveContent(CreateContentRequest request, String frontContentFileUrl, String backContentFileUrl, Member member) {
+        return contentRepository.save(Content.builder()
                 .id(idConstructor.create())
+                .location(request.location())
+                .contentTag(request.tag())
+                .contentTime(ContentTime.of(request.molluDateTime(), request.uploadDateTime()))
+                .contentSource(ContentSource.of(frontContentFileUrl, backContentFileUrl))
+                .member(member)
+                .build());
+    }
+
+    private void saveContentGroup(Content content) {
+        final Group group = getGroup();
+        contentGroupRepository.save(ContentGroup.builder()
+                .id(idConstructor.create())
+                .content(content)
                 .group(group)
-                .build();
+                .build());
     }
 
     private Group getGroup() {
         return groupRepository.findDefaultGroup()
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
-    }
-
-    private Content saveContent(CreateContentRequest request, String frontContentFileUrl, String backContentFileUrl, Member member, ContentGroup contentGroup) {
-        return contentRepository.save(Content.builder()
-                .id(idConstructor.create())
-                .location(request.location())
-                .contentTag(request.tag())
-                .frontContentSource(frontContentFileUrl)
-                .backContentSource(backContentFileUrl)
-                .member(member)
-                .contentGroup(contentGroup)
-                .build());
     }
 
     private String uploadContent(MultipartFile file) {

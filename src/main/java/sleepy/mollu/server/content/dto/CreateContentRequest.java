@@ -3,18 +3,20 @@ package sleepy.mollu.server.content.dto;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 public record CreateContentRequest(
 
         @NotNull
         String location,
 
-        @NotNull
-        List<String> groupIds,
+        String tag,
 
         @NotNull
-        String tag,
+        LocalDateTime molluDateTime,
+
+        @NotNull
+        LocalDateTime uploadDateTime,
 
         @NotNull
         MultipartFile frontContentFile,
