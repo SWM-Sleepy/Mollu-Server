@@ -102,7 +102,8 @@ class GroupServiceTest {
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
             given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
             given(groupMember.isSameMember(member)).willReturn(true);
-            given(groupMember.getMember()).willReturn(member);;
+            given(groupMember.getMember()).willReturn(member);
+            ;
 
             // when
             final GroupMemberSearchResponse response = groupService.searchGroupMembers(memberId, groupId);

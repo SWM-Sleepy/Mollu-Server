@@ -59,6 +59,36 @@ class ContentControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("컨텐츠 삭제 API를 호출하면 204를 반환한다")
+    void ContentControllerTest3() throws Exception {
+
+        // given
+        final HttpHeaders headers = getHeaders();
+
+        final String contentId = "contentId";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(delete("/contents/" + contentId)
+                .headers(headers));
+
+        // then
+        resultActions.andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
+    private String getAccessToken() {
+        final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
+        return jwtToken.accessToken();
+    }
+
+    private HttpHeaders getHeaders() {
+        final String accessToken = getAccessToken();
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        return headers;
+    }
+
     @Nested
     @DisplayName("[컨텐츠 업로드 API 호출시] ")
     class ContentUploadTest {
@@ -126,35 +156,5 @@ class ContentControllerTest {
 
             return params;
         }
-    }
-
-    @Test
-    @DisplayName("컨텐츠 삭제 API를 호출하면 204를 반환한다")
-    void ContentControllerTest3() throws Exception {
-
-        // given
-        final HttpHeaders headers = getHeaders();
-
-        final String contentId = "contentId";
-
-        // when
-        final ResultActions resultActions = mockMvc.perform(delete("/contents/" + contentId)
-                .headers(headers));
-
-        // then
-        resultActions.andExpect(status().isNoContent())
-                .andDo(print());
-    }
-
-    private String getAccessToken() {
-        final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
-        return jwtToken.accessToken();
-    }
-
-    private HttpHeaders getHeaders() {
-        final String accessToken = getAccessToken();
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-        return headers;
     }
 }
