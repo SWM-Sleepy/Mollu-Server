@@ -28,11 +28,20 @@ public class ContentReportController {
     @InternalServerErrorResponse
     @PostMapping("/{contentId}/report")
     public ResponseEntity<Void> groupSearchFeedResponse(@Login String memberId, @PathVariable String contentId,
-                                                        @RequestBody(required = false) ReportRequest request) {
+                              결                          @RequestBody(required = false) ReportRequest request) {
 
-        final Long reportId = reportService.reportContent(memberId, contentId, request);
+        final String reason = getReason(request);
+        final Long reportId = reportService.reportContent(memberId, contentId, reason);
         final URI uri = URI.create("/contents/" + contentId + "/report/" + reportId);
 
         return ResponseEntity.created(uri).build();
+    }
+
+    private String getReason(ReportRequest request) {
+        String reason = "";
+        if (request != null) {
+            reason = request.reason();
+        }
+        return reason;
     }
 }
