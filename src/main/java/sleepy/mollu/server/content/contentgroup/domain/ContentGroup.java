@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.group.domain.group.Group;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class ContentGroup {
+public class ContentGroup extends BaseEntity {
 
     @Id
     @Column(name = "content_group_id")

@@ -6,6 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import sleepy.mollu.server.common.config.JpaAuditingConfig;
+import sleepy.mollu.server.common.config.QueryDslConfig;
 import sleepy.mollu.server.fixture.GroupFixture;
 import sleepy.mollu.server.fixture.GroupMemberFixture;
 import sleepy.mollu.server.fixture.MemberFixture;
@@ -20,6 +23,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Import(QueryDslConfig.class)
 class GroupMemberRepositoryTest {
 
     @Autowired

@@ -5,6 +5,7 @@ import online.partyrun.jwtmanager.dto.JwtToken;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,13 +16,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,8 +50,11 @@ class ContentControllerTest {
     void ContentControllerTest() throws Exception {
 
         // given
+        given(contentService.searchGroupFeed(anyString(), anyString(), any(LocalDateTime.class)))
+                .willReturn(new GroupSearchFeedResponse("cursorId", LocalDateTime.now(), List.of()));
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("page", "1");
+        params.add("cursorId", "1");
+        params.add("cursorEndDate", "2023-07-06T11:45:00");
 
         final HttpHeaders headers = getHeaders();
 

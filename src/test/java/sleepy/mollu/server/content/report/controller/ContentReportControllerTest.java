@@ -2,9 +2,12 @@ package sleepy.mollu.server.content.report.controller;
 
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,6 +20,7 @@ import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
 
 import java.util.Set;
 
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,7 +43,7 @@ class ContentReportControllerTest {
     class ReportContentTest {
 
         @Test
-        @DisplayName("신고 사유를 적지 않아도 201을 응답한다.")
+        @DisplayName("신고 사유를 적지 않으면 `reason`에 빈 문자열이 저장되고, 201을 응답한다.")
         void reportContentTest() throws Exception {
             // given
             final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
@@ -56,6 +60,7 @@ class ContentReportControllerTest {
             // then
             result.andExpect(status().isCreated())
                     .andDo(print());
+            then(reportService).should().reportContent("memberId", "contentId", "");
         }
     }
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.ContentReport;
-import sleepy.mollu.server.content.report.dto.ReportRequest;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
 import sleepy.mollu.server.content.report.repository.ReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
@@ -23,13 +22,13 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
 
     @Override
-    public Long reportContent(String memberId, String contentId, ReportRequest request) {
+    public Long reportContent(String memberId, String contentId, String reason) {
 
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
         validateOwner(member, content);
 
-        return saveContentReport(request.reason(), member, content);
+        return saveContentReport(reason, member, content);
     }
 
     private Member getMember(String memberId) {

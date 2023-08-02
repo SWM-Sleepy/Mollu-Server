@@ -2,8 +2,6 @@ package sleepy.mollu.server.content.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.common.domain.IdConstructor;
@@ -30,12 +28,15 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ContentServiceImpl implements ContentService {
+
+    private static final int PAGE_SIZE = 15;
 
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
@@ -48,13 +49,17 @@ public class ContentServiceImpl implements ContentService {
 
     // TODO: 로직 수정 및 테스트 코드 작성
     @Override
-    public GroupSearchFeedResponse searchGroupFeed(String memberId, Pageable pageable) {
+    public GroupSearchFeedResponse searchGroupFeed(String memberId, String cursorId, LocalDateTime cursorEndDate) {
 
         final Member member = getMember(memberId);
         final List<Group> groups = getGroups(member);
-        final List<Content> contents = getContents(pageable, groups);
+        final List<ContentGroup> contentGroups = getContentGroups(groups, cursorId, cursorEndDate);
+        final List<Content> contents = contentGroups.stream()
+                .map(ContentGroup::getContent)
+                .toList();
+        final Cursor cursor = getCursor(contentGroups);
 
-        return getGroupSearchFeedResponse(member, contents);
+        return getGroupSearchFeedResponse(cursor, contents);
     }
 
     private Member getMember(String memberId) {
@@ -70,20 +75,25 @@ public class ContentServiceImpl implements ContentService {
                 .toList();
     }
 
-    private List<Content> getContents(Pageable pageable, List<Group> groups) {
-        final Page<ContentGroup> contentGroups = contentGroupRepository.findAllByGroups(groups, pageable);
-        final List<ContentGroup> contentGroupsWithContent = contentGroupRepository.findAllWithContentByContentGroups(contentGroups.toList());
-
-        return contentGroupsWithContent.stream()
-                .map(ContentGroup::getContent)
-                .toList();
+    private List<ContentGroup> getContentGroups(List<Group> groups, String cursorId, LocalDateTime cursorEndDate) {
+        return contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
     }
 
-    private GroupSearchFeedResponse getGroupSearchFeedResponse(Member member, List<Content> contents) {
-        return new GroupSearchFeedResponse(contents.stream()
-                .map(content ->
-                        new GroupSearchContentResponse(getMemberResponse(member), getContentResponse(content)))
-                .toList());
+    private record Cursor(String cursorId, LocalDateTime cursorEndDate) {
+    }
+
+    private Cursor getCursor(List<ContentGroup> contentGroups) {
+        final ContentGroup lastContentGroup = contentGroups.get(contentGroups.size() - 1);
+
+        return new Cursor(lastContentGroup.getId(), lastContentGroup.getCreatedAt());
+    }
+
+    private GroupSearchFeedResponse getGroupSearchFeedResponse(Cursor cursor, List<Content> contents) {
+        return new GroupSearchFeedResponse(cursor.cursorId, cursor.cursorEndDate,
+                contents.stream()
+                        .map(content ->
+                                new GroupSearchContentResponse(getMemberResponse(content.getMember()), getContentResponse(content)))
+                        .toList());
     }
 
     private GroupSearchContentResponse.Member getMemberResponse(Member member) {
