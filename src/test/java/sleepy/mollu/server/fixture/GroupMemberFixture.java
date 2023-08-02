@@ -10,17 +10,7 @@ import java.util.UUID;
 
 public class GroupMemberFixture {
 
-    public static final String DEFAULT_ID = "id";
     public static final GroupMemberRole DEFAULT_ROLE = GroupMemberRole.MEMBER;
-
-    public static GroupMember create(Group group, Member member) {
-        return GroupMember.builder()
-                .id(DEFAULT_ID)
-                .role(DEFAULT_ROLE)
-                .group(group)
-                .member(member)
-                .build();
-    }
 
     public static GroupMember create(String id, Group group, Member member) {
         return GroupMember.builder()
