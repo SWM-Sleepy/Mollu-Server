@@ -45,7 +45,8 @@ class ContentControllerTest {
 
         // given
         final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("page", "1");
+        params.add("cursorId", "1");
+        params.add("cursorEndDate", "2023-07-06T11:45:00");
 
         final HttpHeaders headers = getHeaders();
 

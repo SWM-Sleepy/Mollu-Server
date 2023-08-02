@@ -28,7 +28,7 @@ public class ContentReportController {
     @InternalServerErrorResponse
     @PostMapping("/{contentId}/report")
     public ResponseEntity<Void> groupSearchFeedResponse(@Login String memberId, @PathVariable String contentId,
-                              결                          @RequestBody(required = false) ReportRequest request) {
+                                                        @RequestBody(required = false) ReportRequest request) {
 
         final String reason = getReason(request);
         final Long reportId = reportService.reportContent(memberId, contentId, reason);

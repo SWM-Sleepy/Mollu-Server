@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sleepy.mollu.server.common.domain.CustomPageRequest;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.service.ContentService;
@@ -18,6 +17,7 @@ import sleepy.mollu.server.swagger.NoContentResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @Tag(name = "컨텐츠 관련 API")
 @RestController
@@ -31,9 +31,11 @@ public class ContentController {
     @OkResponse
     @InternalServerErrorResponse
     @GetMapping("/group")
-    public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@Login String memberId, @RequestParam("page") int page) {
+    public ResponseEntity<GroupSearchFeedResponse> groupSearchFeedResponse(@Login String memberId,
+                                                                           @RequestParam(value = "cursorId", required = false) String cursorId,
+                                                                           @RequestParam(value = "cursorEndDate", required = false) LocalDateTime cursorEndDate) {
 
-        return ResponseEntity.ok(contentService.searchGroupFeed(memberId, CustomPageRequest.of(page)));
+        return ResponseEntity.ok(contentService.searchGroupFeed(memberId, cursorId, cursorEndDate));
     }
 
     @Operation(summary = "컨텐츠 업로드")
