@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sleepy.mollu.server.member.preference.dto.PhoneTokenRequest;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.dto.PreferenceResponse;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
@@ -44,5 +46,18 @@ public class PreferenceController {
     public ResponseEntity<PreferenceResponse> searchPreference(@Login String memberId) {
 
         return ResponseEntity.ok().body(preferenceService.searchPreference(memberId));
+    }
+
+    @Operation(summary = "알림 토큰 설정")
+    @CreatedResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @PostMapping("/token")
+    public ResponseEntity<Void> updatePhoneToken(@Login String memberId, @RequestBody @Valid PhoneTokenRequest request) {
+
+        preferenceService.updatePhoneToken(memberId, request.phoneToken());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

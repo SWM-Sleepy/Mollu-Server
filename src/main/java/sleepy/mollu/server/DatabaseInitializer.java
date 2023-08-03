@@ -7,6 +7,8 @@ import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class DatabaseInitializer {
@@ -16,6 +18,10 @@ public class DatabaseInitializer {
 
     @PostConstruct
     public void init() {
+
+        final Optional<Group> group = groupRepository.findDefaultGroup();
+        if (group.isPresent()) return;
+
         groupRepository.save(Group.builder()
                 .id(idConstructor.create())
                 .name("디폴트 그룹")

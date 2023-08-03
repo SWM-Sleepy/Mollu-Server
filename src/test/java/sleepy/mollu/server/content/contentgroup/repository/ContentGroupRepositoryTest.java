@@ -29,26 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import({JpaAuditingConfig.class, QueryDslConfig.class})
 class ContentGroupRepositoryTest {
 
+    private static final LocalDateTime NOW = LocalDateTime.now();
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private GroupRepository groupRepository;
-
     @Autowired
     private GroupMemberRepository groupMemberRepository;
-
     @Autowired
     private ContentRepository contentRepository;
-
     @Autowired
     private ContentGroupRepository contentGroupRepository;
-
     @Autowired
     private EntityManager em;
-
-    private static final LocalDateTime NOW = LocalDateTime.now();
-
     private Member member1, member2;
     private Group group1;
     private Content content1, content2, content3;
@@ -133,6 +126,26 @@ class ContentGroupRepositoryTest {
 
             // then
             assertThat(findTags).containsExactly("tag2");
+        }
+
+        @Test
+        @DisplayName("생성날짜가 중복된 컨텐츠가 있어도, 중복된 피드를 조회하지 않는다.")
+        void FindGroupFeed5() {
+            // given
+
+            // when
+
+            // then
+        }
+
+        @Test
+        @DisplayName("피드의 마지막에는 컨텐츠가 없다.")
+        void FindGroupFeed4() {
+            // given
+
+            // when
+
+            // then
         }
     }
 }

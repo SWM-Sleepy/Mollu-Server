@@ -7,15 +7,17 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sleepy.mollu.server.oauth2.controller.interceptor.LoginInterceptor;
 import sleepy.mollu.server.oauth2.controller.resolver.LoginArgumentResolver;
+import sleepy.mollu.server.oauth2.controller.resolver.RefreshTokenResolver;
 
 import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class LoginConfig implements WebMvcConfigurer {
+public class AuthConfig implements WebMvcConfigurer {
 
     private final LoginInterceptor loginInterceptor;
     private final LoginArgumentResolver loginArgumentResolver;
+    private final RefreshTokenResolver refreshTokenResolver;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -27,5 +29,6 @@ public class LoginConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(loginArgumentResolver);
+        resolvers.add(refreshTokenResolver);
     }
 }

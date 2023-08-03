@@ -14,4 +14,6 @@ public interface OAuth2Service {
     TokenResponse signup(String type, String socialToken, SignupRequest request) throws GeneralSecurityException, IOException;
 
     CheckResponse checkId(String molluId);
+
+    TokenResponse refresh(String refreshToken);
 }

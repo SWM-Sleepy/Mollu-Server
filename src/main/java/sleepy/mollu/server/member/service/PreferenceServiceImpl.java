@@ -46,4 +46,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
         return new PreferenceResponse(preference.isMolluAlarm(), preference.isContentAlarm());
     }
+
+    @Override
+    public void updatePhoneToken(String memberId, String phoneToken) {
+
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse.GroupMemberResponse;
+import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.domain.GroupMembers;
@@ -39,6 +40,11 @@ public class GroupServiceImpl implements GroupService {
     private Member getMember(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다."));
+    }
+
+    @Override
+    public MyGroupResponse searchMyGroups(String memberId) {
+        return new MyGroupResponse(List.of(new MyGroupResponse.Group("groupId", "groupName")));
     }
 
     private Group getGroup(String groupId) {

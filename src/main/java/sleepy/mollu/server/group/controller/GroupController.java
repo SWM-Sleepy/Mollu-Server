@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
+import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.service.GroupService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
 import sleepy.mollu.server.swagger.*;
@@ -32,5 +33,17 @@ public class GroupController {
     public ResponseEntity<GroupMemberSearchResponse> groupSearchFeedResponse(@Login String memberId, @PathVariable String groupId) {
 
         return ResponseEntity.ok(groupService.searchGroupMembers(memberId, groupId));
+    }
+
+    @Operation(summary = "소속 그룹 조회")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping("/my")
+    public ResponseEntity<MyGroupResponse> searchMyGroups(@Login String memberId) {
+
+        return ResponseEntity.ok(groupService.searchMyGroups(memberId));
     }
 }

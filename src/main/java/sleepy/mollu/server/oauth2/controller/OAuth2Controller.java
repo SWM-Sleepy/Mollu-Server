@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.member.dto.SignupRequest;
+import sleepy.mollu.server.oauth2.controller.annotation.RefreshToken;
 import sleepy.mollu.server.oauth2.controller.annotation.SocialToken;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
@@ -57,5 +58,15 @@ public class OAuth2Controller {
     public ResponseEntity<CheckResponse> checkId(@RequestParam String molluId) {
 
         return ResponseEntity.ok().body(oauth2Service.checkId(molluId));
+    }
+
+    @Operation(summary = "토큰 재발급")
+    @CreatedResponse
+    @BadRequestResponse
+    @InternalServerErrorResponse
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponse> refresh(@RefreshToken String refreshToken) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(oauth2Service.refresh(refreshToken));
     }
 }
