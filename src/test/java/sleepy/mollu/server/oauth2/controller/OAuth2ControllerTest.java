@@ -106,7 +106,7 @@ class OAuth2ControllerTest extends ControllerTest {
         @DisplayName("리프레시 토큰이 없으면 400을 반환한다")
         void RefreshTest1() throws Exception {
             // given & when
-            final ResultActions resultActions = post("/auth/refresh");
+            final ResultActions resultActions = post("/auth/refresh", null);
 
             // then
             resultActions.andExpect(status().isBadRequest())
