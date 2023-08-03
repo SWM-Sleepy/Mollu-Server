@@ -1,10 +1,8 @@
 package sleepy.mollu.server.oauth2.controller;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
 import sleepy.mollu.server.member.dto.SignupRequest;

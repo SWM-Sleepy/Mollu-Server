@@ -79,9 +79,6 @@ public class ContentServiceImpl implements ContentService {
         return contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
     }
 
-    private record Cursor(String cursorId, LocalDateTime cursorEndDate) {
-    }
-
     private Cursor getCursor(List<ContentGroup> contentGroups) {
         final ContentGroup lastContentGroup = contentGroups.get(contentGroups.size() - 1);
 
@@ -162,5 +159,8 @@ public class ContentServiceImpl implements ContentService {
         }
 
         contentRepository.delete(content);
+    }
+
+    private record Cursor(String cursorId, LocalDateTime cursorEndDate) {
     }
 }

@@ -29,26 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import({JpaAuditingConfig.class, QueryDslConfig.class})
 class ContentGroupRepositoryTest {
 
+    private static final LocalDateTime NOW = LocalDateTime.now();
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private GroupRepository groupRepository;
-
     @Autowired
     private GroupMemberRepository groupMemberRepository;
-
     @Autowired
     private ContentRepository contentRepository;
-
     @Autowired
     private ContentGroupRepository contentGroupRepository;
-
     @Autowired
     private EntityManager em;
-
-    private static final LocalDateTime NOW = LocalDateTime.now();
-
     private Member member1, member2;
     private Group group1;
     private Content content1, content2, content3;

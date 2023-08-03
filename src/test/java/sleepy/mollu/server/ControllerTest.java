@@ -38,25 +38,26 @@ public class ControllerTest {
 
     @Autowired
     protected JwtGenerator jwtGenerator;
-
+    @MockBean
+    protected ReportService reportService;
+    @MockBean
+    protected ContentService contentService;
+    @MockBean
+    protected OAuth2Service oauth2Service;
+    @MockBean
+    protected GroupService groupService;
     @MockBean
     private ProfileService profileService;
-
     @MockBean
     private PreferenceService preferenceService;
 
-    @MockBean
-    protected ReportService reportService;
-
-    @MockBean
-    protected ContentService contentService;
-
-    @MockBean
-    protected OAuth2Service oauth2Service;
-
-    @MockBean
-    protected GroupService groupService;
-
+    private static HttpHeaders getHeaders(String accessToken) {
+        final HttpHeaders headers = new HttpHeaders();
+        if (accessToken != null) {
+            headers.add("Authorization", "Bearer " + accessToken);
+        }
+        return headers;
+    }
 
     protected ResultActions get(String path, String accessToken) throws Exception {
 
@@ -135,13 +136,5 @@ public class ControllerTest {
     protected String getRefreshToken(String memberId) {
         final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
         return jwtToken.refreshToken();
-    }
-
-    private static HttpHeaders getHeaders(String accessToken) {
-        final HttpHeaders headers = new HttpHeaders();
-        if (accessToken != null) {
-            headers.add("Authorization", "Bearer " + accessToken);
-        }
-        return headers;
     }
 }
