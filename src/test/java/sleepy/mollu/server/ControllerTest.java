@@ -19,7 +19,6 @@ import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.profile.service.ProfileService;
-import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
 
 import java.util.Set;
