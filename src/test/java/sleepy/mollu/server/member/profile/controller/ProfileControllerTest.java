@@ -1,6 +1,5 @@
 package sleepy.mollu.server.member.profile.controller;
 
-import online.partyrun.jwtmanager.dto.JwtToken;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,8 +9,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
-
-import java.util.Set;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,7 +28,7 @@ class ProfileControllerTest extends ControllerTest {
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("molluId", "ysyss");
 
-            final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
+            final JwtToken jwtToken = jwtGenerator.generate("memberId");
             final String accessToken = jwtToken.accessToken();
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + accessToken);

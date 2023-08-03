@@ -1,6 +1,5 @@
 package sleepy.mollu.server.content.controller;
 
-import online.partyrun.jwtmanager.dto.JwtToken;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,11 +10,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -64,7 +63,7 @@ class ContentControllerTest extends ControllerTest {
     }
 
     private String getAccessToken() {
-        final JwtToken jwtToken = jwtGenerator.generate("memberId", Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate("memberId");
         return jwtToken.accessToken();
     }
 
