@@ -128,6 +128,6 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
     @Override
     public TokenResponse refresh(String refreshToken) {
-        return null;
+        return new TokenResponse("accessToken", "refreshToken");
     }
 }
