@@ -8,4 +8,6 @@ public interface PreferenceService {
     void updatePreference(String memberId, PreferenceRequest request);
 
     PreferenceResponse searchPreference(String memberId);
+
+    void updatePhoneToken(String memberId, String phoneToken);
 }

@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
+import sleepy.mollu.server.member.preference.dto.PhoneTokenRequest;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
@@ -56,6 +57,36 @@ class PreferenceControllerTest extends ControllerTest {
 
             // then
             result.andExpect(status().isOk())
+                    .andDo(print());
+        }
+    }
+
+    @Nested
+    @DisplayName("[알림 설정 조회 API 호출시] ")
+    class UpdatePhoneToken {
+
+        @Test
+        @DisplayName("phoneToken이 설정되어있지 않으면 400을 응답한다.")
+        void UpdatePhoneToken() throws Exception {
+            // given & when
+            final ResultActions resultActions = post("/members/preference/token");
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("201을 응답한다")
+        void UpdatePhoneToken1() throws Exception {
+            // given
+            final PhoneTokenRequest request = new PhoneTokenRequest("phoneToken");
+
+            // when
+            final ResultActions resultActions = post("/members/preference/token", request);
+
+            // then
+            resultActions.andExpect(status().isCreated())
                     .andDo(print());
         }
     }

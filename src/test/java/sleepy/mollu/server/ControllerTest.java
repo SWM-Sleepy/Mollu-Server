@@ -81,13 +81,18 @@ public class ControllerTest {
                 .content(body));
     }
 
+    protected ResultActions post(String path, Object requestBody) throws Exception {
+
+        return post(path, getAccessToken("memberId"), requestBody);
+    }
+
     protected ResultActions post(String path, String accessToken) throws Exception {
 
         return post(path, accessToken, null);
     }
 
     protected ResultActions post(String path) throws Exception {
-        return post(path, null);
+        return post(path, getAccessToken("memberId"));
     }
 
     protected ResultActions put(String path, String accessToken, Object requestBody) throws Exception {
