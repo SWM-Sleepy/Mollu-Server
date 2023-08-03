@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.report.domain.Report;
-import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +34,8 @@ public class Member extends BaseEntity {
 
     private String phoneToken;
 
+    private String refreshToken;
+
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
     private FileSource profileSource = new FileSource("");
@@ -43,23 +43,17 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<Content> contents = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "preference_id")
     private Preference preference;
 
-    @OneToMany(mappedBy = "member")
-    private List<Report> contentReports = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<GroupMember> groupMembers = new ArrayList<>();
-
     @Builder
-    public Member(String id, String name, String molluId, LocalDate birthday, String phoneToken, Preference preference) {
+    public Member(String id, String name, String molluId, LocalDate birthday, String refreshToken, Preference preference) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
         this.birthday = new Birthday(birthday);
-        this.phoneToken = phoneToken;
+        this.refreshToken = refreshToken;
         setPreference(preference);
     }
 
@@ -86,6 +80,10 @@ public class Member extends BaseEntity {
 
     public String getProfileSource() {
         return this.profileSource.getValue();
+    }
+
+    public void updatePhoneToken(String phoneToken) {
+        this.phoneToken = phoneToken;
     }
 
     public void updateProfile(String molluId, String name, LocalDate birthday, String profileSource) {
@@ -119,11 +117,11 @@ public class Member extends BaseEntity {
         }
     }
 
-    public void addContentReport(Report report) {
-        this.contentReports.add(report);
+    public boolean hasSameRefreshToken(String refreshToken) {
+        return this.refreshToken.equals(refreshToken);
     }
 
-    public void addGroupMember(GroupMember groupMember) {
-        this.groupMembers.add(groupMember);
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

@@ -32,6 +32,5 @@ public abstract class Report extends BaseEntity {
 
     private void setMember(Member member) {
         this.member = member;
-        member.addContentReport(this);
     }
 }

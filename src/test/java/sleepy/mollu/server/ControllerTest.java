@@ -1,8 +1,6 @@
 package sleepy.mollu.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import online.partyrun.jwtmanager.JwtGenerator;
-import online.partyrun.jwtmanager.dto.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,15 +17,15 @@ import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.profile.service.ProfileService;
-import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
+import sleepy.mollu.server.oauth2.jwt.config.JwtConfig;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
+import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
-
-import java.util.Set;
 
 @WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
         AdminAlarmController.class
 }))
-@Import(CustomJwtConfig.class)
+@Import(JwtConfig.class)
 public class ControllerTest {
 
     @Autowired
@@ -129,12 +127,12 @@ public class ControllerTest {
     }
 
     protected String getAccessToken(String memberId) {
-        final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate(memberId);
         return jwtToken.accessToken();
     }
 
     protected String getRefreshToken(String memberId) {
-        final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate(memberId);
         return jwtToken.refreshToken();
     }
 }

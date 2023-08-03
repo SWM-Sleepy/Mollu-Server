@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
+import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
@@ -103,13 +104,37 @@ class GroupServiceTest {
             given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
             given(groupMember.isSameMember(member)).willReturn(true);
             given(groupMember.getMember()).willReturn(member);
-            ;
 
             // when
             final GroupMemberSearchResponse response = groupService.searchGroupMembers(memberId, groupId);
 
             // then
             assertThat(response.groupMemberResponses()).hasSize(1);
+        }
+    }
+
+    @Nested
+    @DisplayName("[소속 그룹 조회 서비스 호출시] ")
+    class SearchMyGroups {
+
+        final String memberId = "memberId";
+        final Member member = mock(Member.class);
+        final GroupMember groupMember = mock(GroupMember.class);
+        final Group group = mock(Group.class);
+
+        @Test
+        @DisplayName("성공적으로 소속 그룹을 조회한다.")
+        void SearchMyGroups() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(groupMemberRepository.findAllWithGroupByMember(member)).willReturn(List.of(groupMember));
+            given(groupMember.getGroup()).willReturn(group);
+
+            // when
+            final MyGroupResponse myGroupResponse = groupService.searchMyGroups(memberId);
+
+            // then
+            assertThat(myGroupResponse.groups()).hasSize(1);
         }
     }
 

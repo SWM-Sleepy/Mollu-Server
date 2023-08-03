@@ -1,14 +1,13 @@
-package sleepy.mollu.server.oauth2.config;
+package sleepy.mollu.server.oauth2.jwt.config;
 
-import online.partyrun.jwtmanager.manager.JwtManager;
-import online.partyrun.jwtmanager.manager.TokenManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import sleepy.mollu.server.oauth2.jwt.CustomJwtManager;
+import sleepy.mollu.server.oauth2.jwt.service.JwtManager;
+import sleepy.mollu.server.oauth2.jwt.service.TokenManager;
 
 @Configuration
-public class CustomJwtConfig {
+public class JwtConfig {
 
     @Bean
     public JwtManager jwtManager(
@@ -17,7 +16,7 @@ public class CustomJwtConfig {
             @Value("${jwt.refresh-secret-key}") String refreshKey,
             @Value("${jwt.refresh-expire-second}") Long refreshExpireSecond) {
 
-        return new CustomJwtManager(
+        return new JwtManager(
                 tokenManager(accessKey, accessExpireSecond),
                 tokenManager(refreshKey, refreshExpireSecond));
     }

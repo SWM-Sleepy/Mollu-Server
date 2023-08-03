@@ -57,7 +57,7 @@ class OAuth2ControllerTest extends ControllerTest {
         void socialSignupTest1() throws Exception {
             // given
             final String accessToken = getAccessToken("memberId");
-            final SignupRequest request = new SignupRequest("김준형", LocalDate.now(), "molluId", "phoneToken");
+            final SignupRequest request = new SignupRequest("김준형", LocalDate.now(), "molluId");
 
             // when
             final ResultActions resultActions = post("/auth/signup/google", accessToken, request);

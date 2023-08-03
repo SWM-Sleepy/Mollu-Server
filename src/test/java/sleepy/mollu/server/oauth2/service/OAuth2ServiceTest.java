@@ -1,7 +1,5 @@
 package sleepy.mollu.server.oauth2.service;
 
-import online.partyrun.jwtmanager.JwtGenerator;
-import online.partyrun.jwtmanager.dto.JwtToken;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +17,8 @@ import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
+import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -29,7 +29,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -94,7 +95,7 @@ class OAuth2ServiceTest {
 
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
             given(memberRepository.existsById(memberId)).willReturn(true);
-            given(jwtGenerator.generate(anyString(), anySet())).willReturn(JwtToken.builder()
+            given(jwtGenerator.generate(anyString())).willReturn(JwtToken.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build());
@@ -116,7 +117,7 @@ class OAuth2ServiceTest {
 
         final String type = "type";
         final String socialToken = "socialToken";
-        final SignupRequest request = new SignupRequest("name", LocalDate.now(), "molluId", "phoneToken");
+        final SignupRequest request = new SignupRequest("name", LocalDate.now(), "molluId");
         final String memberId = "memberId";
 
 
@@ -148,7 +149,7 @@ class OAuth2ServiceTest {
             given(oAuth2ClientMap.get(anyString())).willReturn(oAuth2Client);
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
             given(memberRepository.existsById(memberId)).willReturn(false);
-            given(jwtGenerator.generate(anyString(), anySet())).willReturn(JwtToken.builder()
+            given(jwtGenerator.generate(anyString())).willReturn(JwtToken.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build());

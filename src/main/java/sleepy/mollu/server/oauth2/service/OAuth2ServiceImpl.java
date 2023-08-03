@@ -1,10 +1,8 @@
 package sleepy.mollu.server.oauth2.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import online.partyrun.jwtmanager.JwtGenerator;
-import online.partyrun.jwtmanager.dto.JwtToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
@@ -20,15 +18,21 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
+import sleepy.mollu.server.oauth2.exception.TokenUnAuthenticatedException;
+import sleepy.mollu.server.oauth2.jwt.dto.ExtractType;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtPayload;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
+import sleepy.mollu.server.oauth2.jwt.service.JwtExtractor;
+import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
+import sleepy.mollu.server.oauth2.jwt.service.JwtRefresher;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.Set;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OAuth2ServiceImpl implements OAuth2Service {
 
@@ -36,6 +40,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
     private final Map<String, OAuth2Client> oAuth2ClientMap;
     private final JwtGenerator jwtGenerator;
+    private final JwtExtractor jwtExtractor;
+    private final JwtRefresher jwtRefresher;
 
     private final MemberRepository memberRepository;
     private final GroupMemberRepository groupMemberRepository;
@@ -48,7 +54,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberNotExists(memberId);
 
-        final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
+        final JwtToken jwtToken = jwtGenerator.generate(memberId);
 
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
     }
@@ -66,17 +72,17 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return oAuth2Client.getMemberId(socialToken);
     }
 
+    @Transactional
     @Override
     public TokenResponse signup(String type, String socialToken, SignupRequest request) throws GeneralSecurityException, IOException {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
-        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId(), request.phoneToken());
+        final JwtToken jwtToken = jwtGenerator.generate(memberId);
+        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
 
         // FIXME: 2023/07/25 MVP 이후 삭제
         joinGroup(member);
-
-        final JwtToken jwtToken = jwtGenerator.generate(memberId, Set.of("member"));
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
     }
 
@@ -86,13 +92,13 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         }
     }
 
-    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId, String phoneToken) {
+    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
         return memberRepository.save(Member.builder()
                 .id(memberId)
                 .name(name)
                 .birthday(birthday)
                 .molluId(molluId)
-                .phoneToken(phoneToken)
+                .refreshToken(refreshToken)
                 .preference(getPreference())
                 .build());
     }
@@ -126,8 +132,29 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return new CheckResponse(!existsMemberWithSameMolluId);
     }
 
+    @Transactional
     @Override
     public TokenResponse refresh(String refreshToken) {
-        return new TokenResponse("accessToken", "refreshToken");
+
+        final String memberId = getMemberIdFromRefreshToken(refreshToken);
+        final Member member = getMember(memberId);
+        if(!member.hasSameRefreshToken(refreshToken)) {
+            throw new TokenUnAuthenticatedException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
+        }
+
+        final JwtToken token = jwtRefresher.refresh(refreshToken);
+        member.updateRefreshToken(token.refreshToken());
+
+        return new TokenResponse(token.accessToken(), token.refreshToken());
+    }
+
+    private String getMemberIdFromRefreshToken(String refreshToken) {
+        final JwtPayload payload = jwtExtractor.extract(refreshToken, ExtractType.REFRESH);
+        return payload.id();
+    }
+
+    private Member getMember(String memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
     }
 }

@@ -20,7 +20,7 @@ import sleepy.mollu.server.member.repository.MemberRepository;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
 
@@ -44,7 +44,23 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public MyGroupResponse searchMyGroups(String memberId) {
-        return new MyGroupResponse(List.of(new MyGroupResponse.Group("groupId", "groupName")));
+        final Member member = getMember(memberId);
+        final List<Group> groups = getGroups(member);
+
+        return getMyGroupResponse(groups);
+    }
+
+    private List<Group> getGroups(Member member) {
+        final List<GroupMember> groupMembers = groupMemberRepository.findAllWithGroupByMember(member);
+        return groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .toList();
+    }
+
+    private MyGroupResponse getMyGroupResponse(List<Group> groups) {
+        return new MyGroupResponse(groups.stream()
+                .map(group -> new MyGroupResponse.Group(group.getId(), group.getName()))
+                .toList());
     }
 
     private Group getGroup(String groupId) {
