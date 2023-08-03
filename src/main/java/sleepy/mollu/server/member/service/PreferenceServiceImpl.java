@@ -1,8 +1,8 @@
 package sleepy.mollu.server.member.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
@@ -13,12 +13,13 @@ import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PreferenceServiceImpl implements PreferenceService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional
     @Override
     public void updatePreference(String memberId, PreferenceRequest request) {
 
@@ -48,6 +49,7 @@ public class PreferenceServiceImpl implements PreferenceService {
         return new PreferenceResponse(preference.isMolluAlarm(), preference.isContentAlarm());
     }
 
+    @Transactional
     @Override
     public void updatePhoneToken(String memberId, String phoneToken) {
 

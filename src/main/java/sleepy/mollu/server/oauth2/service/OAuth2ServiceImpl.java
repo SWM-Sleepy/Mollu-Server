@@ -1,10 +1,10 @@
 package sleepy.mollu.server.oauth2.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import online.partyrun.jwtmanager.JwtGenerator;
 import online.partyrun.jwtmanager.dto.JwtToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OAuth2ServiceImpl implements OAuth2Service {
 
@@ -66,6 +66,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return oAuth2Client.getMemberId(socialToken);
     }
 
+    @Transactional
     @Override
     public TokenResponse signup(String type, String socialToken, SignupRequest request) throws GeneralSecurityException, IOException {
 
@@ -126,6 +127,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return new CheckResponse(!existsMemberWithSameMolluId);
     }
 
+    @Transactional
     @Override
     public TokenResponse refresh(String refreshToken) {
         return new TokenResponse("accessToken", "refreshToken");

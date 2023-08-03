@@ -13,7 +13,7 @@ import sleepy.mollu.server.member.profile.dto.ProfileResponse;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
@@ -34,6 +34,8 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
     }
 
+
+    @Transactional
     @Override
     public void updateProfile(String memberId, ProfileRequest request) {
 

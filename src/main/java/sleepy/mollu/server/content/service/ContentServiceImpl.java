@@ -1,8 +1,8 @@
 package sleepy.mollu.server.content.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ContentServiceImpl implements ContentService {
 
@@ -105,6 +105,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     // TODO: 로직 수정 및 테스트 코드 작성
+    @Transactional
     @Override
     public String createContent(String memberId, CreateContentRequest request) {
 
@@ -148,6 +149,7 @@ public class ContentServiceImpl implements ContentService {
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
     }
 
+    @Transactional
     @Override
     public void deleteContent(String memberId, String contentId) {
 

@@ -12,7 +12,7 @@ import sleepy.mollu.server.member.repository.MemberRepository;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MolluAlarmService implements AlarmService {
 
