@@ -34,6 +34,8 @@ public class Member extends BaseEntity {
 
     private String phoneToken;
 
+    private String refreshToken;
+
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
     private FileSource profileSource = new FileSource("");
@@ -46,12 +48,12 @@ public class Member extends BaseEntity {
     private Preference preference;
 
     @Builder
-    public Member(String id, String name, String molluId, LocalDate birthday, String phoneToken, Preference preference) {
+    public Member(String id, String name, String molluId, LocalDate birthday, String refreshToken, Preference preference) {
         this.id = id;
         this.name = new Name(name);
         this.molluId = new MolluId(molluId);
         this.birthday = new Birthday(birthday);
-        this.phoneToken = phoneToken;
+        this.refreshToken = refreshToken;
         setPreference(preference);
     }
 
@@ -113,5 +115,13 @@ public class Member extends BaseEntity {
         if (profileSource != null) {
             this.profileSource = new FileSource(profileSource);
         }
+    }
+
+    public boolean hasSameRefreshToken(String refreshToken) {
+        return this.refreshToken.equals(refreshToken);
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
