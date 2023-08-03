@@ -125,4 +125,9 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
         return new CheckResponse(!existsMemberWithSameMolluId);
     }
+
+    @Override
+    public TokenResponse refresh(String refreshToken) {
+        return null;
+    }
 }

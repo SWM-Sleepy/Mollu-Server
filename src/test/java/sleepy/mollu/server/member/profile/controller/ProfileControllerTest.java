@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import sleepy.mollu.server.ControllerTest;
 import sleepy.mollu.server.member.profile.service.ProfileService;
 import sleepy.mollu.server.oauth2.config.CustomJwtConfig;
 
@@ -25,21 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ProfileController.class)
-@Import(CustomJwtConfig.class)
-class ProfileControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private ProfileService profileService;
-
-    @Autowired
-    private JwtGenerator jwtGenerator;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+class ProfileControllerTest extends ControllerTest {
 
     @Nested
     @DisplayName("[프로필 수정 API 호출 시] ")
