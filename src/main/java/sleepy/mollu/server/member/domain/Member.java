@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.report.domain.Report;
-import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,15 +41,9 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<Content> contents = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "preference_id")
     private Preference preference;
-
-    @OneToMany(mappedBy = "member")
-    private List<Report> contentReports = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<GroupMember> groupMembers = new ArrayList<>();
 
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday, String phoneToken, Preference preference) {
@@ -88,6 +80,10 @@ public class Member extends BaseEntity {
         return this.profileSource.getValue();
     }
 
+    public void updatePhoneToken(String phoneToken) {
+        this.phoneToken = phoneToken;
+    }
+
     public void updateProfile(String molluId, String name, LocalDate birthday, String profileSource) {
         updateMolluId(molluId);
         updateName(name);
@@ -117,13 +113,5 @@ public class Member extends BaseEntity {
         if (profileSource != null) {
             this.profileSource = new FileSource(profileSource);
         }
-    }
-
-    public void addContentReport(Report report) {
-        this.contentReports.add(report);
-    }
-
-    public void addGroupMember(GroupMember groupMember) {
-        this.groupMembers.add(groupMember);
     }
 }

@@ -22,9 +22,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     public void updatePreference(String memberId, PreferenceRequest request) {
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]에 해당하는 멤버가 없습니다."));
-
+        final Member member = getMember(memberId);
         final Preference preference = member.getPreference();
         if (preference == null) {
             throw new PreferenceNotFoundException("[" + memberId + "]와 연관된 알림 설정이 없습니다.");
@@ -33,12 +31,15 @@ public class PreferenceServiceImpl implements PreferenceService {
         preference.update(request.molluAlarm(), request.contentAlarm());
     }
 
+    private Member getMember(String memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]에 해당하는 멤버가 없습니다."));
+    }
+
     @Override
     public PreferenceResponse searchPreference(String memberId) {
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]에 해당하는 멤버가 없습니다."));
-
+        final Member member = getMember(memberId);
         final Preference preference = member.getPreference();
         if (preference == null) {
             throw new PreferenceNotFoundException("[" + memberId + "]와 연관된 알림 설정이 없습니다.");
@@ -50,5 +51,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     public void updatePhoneToken(String memberId, String phoneToken) {
 
+        final Member member = getMember(memberId);
+        member.updatePhoneToken(phoneToken);
     }
 }
