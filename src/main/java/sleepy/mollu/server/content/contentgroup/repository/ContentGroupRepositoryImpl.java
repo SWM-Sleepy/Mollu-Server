@@ -36,7 +36,7 @@ public class ContentGroupRepositoryImpl implements ContentGroupRepositoryCustom 
         }
 
         return contentGroup.createdAt.lt(cursorEndDate)
-                .or(contentGroup.createdAt.lt(cursorEndDate))
-                .and(contentGroup.id.ne(cursorId));
+                .or(contentGroup.createdAt.eq(cursorEndDate)
+                        .and(contentGroup.id.ne(cursorId)));
     }
 }
