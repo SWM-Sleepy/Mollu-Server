@@ -1,58 +1,33 @@
 package sleepy.mollu.server.group.groupmember.repository;
 
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import sleepy.mollu.server.common.config.QueryDslConfig;
-import sleepy.mollu.server.fixture.GroupFixture;
-import sleepy.mollu.server.fixture.GroupMemberFixture;
-import sleepy.mollu.server.fixture.MemberFixture;
+import sleepy.mollu.server.RepositoryTest;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
-import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Import(QueryDslConfig.class)
-class GroupMemberRepositoryTest {
-
-    @Autowired
-    private GroupMemberRepository groupMemberRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private EntityManager em;
+class GroupMemberRepositoryTest extends RepositoryTest {
 
     private Member member1, member2;
     private Group group1, group2;
 
     @BeforeEach
     void setUp() {
-        member1 = MemberFixture.create("member1", "molluId1");
-        member2 = MemberFixture.create("member2", "molluId2");
+        member1 = saveMember("member1", "molluId1");
+        member2 = saveMember("member2", "molluId2");
         final List<Member> members = List.of(member1, member2);
 
-        group1 = GroupFixture.create("group1");
-        group2 = GroupFixture.create("group2");
+        group1 = saveGroup("group1");
+        group2 = saveGroup("group2");
         final List<Group> groups = List.of(group1, group2);
 
-        memberRepository.saveAll(members);
-        groupRepository.saveAll(groups);
-        groupMemberRepository.saveAll(GroupMemberFixture.createAll(groups, members));
+        saveGroupMembers(groups, members);
 
         em.flush();
         em.clear();
