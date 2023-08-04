@@ -59,8 +59,13 @@ public class GroupServiceImpl implements GroupService {
 
     private MyGroupResponse getMyGroupResponse(List<Group> groups) {
         return new MyGroupResponse(groups.stream()
-                .map(group -> new MyGroupResponse.Group(group.getId(), group.getName()))
+                .map(group -> new MyGroupResponse.Group(group.getId(), group.getName(), getGroupMemberCount(group)))
                 .toList());
+    }
+
+    private int getGroupMemberCount(Group group) {
+        final List<GroupMember> allByGroup = groupMemberRepository.findAllByGroup(group);
+        return allByGroup.size();
     }
 
     private Group getGroup(String groupId) {
@@ -83,7 +88,7 @@ public class GroupServiceImpl implements GroupService {
     private List<GroupMemberResponse> getGroupMembers(GroupMembers groupMembers) {
         return groupMembers.groupMembers().stream()
                 .map(GroupMember::getMember)
-                .map(member -> new GroupMemberResponse(member.getId(), member.getName(), member.getProfileSource()))
+                .map(member -> new GroupMemberResponse(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource()))
                 .toList();
     }
 }
