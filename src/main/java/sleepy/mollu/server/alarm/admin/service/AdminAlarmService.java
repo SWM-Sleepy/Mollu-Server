@@ -1,7 +1,7 @@
-package sleepy.mollu.server.admin.alarm.service;
+package sleepy.mollu.server.alarm.admin.service;
 
-import sleepy.mollu.server.admin.alarm.dto.MolluRangeResponse;
-import sleepy.mollu.server.admin.alarm.dto.MolluTimeResponse;
+import sleepy.mollu.server.alarm.admin.dto.MolluRangeResponse;
+import sleepy.mollu.server.alarm.admin.dto.MolluTimeResponse;
 
 import java.time.LocalTime;
 import java.util.List;

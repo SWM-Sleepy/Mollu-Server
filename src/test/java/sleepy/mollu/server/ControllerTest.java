@@ -11,7 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import sleepy.mollu.server.admin.alarm.controller.AdminAlarmController;
+import sleepy.mollu.server.alarm.admin.controller.AdminAlarmController;
 import sleepy.mollu.server.content.report.service.ReportService;
 import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
