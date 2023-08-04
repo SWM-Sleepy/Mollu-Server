@@ -18,9 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class MolluTimeControllerTest extends ControllerTest {
 
-    @MockBean
-    private MolluTimeService molluTimeService;
-
     @Nested
     @DisplayName("[MOLLU 타임 조회 API 호출시] ")
     class SearchMolluTime {

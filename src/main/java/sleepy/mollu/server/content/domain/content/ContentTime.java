@@ -20,4 +20,8 @@ public class ContentTime {
     public static ContentTime of(LocalDateTime molluDateTime, LocalDateTime uploadDateTime) {
         return new ContentTime(molluDateTime, uploadDateTime);
     }
+
+    public boolean isUploadedBefore(LocalDateTime localDateTime) {
+        return uploadDateTime.isBefore(localDateTime);
+    }
 }

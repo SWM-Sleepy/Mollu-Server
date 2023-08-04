@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import sleepy.mollu.server.alarm.admin.controller.AdminAlarmController;
+import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.content.report.service.ReportService;
 import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
@@ -45,9 +46,11 @@ public class ControllerTest {
     @MockBean
     protected GroupService groupService;
     @MockBean
-    private ProfileService profileService;
+    protected ProfileService profileService;
     @MockBean
-    private PreferenceService preferenceService;
+    protected PreferenceService preferenceService;
+    @MockBean
+    protected MolluTimeService molluTimeService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();

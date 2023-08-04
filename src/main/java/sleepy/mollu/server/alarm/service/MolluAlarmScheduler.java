@@ -17,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MolluAlarmScheduler {
 
+    private static final LocalDate NOW = LocalDate.now();
     private final MolluAlarmRepository molluAlarmRepository;
     private final TimePicker timePicker;
     private final TaskScheduler taskScheduler;
@@ -46,7 +47,8 @@ public class MolluAlarmScheduler {
         final Optional<MolluAlarm> newMolluAlarm = molluAlarmRepository.findTop();
 
         if (newMolluAlarm.isEmpty()) {
-            generateAlarm();
+            generateAlarm(NOW);
+            generateAlarm(NOW.minusDays(1));
             scheduleAlarm();
             return null;
         }
@@ -56,7 +58,7 @@ public class MolluAlarmScheduler {
 
     private void sendAlarm(MolluAlarm molluAlarm) {
         if (!molluAlarm.isToday(LocalDateTime.now())) {
-            generateAlarm();
+            generateAlarm(NOW);
         }
 
         if (!molluAlarm.isSend()) {
@@ -64,10 +66,9 @@ public class MolluAlarmScheduler {
         }
     }
 
-    private void generateAlarm() {
+    private void generateAlarm(LocalDate currentDate) {
         final MolluAlarmRange molluAlarmRange = MolluAlarmRange.getInstance();
         final LocalTime sendTime = timePicker.pick(molluAlarmRange.getFrom(), molluAlarmRange.getTo());
-        final LocalDate currentDate = LocalDate.now();
         final LocalDateTime molluTime = LocalDateTime.of(currentDate, sendTime);
 
         molluAlarmRepository.save(new MolluAlarm(molluTime, false));
