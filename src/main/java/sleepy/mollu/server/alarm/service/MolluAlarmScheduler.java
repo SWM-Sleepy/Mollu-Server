@@ -43,7 +43,7 @@ public class MolluAlarmScheduler {
     }
 
     private MolluAlarm getMolluAlarm() {
-        final Optional<MolluAlarm> newMolluAlarm = molluAlarmRepository.findTopByOrderByIdDesc();
+        final Optional<MolluAlarm> newMolluAlarm = molluAlarmRepository.findTop();
 
         if (newMolluAlarm.isEmpty()) {
             generateAlarm();
@@ -81,7 +81,7 @@ public class MolluAlarmScheduler {
     }
 
     private Instant getStartTime() {
-        final MolluAlarm molluAlarm = molluAlarmRepository.findTopByOrderByIdDesc()
+        final MolluAlarm molluAlarm = molluAlarmRepository.findTop()
                 .orElseThrow();
         final LocalDateTime molluTime = molluAlarm.getMolluTime();
         final ZoneId zoneId = ZoneId.systemDefault();

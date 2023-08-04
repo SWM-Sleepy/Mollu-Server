@@ -33,7 +33,7 @@ public class MolluAlarmService implements AlarmService {
     }
 
     private void checkUpdateComplete() {
-        final MolluAlarm molluAlarm = molluAlarmRepository.findTopByOrderByIdDesc()
+        final MolluAlarm molluAlarm = molluAlarmRepository.findTop()
                 .orElseThrow(() -> new MolluAlarmNotFoundException("`MolluAlarm`이 존재하지 않습니다."));
         molluAlarm.updateSend();
     }
