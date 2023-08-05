@@ -5,13 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import sleepy.mollu.server.RepositoryTest;
-import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,10 +20,10 @@ class ContentGroupRepositoryTest extends RepositoryTest {
     private Member member1, member2;
     private Group group1;
     private Content content1, content2, content3;
-    private List<ContentGroup> contentGroups;
+    private ContentGroup contentGroup1, contentGroup2, contentGroup3;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
         member1 = saveMember("member1", "molluId1");
         member2 = saveMember("member2", "molluId2");
         group1 = saveGroup("group1");
@@ -38,14 +36,9 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         content2 = saveContent("content2", "tag2", NOW, member2);
         content3 = saveContent("content3", "tag3", NOW, member2);
 
-        final List<Content> contents = List.of(content1, content2, content3);
-        contentGroups = saveContentGroups(contents, groups);
-    }
-
-    private void reflect(Object object, Object value) throws NoSuchFieldException, IllegalAccessException {
-        final Field field = BaseEntity.class.getDeclaredField("createdAt");
-        field.setAccessible(true);
-        field.set(object, value);
+        contentGroup1 = saveContentGroup(content1, group1, NOW.minusSeconds(1));
+        contentGroup2 = saveContentGroup(content2, group1, NOW);
+        contentGroup3 = saveContentGroup(content3, group1, NOW.plusSeconds(1));
     }
 
     @Nested
@@ -89,13 +82,13 @@ class ContentGroupRepositoryTest extends RepositoryTest {
 
         @Test
         @DisplayName("피드 조회 도중 다른 컨텐츠가 업로드되어도, 피드에는 영향을 주지 않는다.")
-        void FindGroupFeed3() {
+        void FindGroupFeed3() throws NoSuchFieldException, IllegalAccessException {
             // given
             final List<ContentGroup> expectedFeed = contentGroupRepository.findGroupFeed(List.of(group1), 1, null, null);
             final ContentGroup lastContentGroup = expectedFeed.get(expectedFeed.size() - 1);
 
             final Content content4 = saveContent("content4", "tag4", NOW, member2);
-            saveContentGroup(content4, group1);
+            saveContentGroup(content4, group1, NOW.plusSeconds(2));
 
             // when
             final List<ContentGroup> findFeed = contentGroupRepository.findGroupFeed(List.of(group1), 1, lastContentGroup.getId(), lastContentGroup.getCreatedAt());
@@ -112,9 +105,9 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         @DisplayName("생성날짜가 중복된 컨텐츠가 있으면, ID가 정렬된 상태로 조회한다.")
         void FindGroupFeed5() throws NoSuchFieldException, IllegalAccessException {
             // given
-            for (ContentGroup contentGroup : contentGroups) {
-                reflect(contentGroup, NOW);
-            }
+            reflect(contentGroup1, NOW);
+            reflect(contentGroup2, NOW);
+            reflect(contentGroup3, NOW);
 
             // when
             final List<ContentGroup> feed = contentGroupRepository.findGroupFeed(List.of(group1), 3, null, null);
@@ -127,9 +120,9 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         @DisplayName("피드의 마지막에는 컨텐츠가 없다.")
         void FindGroupFeed4() throws NoSuchFieldException, IllegalAccessException {
             // given
-            for (ContentGroup contentGroup : contentGroups) {
-                reflect(contentGroup, NOW);
-            }
+            reflect(contentGroup1, NOW);
+            reflect(contentGroup2, NOW);
+            reflect(contentGroup3, NOW);
 
             final List<ContentGroup> lastFeed = contentGroupRepository.findGroupFeed(List.of(group1), 3, null, null);
             final ContentGroup lastContentGroup = lastFeed.get(lastFeed.size() - 1);
