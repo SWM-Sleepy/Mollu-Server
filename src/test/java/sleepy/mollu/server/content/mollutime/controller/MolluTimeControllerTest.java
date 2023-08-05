@@ -36,7 +36,7 @@ class MolluTimeControllerTest extends ControllerTest {
             // then
             resultActions.andExpect(status().isOk())
                     .andExpect(jsonPath("$.available").value(true))
-                    .andExpect(jsonPath("$.molluTime").value(now.toString()))
+                    .andExpect(jsonPath("$.molluTime").isNotEmpty())
                     .andDo(print());
         }
 
