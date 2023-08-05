@@ -34,7 +34,7 @@ public class DBCleaner implements InitializingBean {
             if (table.equals("group")) {
                 table = "\"" + table + "\"";
             }
-            em.createNativeQuery("TRUNCATE TABLE " +table).executeUpdate();
+            em.createNativeQuery("TRUNCATE TABLE " + table).executeUpdate();
         });
 
         em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();

@@ -13,7 +13,6 @@ import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;

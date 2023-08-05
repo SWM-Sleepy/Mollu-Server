@@ -3,11 +3,9 @@ package sleepy.mollu.server.content.mollutime.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
-import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 
 import java.time.LocalDateTime;
 

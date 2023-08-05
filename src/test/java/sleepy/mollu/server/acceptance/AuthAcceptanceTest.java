@@ -2,7 +2,6 @@ package sleepy.mollu.server.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
