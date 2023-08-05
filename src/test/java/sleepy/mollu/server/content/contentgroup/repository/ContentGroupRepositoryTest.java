@@ -5,11 +5,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import sleepy.mollu.server.RepositoryTest;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +22,7 @@ class ContentGroupRepositoryTest extends RepositoryTest {
     private Member member1, member2;
     private Group group1;
     private Content content1, content2, content3;
+    private List<ContentGroup> contentGroups;
 
     @BeforeEach
     void setUp() {
@@ -35,10 +39,13 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         content3 = saveContent("content3", "tag3", NOW, member2);
 
         final List<Content> contents = List.of(content1, content2, content3);
-        saveContentGroups(contents, groups);
+        contentGroups = saveContentGroups(contents, groups);
+    }
 
-        em.flush();
-        em.clear();
+    private void reflect(Object object, Object value) throws NoSuchFieldException, IllegalAccessException {
+        final Field field = BaseEntity.class.getDeclaredField("createdAt");
+        field.setAccessible(true);
+        field.set(object, value);
     }
 
     @Nested
@@ -48,7 +55,11 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         @Test
         @DisplayName("그룹에 속한 컨텐츠 그룹을 컨텐츠, 멤버와 함께 조회한다.")
         void FindGroupFeed0() {
-            // given & when
+            // given
+            em.flush();
+            em.clear();
+
+            // when
             System.out.println("--------------------");
             final List<ContentGroup> feed = contentGroupRepository.findGroupFeed(List.of(group1), 1, null, null);
             System.out.println("--------------------");
@@ -98,23 +109,38 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         }
 
         @Test
-        @DisplayName("생성날짜가 중복된 컨텐츠가 있어도, 중복된 피드를 조회하지 않는다.")
-        void FindGroupFeed5() {
+        @DisplayName("생성날짜가 중복된 컨텐츠가 있으면, ID가 정렬된 상태로 조회한다.")
+        void FindGroupFeed5() throws NoSuchFieldException, IllegalAccessException {
             // given
+            for (ContentGroup contentGroup : contentGroups) {
+                reflect(contentGroup, NOW);
+            }
 
             // when
+            final List<ContentGroup> feed = contentGroupRepository.findGroupFeed(List.of(group1), 3, null, null);
 
             // then
+            assertThat(feed).extracting(ContentGroup::getId).isSorted();
         }
 
         @Test
         @DisplayName("피드의 마지막에는 컨텐츠가 없다.")
-        void FindGroupFeed4() {
+        void FindGroupFeed4() throws NoSuchFieldException, IllegalAccessException {
             // given
+            for (ContentGroup contentGroup : contentGroups) {
+                reflect(contentGroup, NOW);
+            }
+
+            final List<ContentGroup> lastFeed = contentGroupRepository.findGroupFeed(List.of(group1), 3, null, null);
+            final ContentGroup lastContentGroup = lastFeed.get(lastFeed.size() - 1);
+            final String cursorId = lastContentGroup.getId();
+            final LocalDateTime cursorEndDate = lastContentGroup.getCreatedAt();
 
             // when
+            final List<ContentGroup> noFeed = contentGroupRepository.findGroupFeed(List.of(group1), 3, cursorId, cursorEndDate);
 
             // then
+            assertThat(noFeed).isEmpty();
         }
     }
 }

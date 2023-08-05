@@ -61,7 +61,7 @@ public class RepositoryTest {
         contentGroupRepository.save(ContentGroupFixture.create(content, group));
     }
 
-    protected void saveContentGroups(List<Content> contents, List<Group> groups) {
-        contentGroupRepository.saveAll(ContentGroupFixture.createAll(contents, groups));
+    protected List<ContentGroup> saveContentGroups(List<Content> contents, List<Group> groups) {
+        return contentGroupRepository.saveAll(ContentGroupFixture.createAll(contents, groups));
     }
 }

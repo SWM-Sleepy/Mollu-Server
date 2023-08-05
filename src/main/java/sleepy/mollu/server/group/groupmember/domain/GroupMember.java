@@ -13,7 +13,7 @@ import sleepy.mollu.server.member.domain.Member;
 public class GroupMember {
 
     @Id
-    @Column(name = "relation_id")
+    @Column(name = "group_member_id")
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)

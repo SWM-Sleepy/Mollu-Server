@@ -25,7 +25,7 @@ public class ContentGroupRepositoryImpl implements CustomContentGroupRepository 
                 .join(contentGroup.content, content).fetchJoin()
                 .join(content.member).fetchJoin()
                 .where(contentGroup.group.in(groups), cursorIdAndCursorEndDate(cursorId, cursorEndDate))
-                .orderBy(contentGroup.createdAt.desc())
+                .orderBy(contentGroup.createdAt.desc(), contentGroup.id.asc())
                 .limit(pageSize)
                 .fetch();
     }
@@ -37,6 +37,6 @@ public class ContentGroupRepositoryImpl implements CustomContentGroupRepository 
 
         return contentGroup.createdAt.lt(cursorEndDate)
                 .or(contentGroup.createdAt.eq(cursorEndDate)
-                        .and(contentGroup.id.ne(cursorId)));
+                        .and(contentGroup.id.gt(cursorId)));
     }
 }

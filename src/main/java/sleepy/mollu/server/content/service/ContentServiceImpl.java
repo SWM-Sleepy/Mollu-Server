@@ -54,9 +54,7 @@ public class ContentServiceImpl implements ContentService {
         final Member member = getMember(memberId);
         final List<Group> groups = getGroups(member);
         final List<ContentGroup> contentGroups = getContentGroups(groups, cursorId, cursorEndDate);
-        final List<Content> contents = contentGroups.stream()
-                .map(ContentGroup::getContent)
-                .toList();
+        final List<Content> contents = getContents(contentGroups);
         final Cursor cursor = getCursor(contentGroups);
 
         return getGroupSearchFeedResponse(cursor, contents);
@@ -79,7 +77,17 @@ public class ContentServiceImpl implements ContentService {
         return contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
     }
 
+    private List<Content> getContents(List<ContentGroup> contentGroups) {
+        return contentGroups.stream()
+                .map(ContentGroup::getContent)
+                .toList();
+    }
+
     private Cursor getCursor(List<ContentGroup> contentGroups) {
+        if (contentGroups.isEmpty()) {
+            return new Cursor(null, null);
+        }
+
         final ContentGroup lastContentGroup = contentGroups.get(contentGroups.size() - 1);
 
         return new Cursor(lastContentGroup.getId(), lastContentGroup.getCreatedAt());
