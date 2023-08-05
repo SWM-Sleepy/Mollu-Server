@@ -15,7 +15,7 @@ import static sleepy.mollu.server.content.domain.content.QContent.content;
 
 @Repository
 @RequiredArgsConstructor
-public class ContentGroupRepositoryImpl implements ContentGroupRepositoryCustom {
+public class ContentGroupRepositoryImpl implements CustomContentGroupRepository {
 
     private final JPAQueryFactory queryFactory;
 

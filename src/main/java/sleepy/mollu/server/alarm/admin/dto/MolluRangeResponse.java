@@ -1,4 +1,4 @@
-package sleepy.mollu.server.admin.alarm.dto;
+package sleepy.mollu.server.alarm.admin.dto;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

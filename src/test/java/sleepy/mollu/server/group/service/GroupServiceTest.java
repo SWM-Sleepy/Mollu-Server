@@ -109,7 +109,7 @@ class GroupServiceTest {
             final GroupMemberSearchResponse response = groupService.searchGroupMembers(memberId, groupId);
 
             // then
-            assertThat(response.groupMemberResponses()).hasSize(1);
+            assertThat(response.groupMembers()).hasSize(1);
         }
     }
 

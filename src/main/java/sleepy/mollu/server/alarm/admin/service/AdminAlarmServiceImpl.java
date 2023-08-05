@@ -1,10 +1,10 @@
-package sleepy.mollu.server.admin.alarm.service;
+package sleepy.mollu.server.alarm.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleepy.mollu.server.admin.alarm.dto.MolluRangeResponse;
-import sleepy.mollu.server.admin.alarm.dto.MolluTimeResponse;
+import sleepy.mollu.server.alarm.admin.dto.MolluRangeResponse;
+import sleepy.mollu.server.alarm.admin.dto.MolluTimeResponse;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.domain.MolluAlarmRange;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;

@@ -66,7 +66,7 @@ class MolluAlarmSchedulerTest {
             molluAlarmScheduler.init();
 
             // then
-            then(molluAlarmRepository).should(times(0)).findTopByOrderByIdDesc();
+            then(molluAlarmRepository).should(times(0)).findTop();
         }
 
         @ParameterizedTest
@@ -75,10 +75,10 @@ class MolluAlarmSchedulerTest {
         void SchedulerTest4(String profile) throws NoSuchFieldException, IllegalAccessException {
             // given
             reflect(molluAlarmScheduler, "profile", profile);
-            given(molluAlarmRepository.findTopByOrderByIdDesc()).willReturn(Optional.empty());
+            given(molluAlarmRepository.findTop()).willReturn(Optional.empty());
             given(timePicker.pick(any(LocalTime.class), any(LocalTime.class))).willReturn(LocalTime.now());
             final MolluAlarm molluAlarm = mock(MolluAlarm.class);
-            given(molluAlarmRepository.findTopByOrderByIdDesc()).willReturn(Optional.of(molluAlarm));
+            given(molluAlarmRepository.findTop()).willReturn(Optional.of(molluAlarm));
             given(molluAlarm.getMolluTime()).willReturn(LocalDateTime.now());
 
             // when
@@ -96,7 +96,7 @@ class MolluAlarmSchedulerTest {
             // given
             reflect(molluAlarmScheduler, "profile", profile);
             final MolluAlarm molluAlarm = mock(MolluAlarm.class);
-            given(molluAlarmRepository.findTopByOrderByIdDesc()).willReturn(Optional.of(molluAlarm));
+            given(molluAlarmRepository.findTop()).willReturn(Optional.of(molluAlarm));
             given(molluAlarm.isToday(any())).willReturn(false);
             given(timePicker.pick(any(LocalTime.class), any(LocalTime.class))).willReturn(LocalTime.now());
             given(molluAlarm.getMolluTime()).willReturn(LocalDateTime.now());
@@ -115,7 +115,7 @@ class MolluAlarmSchedulerTest {
             // given
             reflect(molluAlarmScheduler, "profile", profile);
             final MolluAlarm molluAlarm = mock(MolluAlarm.class);
-            given(molluAlarmRepository.findTopByOrderByIdDesc()).willReturn(Optional.of(molluAlarm));
+            given(molluAlarmRepository.findTop()).willReturn(Optional.of(molluAlarm));
             given(molluAlarm.isToday(any())).willReturn(true);
             given(molluAlarm.isSend()).willReturn(true);
 
@@ -132,7 +132,7 @@ class MolluAlarmSchedulerTest {
             // given
             reflect(molluAlarmScheduler, "profile", "dev");
             final MolluAlarm molluAlarm = mock(MolluAlarm.class);
-            given(molluAlarmRepository.findTopByOrderByIdDesc()).willReturn(Optional.of(molluAlarm));
+            given(molluAlarmRepository.findTop()).willReturn(Optional.of(molluAlarm));
             given(molluAlarm.isToday(any())).willReturn(true);
             given(molluAlarm.isSend()).willReturn(false);
             given(molluAlarm.getMolluTime()).willReturn(LocalDateTime.now());

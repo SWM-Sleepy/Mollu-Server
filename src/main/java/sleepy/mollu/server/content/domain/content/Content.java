@@ -71,4 +71,8 @@ public class Content extends BaseEntity {
     public boolean isOwner(Member member) {
         return this.member == member;
     }
+
+    public boolean isUploadedBefore(LocalDateTime localDateTime) {
+        return contentTime.isUploadedBefore(localDateTime);
+    }
 }

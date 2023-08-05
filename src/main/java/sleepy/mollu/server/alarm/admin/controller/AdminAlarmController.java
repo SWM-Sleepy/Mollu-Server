@@ -1,4 +1,4 @@
-package sleepy.mollu.server.admin.alarm.controller;
+package sleepy.mollu.server.alarm.admin.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import sleepy.mollu.server.admin.alarm.dto.MolluRangeRequest;
-import sleepy.mollu.server.admin.alarm.dto.MolluRangeResponse;
-import sleepy.mollu.server.admin.alarm.dto.MolluTimeResponse;
-import sleepy.mollu.server.admin.alarm.service.AdminAlarmService;
+import sleepy.mollu.server.alarm.admin.dto.MolluRangeRequest;
+import sleepy.mollu.server.alarm.admin.dto.MolluRangeResponse;
+import sleepy.mollu.server.alarm.admin.dto.MolluTimeResponse;
+import sleepy.mollu.server.alarm.admin.service.AdminAlarmService;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
