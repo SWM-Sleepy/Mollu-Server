@@ -67,6 +67,7 @@ class OAuth2ServiceTest {
         private final String memberId = "memberId";
         private final String type = "type";
         private final String socialToken = "socialToken";
+        private final Member member = mock(Member.class);
 
         @Test
         @DisplayName("회원가입을 하지 않았으면 예외를 발생시킨다.")
@@ -76,7 +77,7 @@ class OAuth2ServiceTest {
             given(oAuth2ClientMap.get(anyString())).willReturn(oAuth2Client);
 
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
-            given(memberRepository.existsById(memberId)).willReturn(false);
+            given(memberRepository.findById(memberId)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> oAuth2Service.login(type, socialToken))
@@ -94,7 +95,7 @@ class OAuth2ServiceTest {
             final String refreshToken = "refreshToken";
 
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
-            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(jwtGenerator.generate(anyString())).willReturn(JwtToken.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
