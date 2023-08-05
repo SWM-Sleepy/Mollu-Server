@@ -36,9 +36,14 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         content2 = saveContent("content2", "tag2", NOW, member2);
         content3 = saveContent("content3", "tag3", NOW, member2);
 
-        contentGroup1 = saveContentGroup(content1, group1, NOW.minusSeconds(1));
-        contentGroup2 = saveContentGroup(content2, group1, NOW);
-        contentGroup3 = saveContentGroup(content3, group1, NOW.plusSeconds(1));
+        contentGroup1 = saveContentGroup(content1, group1);
+        reflect(contentGroup1, NOW.minusSeconds(1));
+
+        contentGroup2 = saveContentGroup(content2, group1);
+        reflect(contentGroup2, NOW);
+
+        contentGroup3 = saveContentGroup(content3, group1);
+        reflect(contentGroup3, NOW.plusSeconds(1));
     }
 
     @Nested
@@ -84,11 +89,15 @@ class ContentGroupRepositoryTest extends RepositoryTest {
         @DisplayName("피드 조회 도중 다른 컨텐츠가 업로드되어도, 피드에는 영향을 주지 않는다.")
         void FindGroupFeed3() throws NoSuchFieldException, IllegalAccessException {
             // given
+            em.flush();
+            em.clear();
+
             final List<ContentGroup> expectedFeed = contentGroupRepository.findGroupFeed(List.of(group1), 1, null, null);
             final ContentGroup lastContentGroup = expectedFeed.get(expectedFeed.size() - 1);
 
             final Content content4 = saveContent("content4", "tag4", NOW, member2);
-            saveContentGroup(content4, group1, NOW.plusSeconds(2));
+            final ContentGroup contentGroup = saveContentGroup(content4, group1);
+            reflect(contentGroup, NOW.plusSeconds(2));
 
             // when
             final List<ContentGroup> findFeed = contentGroupRepository.findGroupFeed(List.of(group1), 1, lastContentGroup.getId(), lastContentGroup.getCreatedAt());
@@ -123,6 +132,8 @@ class ContentGroupRepositoryTest extends RepositoryTest {
             reflect(contentGroup1, NOW);
             reflect(contentGroup2, NOW);
             reflect(contentGroup3, NOW);
+            em.flush();
+            em.clear();
 
             final List<ContentGroup> lastFeed = contentGroupRepository.findGroupFeed(List.of(group1), 3, null, null);
             final ContentGroup lastContentGroup = lastFeed.get(lastFeed.size() - 1);
