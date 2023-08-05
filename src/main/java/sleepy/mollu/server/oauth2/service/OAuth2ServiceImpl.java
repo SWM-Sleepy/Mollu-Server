@@ -52,17 +52,12 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
-        validateMemberNotExists(memberId);
+        final Member member = getMember(memberId);
 
-        final JwtToken jwtToken = jwtGenerator.generate(memberId);
+        final JwtToken token = jwtGenerator.generate(memberId);
+        member.updateRefreshToken(token.refreshToken());
 
-        return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
-    }
-
-    private void validateMemberNotExists(String memberId) {
-        if (!memberRepository.existsById(memberId)) {
-            throw new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다.");
-        }
+        return new TokenResponse(token.accessToken(), token.refreshToken());
     }
 
     private String getOAuth2MemberId(String type, String socialToken) throws GeneralSecurityException, IOException {
@@ -138,7 +133,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
         final String memberId = getMemberIdFromRefreshToken(refreshToken);
         final Member member = getMember(memberId);
-        if(!member.hasSameRefreshToken(refreshToken)) {
+        if (!member.hasSameRefreshToken(refreshToken)) {
             throw new TokenUnAuthenticatedException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
         }
 
