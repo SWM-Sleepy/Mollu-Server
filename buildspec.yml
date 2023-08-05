@@ -5,7 +5,7 @@ phases:
     commands:
       - echo Build started on $(TZ=Asia/Seoul date)
       - chmod +x ./gradlew
-      - ./gradlew build
+      - ./gradlew build --info
 
   post_build:
     commands:
