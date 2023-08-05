@@ -39,7 +39,7 @@ public class MolluTimeServiceImpl implements MolluTimeService {
         final LocalDateTime todayMolluTime = getTodayMolluTime();
         final LocalDateTime yesterdayMolluTime = getYesterdayMolluTime();
 
-        if (isAvailable(content, todayMolluTime, yesterdayMolluTime)) {
+        if (isUploadable(content, todayMolluTime, yesterdayMolluTime)) {
             return new SearchMolluTimeResponse(true, yesterdayMolluTime);
         }
 
@@ -68,7 +68,7 @@ public class MolluTimeServiceImpl implements MolluTimeService {
                 .getMolluTime();
     }
 
-    private boolean isAvailable(Content content, LocalDateTime todayMolluTime, LocalDateTime yesterdayMolluTime) {
+    private boolean isUploadable(Content content, LocalDateTime todayMolluTime, LocalDateTime yesterdayMolluTime) {
         final LocalDateTime now = LocalDateTime.now(clock);
 
         if (now.isBefore(todayMolluTime)) {
