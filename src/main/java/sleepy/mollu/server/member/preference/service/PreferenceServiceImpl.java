@@ -1,4 +1,4 @@
-package sleepy.mollu.server.member.service;
+package sleepy.mollu.server.member.preference.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,6 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.dto.PreferenceResponse;
 import sleepy.mollu.server.member.preference.exception.PreferenceNotFoundException;
-import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 @Service
