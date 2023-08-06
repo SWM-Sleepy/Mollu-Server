@@ -64,6 +64,10 @@ public class Content extends BaseEntity {
         return contentTime.getMolluDateTime();
     }
 
+    public LocalDateTime getUploadDateTime() {
+        return contentTime.getUploadDateTime();
+    }
+
     public boolean isOwner(String memberId) {
         return this.member.isSameId(memberId);
     }

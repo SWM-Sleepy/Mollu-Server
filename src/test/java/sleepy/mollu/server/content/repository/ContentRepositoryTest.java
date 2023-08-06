@@ -2,16 +2,33 @@ package sleepy.mollu.server.content.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import sleepy.mollu.server.RepositoryTest;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ContentRepositoryTest extends RepositoryTest {
+
+    public static Stream<Arguments> findAllByMemberAndDateSource() {
+        return Stream.of(
+                Arguments.of(NOW.plusDays(2), NOW.plusDays(3), 2),
+                Arguments.of(NOW.plusDays(1), NOW.plusDays(3), 3),
+                Arguments.of(NOW.plusDays(2), NOW.plusDays(4), 3),
+                Arguments.of(NOW.minusDays(1), NOW, 0),
+                Arguments.of(NOW.plusDays(5), NOW.plusDays(6), 0)
+        );
+    }
 
     @Test
     @DisplayName("[findTopByMemberOrderByCreatedAtDesc 호출시] 멤버가 찍은 가장 최근의 컨텐츠를 조회한다.")
@@ -31,5 +48,26 @@ class ContentRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(content).isSameAs(content3);
+    }
+
+    @ParameterizedTest
+    @DisplayName("[findAllByMemberAndDate 호출시] 멤버가 업로드한 컨텐츠를 조회한다.")
+    @MethodSource("findAllByMemberAndDateSource")
+    void ContentRepositoryTest2(LocalDateTime from, LocalDateTime to, int expectedSize) {
+        // given
+        final Member member = saveMember("memberId", "molluId");
+        saveContent("contentId1", "tag1", NOW.plusDays(1), member);
+        saveContent("contentId2", "tag2", NOW.plusDays(2), member);
+        saveContent("contentId3", "tag3", NOW.plusDays(3), member);
+        saveContent("contentId4", "tag4", NOW.plusDays(4), member);
+
+        // when
+        final List<Content> contents = contentRepository.findAllByMemberAndDate(member, from, to);
+
+        // then
+        assertAll(
+                () -> assertThat(contents).extracting(Content::getUploadDateTime).isSortedAccordingTo(Comparator.reverseOrder()),
+                () -> assertThat(contents).hasSize(expectedSize)
+        );
     }
 }
