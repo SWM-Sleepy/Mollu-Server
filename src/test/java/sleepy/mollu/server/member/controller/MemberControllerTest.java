@@ -13,9 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class MemberControllerTest extends ControllerTest {
 
-    @MockBean
-    private MemberService memberService;
-
     @Nested
     @DisplayName("[내 컨텐츠 조회 API 호출시] ")
     class SearchMyContents {
