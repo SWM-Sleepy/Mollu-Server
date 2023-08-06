@@ -55,14 +55,11 @@ public class RepositoryTest {
     }
 
     protected Content saveContent(String contentId, String tag, LocalDateTime uploadDateTime, Member member) {
-        final Content content = ContentFixture.create(contentId, tag, uploadDateTime, member);
-        return contentRepository.save(content);
+        return contentRepository.save(ContentFixture.create(contentId, tag, uploadDateTime, member));
     }
 
-    protected ContentGroup saveContentGroup(Content content, Group group, LocalDateTime createdAt) throws NoSuchFieldException, IllegalAccessException {
-        final ContentGroup contentGroup = ContentGroupFixture.create(content, group);
-        reflect(contentGroup, createdAt);
-        return contentGroupRepository.save(contentGroup);
+    protected ContentGroup saveContentGroup(Content content, Group group) throws NoSuchFieldException, IllegalAccessException {
+        return contentGroupRepository.save(ContentGroupFixture.create(content, group));
     }
 
     protected List<ContentGroup> saveContentGroups(List<Content> contents, List<Group> groups) {
