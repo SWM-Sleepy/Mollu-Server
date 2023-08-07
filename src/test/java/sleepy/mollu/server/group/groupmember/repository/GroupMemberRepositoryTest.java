@@ -19,8 +19,8 @@ class GroupMemberRepositoryTest extends RepositoryTest {
 
     @BeforeEach
     void setUp() {
-        member1 = saveMember("member1", "molluId1");
-        member2 = saveMember("member2", "molluId2");
+        member1 = saveMember("member1", "mollua");
+        member2 = saveMember("member2", "mollub");
         final List<Member> members = List.of(member1, member2);
 
         group1 = saveGroup("group1");

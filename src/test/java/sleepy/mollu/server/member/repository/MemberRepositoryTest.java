@@ -12,7 +12,7 @@ class MemberRepositoryTest extends RepositoryTest {
     @DisplayName("[existsByMolluId 호출시] 동일한 molluId를 가진 멤버가 존재하면 true를 반환한다.")
     void MemberRepositoryTest() {
         // given
-        final String sameMolluId = "molluId";
+        final String sameMolluId = "mollu";
         saveMember("memberId", sameMolluId);
 
         // when
@@ -26,8 +26,8 @@ class MemberRepositoryTest extends RepositoryTest {
     @DisplayName("[existsByMolluId 호출시] 동일한 molluId를 가진 멤버가 없으면 false를 반환한다.")
     void MemberRepositoryTest2() {
         // given
-        final String saveMolluId = "saveMolluId";
-        final String checkMolluId = "checkMolluId";
+        final String saveMolluId = "mollua";
+        final String checkMolluId = "mollub";
         saveMember("memberId", saveMolluId);
 
         // when

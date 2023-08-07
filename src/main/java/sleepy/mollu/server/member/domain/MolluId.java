@@ -35,7 +35,7 @@ public class MolluId {
 
     private void validateEnglish(String value) {
         if (!value.matches(SMALL_LETTER_ENGLISH_PATTERN)) {
-            throw new IllegalArgumentException("MolluId는 영어만 가능합니다.");
+            throw new IllegalArgumentException("MolluId는 영어 소문자만 가능합니다.");
         }
     }
 

@@ -34,7 +34,7 @@ class ContentRepositoryTest extends RepositoryTest {
     @DisplayName("[findTopByMemberOrderByCreatedAtDesc 호출시] 멤버가 찍은 가장 최근의 컨텐츠를 조회한다.")
     void ContentRepositoryTest() {
         // given
-        final Member member = saveMember("memberId", "molluId");
+        final Member member = saveMember("memberId", "mollu");
         final Group group = saveGroup("groupId");
         final Content content1 = saveContent("contentId1", "tag1", NOW, member);
         final Content content2 = saveContent("contentId2", "tag2", NOW, member);
@@ -55,7 +55,7 @@ class ContentRepositoryTest extends RepositoryTest {
     @MethodSource("findAllByMemberAndDateSource")
     void ContentRepositoryTest2(LocalDateTime from, LocalDateTime to, int expectedSize) {
         // given
-        final Member member = saveMember("memberId", "molluId");
+        final Member member = saveMember("memberId", "mollu");
         saveContent("contentId1", "tag1", NOW.plusDays(1), member);
         saveContent("contentId2", "tag2", NOW.plusDays(2), member);
         saveContent("contentId3", "tag3", NOW.plusDays(3), member);
