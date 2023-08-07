@@ -22,8 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-    private static final int ZERO_HOUR = 0;
-    private static final int ZERO_MINUTE = 0;
+    private static final int FROM_HOUR = 0;
+    private static final int FROM_MINUTE = 0;
+    private static final int TO_HOUR = 23;
+    private static final int TO_MINUTE = 59;
     private static final int SEARCH_PERIOD = 7;
 
     private final MemberRepository memberRepository;
@@ -33,8 +35,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MyContentsResponse searchMyContents(String memberId, LocalDate date) {
         final Member member = getMember("memberId");
-        final LocalDateTime from = getLocalDateTime(date.minusDays(SEARCH_PERIOD));
-        final LocalDateTime to = getLocalDateTime(date);
+        final LocalDateTime from = getFromDateTime(date.minusDays(SEARCH_PERIOD));
+        final LocalDateTime to = getToDateTime(date);
         final List<Content> contents = contentRepository.findAllByMemberAndDate(member, from, to);
 
         return getMyContentsResponse(contents);
@@ -45,8 +47,12 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "] 에 해당하는 멤버가 없습니다."));
     }
 
-    private LocalDateTime getLocalDateTime(LocalDate date) {
-        return date.atTime(ZERO_HOUR, ZERO_MINUTE);
+    private LocalDateTime getFromDateTime(LocalDate date) {
+        return date.atTime(FROM_HOUR, FROM_MINUTE);
+    }
+
+    private LocalDateTime getToDateTime(LocalDate date) {
+        return date.atTime(TO_HOUR, TO_MINUTE);
     }
 
     private Group getGroup() {

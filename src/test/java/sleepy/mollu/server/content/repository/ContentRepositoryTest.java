@@ -10,6 +10,7 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -22,11 +23,11 @@ class ContentRepositoryTest extends RepositoryTest {
 
     public static Stream<Arguments> findAllByMemberAndDateSource() {
         return Stream.of(
-                Arguments.of(NOW.plusDays(2), NOW.plusDays(3), 2),
-                Arguments.of(NOW.plusDays(1), NOW.plusDays(3), 3),
-                Arguments.of(NOW.plusDays(2), NOW.plusDays(4), 3),
-                Arguments.of(NOW.minusDays(1), NOW, 0),
-                Arguments.of(NOW.plusDays(5), NOW.plusDays(6), 0)
+                Arguments.of(NOW_DATE.plusDays(2), NOW_DATE.plusDays(3), 2),
+                Arguments.of(NOW_DATE.plusDays(1), NOW_DATE.plusDays(3), 3),
+                Arguments.of(NOW_DATE.plusDays(2), NOW_DATE.plusDays(4), 3),
+                Arguments.of(NOW_DATE.minusDays(1), NOW_DATE, 0),
+                Arguments.of(NOW_DATE.plusDays(5), NOW_DATE.plusDays(6), 0)
         );
     }
 
@@ -53,7 +54,7 @@ class ContentRepositoryTest extends RepositoryTest {
     @ParameterizedTest
     @DisplayName("[findAllByMemberAndDate 호출시] 멤버가 업로드한 컨텐츠를 조회한다.")
     @MethodSource("findAllByMemberAndDateSource")
-    void ContentRepositoryTest2(LocalDateTime from, LocalDateTime to, int expectedSize) {
+    void ContentRepositoryTest2(LocalDate from, LocalDate to, int expectedSize) {
         // given
         final Member member = saveMember("memberId", "mollu");
         saveContent("contentId1", "tag1", NOW.plusDays(1), member);
@@ -62,7 +63,7 @@ class ContentRepositoryTest extends RepositoryTest {
         saveContent("contentId4", "tag4", NOW.plusDays(4), member);
 
         // when
-        final List<Content> contents = contentRepository.findAllByMemberAndDate(member, from, to);
+        final List<Content> contents = contentRepository.findAllByMemberAndDate(member, from.atTime(0, 0), to.atTime(23, 59));
 
         // then
         assertAll(
