@@ -24,8 +24,8 @@ class ContentGroupRepositoryTest extends RepositoryTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        member1 = saveMember("member1", "molluId1");
-        member2 = saveMember("member2", "molluId2");
+        member1 = saveMember("member1", "mollua");
+        member2 = saveMember("member2", "mollub");
         group1 = saveGroup("group1");
 
         final List<Member> members = List.of(member1, member2);
@@ -69,7 +69,7 @@ class ContentGroupRepositoryTest extends RepositoryTest {
                     .toList();
             System.out.println("--------------------");
             // then
-            assertThat(findMolluIds).containsExactly("molluId2");
+            assertThat(findMolluIds).containsExactly("mollub");
         }
 
         @Test

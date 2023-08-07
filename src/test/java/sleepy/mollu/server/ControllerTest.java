@@ -18,6 +18,7 @@ import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.profile.service.ProfileService;
+import sleepy.mollu.server.member.service.MemberService;
 import sleepy.mollu.server.oauth2.jwt.config.JwtConfig;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
@@ -51,6 +52,8 @@ public class ControllerTest {
     protected PreferenceService preferenceService;
     @MockBean
     protected MolluTimeService molluTimeService;
+    @MockBean
+    private MemberService memberService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();

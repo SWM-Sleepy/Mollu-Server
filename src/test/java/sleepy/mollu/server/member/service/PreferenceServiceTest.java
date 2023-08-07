@@ -13,6 +13,7 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.exception.PreferenceNotFoundException;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
+import sleepy.mollu.server.member.preference.service.PreferenceServiceImpl;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.Optional;

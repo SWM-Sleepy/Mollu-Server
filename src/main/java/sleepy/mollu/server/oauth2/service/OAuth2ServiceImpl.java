@@ -48,6 +48,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private final GroupRepository groupRepository;
     private final IdConstructor idConstructor;
 
+    @Transactional
     @Override
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
 

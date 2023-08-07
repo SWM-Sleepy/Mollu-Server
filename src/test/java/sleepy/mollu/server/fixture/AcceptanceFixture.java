@@ -8,5 +8,5 @@ public class AcceptanceFixture {
 
     public static final LocalDate nowDate = LocalDate.now();
 
-    public static final SignupRequest 회원가입_요청_데이터 = new SignupRequest("name", nowDate, "molluId");
+    public static final SignupRequest 회원가입_요청_데이터 = new SignupRequest("name", nowDate, "mollu");
 }

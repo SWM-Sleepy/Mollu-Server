@@ -19,6 +19,7 @@ import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
 public class RepositoryTest {
 
     protected static final LocalDateTime NOW = LocalDateTime.now();
+    protected static final LocalDate NOW_DATE = LocalDate.now();
     @Autowired
     protected MemberRepository memberRepository;
     @Autowired
