@@ -25,7 +25,8 @@ class MolluIdTest {
     public static Stream<Arguments> InValidMolluIdSource() {
         return Stream.of(
                 Arguments.of("a".repeat(21)),
-                Arguments.of("한국어"));
+                Arguments.of("한국어"),
+                Arguments.of("AAA"));
     }
 
     @ParameterizedTest
