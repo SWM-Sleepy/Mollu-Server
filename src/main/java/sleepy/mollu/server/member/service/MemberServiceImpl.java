@@ -80,6 +80,7 @@ public class MemberServiceImpl implements MemberService {
                 content.getBackContentSource());
     }
 
+    @Transactional
     @Override
     public void deleteMember(String memberId) {
         final Member member = getMember(memberId);

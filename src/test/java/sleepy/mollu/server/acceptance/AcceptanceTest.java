@@ -25,6 +25,7 @@ public class AcceptanceTest {
 
     private static final String BASE_URL = "/api";
     private static final String AUTH_URL = BASE_URL + "/auth";
+    private static final String MEMBER_URL = BASE_URL + "/members";
 
     @LocalServerPort
     protected int port;
@@ -70,5 +71,13 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> 토큰_재발급_요청(String refreshToken) {
         return post(AUTH_URL + "/refresh", refreshToken);
+    }
+
+    protected ExtractableResponse<Response> 회원탈퇴_요청(String accessToken) {
+        return delete(MEMBER_URL, accessToken);
+    }
+
+    protected ExtractableResponse<Response> 프로필_조회_요청(String accessToken) {
+        return get(MEMBER_URL + "/profile", accessToken);
     }
 }
