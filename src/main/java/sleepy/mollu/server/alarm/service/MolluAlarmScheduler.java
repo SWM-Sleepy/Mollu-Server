@@ -3,15 +3,22 @@ package sleepy.mollu.server.alarm.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.domain.MolluAlarmRange;
+import sleepy.mollu.server.alarm.exception.FileException;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.*;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -19,9 +26,14 @@ public class MolluAlarmScheduler {
 
     private static final LocalDate NOW = LocalDate.now();
     private final MolluAlarmRepository molluAlarmRepository;
-    private final TimePicker timePicker;
-    private final TaskScheduler taskScheduler;
     private final AlarmService alarmService;
+
+    private final TimePicker timePicker;
+    private final Picker picker;
+
+
+    private final TaskScheduler taskScheduler;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -70,8 +82,19 @@ public class MolluAlarmScheduler {
         final MolluAlarmRange molluAlarmRange = MolluAlarmRange.getInstance();
         final LocalTime sendTime = timePicker.pick(molluAlarmRange.getFrom(), molluAlarmRange.getTo());
         final LocalDateTime molluTime = LocalDateTime.of(currentDate, sendTime);
+        final String question = picker.pick(getQuestions());
 
-        molluAlarmRepository.save(new MolluAlarm(molluTime, false));
+        molluAlarmRepository.save(new MolluAlarm(molluTime, question, false));
+    }
+
+    private List<String> getQuestions() {
+        final ClassPathResource resource = new ClassPathResource("questions.txt");
+
+        try (Stream<String> lines = Files.lines(Paths.get(resource.getURI()))) {
+            return lines.toList();
+        } catch (IOException e) {
+            throw new FileException("Questions 파일을 읽어오는데 실패했습니다.");
+        }
     }
 
     @Scheduled(cron = "0 0 0 * * *")
