@@ -24,6 +24,9 @@ public class Content extends BaseEntity {
     private Location location;
 
     @Embedded
+    private Question question;
+
+    @Embedded
     private ContentTag contentTag;
 
     @Embedded
@@ -38,21 +41,26 @@ public class Content extends BaseEntity {
     private Member member;
 
     @Builder
-    public Content(String id, String location, String contentTag, ContentTime contentTime, ContentSource contentSource, Member member) {
+    public Content(String id, String location, String contentTag, String question, ContentTime contentTime, ContentSource contentSource, Member member) {
         this.id = id;
         this.location = new Location(location);
         this.contentTag = new ContentTag(contentTag);
+        this.question = new Question(question);
         this.contentTime = contentTime;
         this.contentSource = contentSource;
         this.member = member;
+    }
+
+    public String getLocation() {
+        return location.getValue();
     }
 
     public String getContentTag() {
         return contentTag.getValue();
     }
 
-    public String getLocation() {
-        return location.getValue();
+    public String getQuestion() {
+        return question.getValue();
     }
 
     public String getFrontContentSource() {

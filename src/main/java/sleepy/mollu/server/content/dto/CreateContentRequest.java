@@ -12,7 +12,8 @@ public record CreateContentRequest(
 
         String tag,
 
-        @NotNull
+        String question,
+
         LocalDateTime molluDateTime,
 
         @NotNull

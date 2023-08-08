@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
@@ -28,15 +29,10 @@ class ProfileControllerTest extends ControllerTest {
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("molluId", "ysyss");
 
-            final JwtToken jwtToken = jwtGenerator.generate("memberId");
-            final String accessToken = jwtToken.accessToken();
-            final HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer " + accessToken);
+            final String accessToken = getAccessToken("memberId");
 
             // when
-            final ResultActions resultActions = mockMvc.perform(multipart(HttpMethod.PATCH, "/members/profile")
-                    .headers(headers)
-                    .params(params));
+            final ResultActions resultActions = multipart(HttpMethod.PATCH, "/members/profile", accessToken, params);
 
             // then
             resultActions.andExpect(status().isOk())

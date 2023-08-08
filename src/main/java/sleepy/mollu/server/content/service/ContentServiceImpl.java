@@ -137,6 +137,7 @@ public class ContentServiceImpl implements ContentService {
                 .id(idConstructor.create())
                 .location(request.location())
                 .contentTag(request.tag())
+                .question(request.question())
                 .contentTime(ContentTime.of(request.molluDateTime(), request.uploadDateTime()))
                 .contentSource(ContentSource.of(frontContentFileUrl, backContentFileUrl))
                 .member(member)

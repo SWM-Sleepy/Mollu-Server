@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,7 +18,6 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,33 +65,19 @@ class ContentControllerTest extends ControllerTest {
         return jwtToken.accessToken();
     }
 
-    private HttpHeaders getHeaders() {
-        final String accessToken = getAccessToken();
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-        return headers;
-    }
-
     @Nested
     @DisplayName("[컨텐츠 업로드 API 호출시] ")
     class ContentUploadTest {
 
         @Test
-        @DisplayName("시간이 비어있으면 400을 반환한다.")
+        @DisplayName("uploadDateTime이 비어있으면 400을 반환한다.")
         void ContentUploadTest3() throws Exception {
             // given
-            final MockMultipartFile frontContentFile = getMockMultipartFile("frontContentFile");
-            final MockMultipartFile backContentFile = getMockMultipartFile("backContentFile");
-
+            final String accessToken = getAccessToken();
             final MultiValueMap<String, String> params = getParams(List.of("location", "tag"));
-            final HttpHeaders headers = getHeaders();
 
             // when
-            final ResultActions resultActions = mockMvc.perform(multipart("/contents")
-                    .file(frontContentFile)
-                    .file(backContentFile)
-                    .params(params)
-                    .headers(headers));
+            final ResultActions resultActions = multipart("/contents", accessToken, params);
 
             // then
             resultActions.andExpect(status().isBadRequest())
@@ -101,31 +85,35 @@ class ContentControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("태그를 작성하지 않아도 201을 반환한다.")
+        @DisplayName("태그, 질문, molluDateTime을 작성하지 않아도 201을 반환한다.")
         void ContentUploadTest() throws Exception {
             // given
-            final MockMultipartFile frontContentFile = getMockMultipartFile("frontContentFile");
-            final MockMultipartFile backContentFile = getMockMultipartFile("backContentFile");
-
-            final MultiValueMap<String, String> params = getParams(List.of("location", "molluDateTime", "uploadDateTime"));
-            final HttpHeaders headers = getHeaders();
+            final String accessToken = getAccessToken();
+            final MultiValueMap<String, String> params = getParams(List.of("location", "uploadDateTime"));
 
             // when
-            final ResultActions resultActions = mockMvc.perform(multipart("/contents")
-                    .file(frontContentFile)
-                    .file(backContentFile)
-                    .params(params)
-                    .headers(headers));
+            final ResultActions resultActions = multipart("/contents", accessToken, params);
 
             // then
             resultActions.andExpect(status().isCreated())
                     .andDo(print());
         }
 
-        private MockMultipartFile getMockMultipartFile(String contentFile) {
-            return new MockMultipartFile(contentFile, "test_file.png",
-                    "image/png", "Spring Framework".getBytes());
+        @Test
+        @DisplayName("성공적으로 201을 반환한다.")
+        void ContentUploadTest1() throws Exception {
+            // given
+            final String accessToken = getAccessToken();
+            final MultiValueMap<String, String> params = getParams(List.of("location", "tag", "question", "molluDateTime", "uploadDateTime"));
+
+            // when
+            final ResultActions resultActions = multipart("/contents", accessToken, params);
+
+            // then
+            resultActions.andExpect(status().isCreated())
+                    .andDo(print());
         }
+
 
         private MultiValueMap<String, String> getParams(List<String> keys) {
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -133,6 +121,7 @@ class ContentControllerTest extends ControllerTest {
             final Map<String, String> map = Map.of(
                     "location", "서울 도봉구",
                     "tag", "태그",
+                    "question", "질문",
                     "molluDateTime", "2023-07-06T11:45:00",
                     "uploadDateTime", "2023-07-06T11:45:00"
             );
