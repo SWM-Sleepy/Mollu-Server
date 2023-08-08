@@ -7,6 +7,9 @@ springdoc:
 server:
   servlet:
     context-path: "/api"
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 cloud:
   aws:
@@ -39,6 +42,11 @@ alarm:
   fcm:
     authorization-key: ${FCM_AUTHORIZATION_KEY}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 ---
 
 # Local Configuration
