@@ -3,6 +3,8 @@ package sleepy.mollu.server.content.report.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -23,6 +25,7 @@ public abstract class Report extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     protected Report(String reason, Member member) {

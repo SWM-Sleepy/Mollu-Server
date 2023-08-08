@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.member.controller.dto.MyContentsResponse;
 import sleepy.mollu.server.member.service.MemberService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
@@ -33,5 +30,18 @@ public class MemberController {
     public ResponseEntity<MyContentsResponse> searchMyContents(@Login String memberId, @RequestParam LocalDate date) {
 
         return ResponseEntity.ok(memberService.searchMyContents(memberId, date));
+    }
+
+    @Operation(summary = "내 컨텐츠 조회")
+    @NoContentResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMember(@Login String memberId) {
+
+        memberService.deleteMember(memberId);
+        return ResponseEntity.noContent().build();
     }
 }

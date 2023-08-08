@@ -7,4 +7,6 @@ import java.time.LocalDate;
 public interface MemberService {
 
     MyContentsResponse searchMyContents(String memberId, LocalDate date);
+
+    void deleteMember(String memberId);
 }

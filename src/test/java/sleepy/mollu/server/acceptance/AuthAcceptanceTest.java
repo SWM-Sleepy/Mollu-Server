@@ -73,4 +73,22 @@ class AuthAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response1.refreshToken()).isNotNull()
         );
     }
+
+    @Test
+    void 회원탈퇴() {
+        // given
+        final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청("google");
+        final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
+
+        // when
+        final ExtractableResponse<Response> 회원탈퇴_응답 = 회원탈퇴_요청(response.accessToken());
+
+        // then
+        final ExtractableResponse<Response> 프로필_조회_응답 = 프로필_조회_요청(response.accessToken());
+
+        assertAll(
+                () -> assertThat(회원탈퇴_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(프로필_조회_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value())
+        );
+    }
 }
