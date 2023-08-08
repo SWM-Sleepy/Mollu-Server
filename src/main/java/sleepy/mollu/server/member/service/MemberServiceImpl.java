@@ -79,4 +79,11 @@ public class MemberServiceImpl implements MemberService {
                 content.getFrontContentSource(),
                 content.getBackContentSource());
     }
+
+    @Override
+    public void deleteMember(String memberId) {
+        final Member member = getMember(memberId);
+
+        memberRepository.delete(member);
+    }
 }
