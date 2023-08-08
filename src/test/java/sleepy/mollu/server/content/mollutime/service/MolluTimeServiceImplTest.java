@@ -66,7 +66,7 @@ class MolluTimeServiceImplTest {
             final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
 
             // then
-            assertThat(response.available()).isFalse();
+            assertThat(response.molluTime()).isNull();
         }
 
         @Test
@@ -111,7 +111,7 @@ class MolluTimeServiceImplTest {
             final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
 
             // then
-            assertThat(response.available()).isTrue();
+            assertThat(response.molluTime()).isEqualTo(yesterdayMolluAlarm.getMolluTime());
         }
 
         @Test
@@ -129,11 +129,11 @@ class MolluTimeServiceImplTest {
             final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
 
             // then
-            assertThat(response.available()).isFalse();
+            assertThat(response.molluTime()).isNull();
         }
 
         @Test
-        @DisplayName("현재 시각이 오늘의 MOLLU 타임 이후이고, 가장 최근에 업로드한 컨텐츠가 오늘의 MOLLU 타임 이전이면, MOLLU 타임을 조회할 수 있다.")
+        @DisplayName("현재 시각이 오늘의 MOLLU 타임 이후이고, 가장 최근에 업로드한 컨텐츠가 오늘의 MOLLU 타임 이전이면, 오늘의 MOLLU 타임을 조회할 수 있다.")
         void searchMolluTime5() {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
@@ -147,7 +147,7 @@ class MolluTimeServiceImplTest {
             final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
 
             // then
-            assertThat(response.available()).isTrue();
+            assertThat(response.molluTime()).isEqualTo(todayMolluAlarm.getMolluTime());
         }
 
         @Test
@@ -165,7 +165,7 @@ class MolluTimeServiceImplTest {
             final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
 
             // then
-            assertThat(response.available()).isFalse();
+            assertThat(response.molluTime()).isNull();
         }
 
         private void setClock(LocalDateTime localDateTime) {
