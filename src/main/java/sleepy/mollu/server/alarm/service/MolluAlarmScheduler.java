@@ -59,8 +59,8 @@ public class MolluAlarmScheduler {
         final Optional<MolluAlarm> newMolluAlarm = molluAlarmRepository.findTop();
 
         if (newMolluAlarm.isEmpty()) {
-            generateAlarm(NOW);
             generateAlarm(NOW.minusDays(1));
+            generateAlarm(NOW);
             scheduleAlarm();
             return null;
         }

@@ -3,7 +3,7 @@ package sleepy.mollu.server.alarm.admin.dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public record MolluTimeResponse(Long id, LocalDateTime molluTime, LocalDateTime createdAt) {
+public record MolluTimeResponse(Long id, LocalDateTime molluTime, String question, LocalDateTime createdAt) {
 
     private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
 

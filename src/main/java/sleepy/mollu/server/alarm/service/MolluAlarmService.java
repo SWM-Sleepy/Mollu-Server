@@ -20,7 +20,7 @@ public class MolluAlarmService implements AlarmService {
     private final MemberRepository memberRepository;
     private final AlarmClient alarmClient;
 
-
+    @Transactional
     @Override
     public void sendAlarm() {
         sendAlarmToAllowedMembers();

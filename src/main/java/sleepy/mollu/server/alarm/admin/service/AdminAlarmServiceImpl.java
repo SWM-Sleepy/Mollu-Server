@@ -40,7 +40,11 @@ public class AdminAlarmServiceImpl implements AdminAlarmService {
         final List<MolluAlarm> molluAlarms = molluAlarmRepository.findAllByOrderByIdDesc();
 
         return molluAlarms.stream()
-                .map(molluAlarm -> new MolluTimeResponse(molluAlarm.getId(), molluAlarm.getMolluTime(), molluAlarm.getCreatedAt()))
+                .map(molluAlarm -> new MolluTimeResponse(
+                        molluAlarm.getId(),
+                        molluAlarm.getMolluTime(),
+                        molluAlarm.getQuestion(),
+                        molluAlarm.getCreatedAt()))
                 .toList();
     }
 
