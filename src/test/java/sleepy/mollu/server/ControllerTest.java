@@ -8,9 +8,12 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.alarm.admin.controller.AdminAlarmController;
 import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.content.report.service.ReportService;
@@ -132,6 +135,26 @@ public class ControllerTest {
         return delete(path, null);
     }
 
+    protected ResultActions multipart(String path, String accessToken, MultiValueMap<String, String> params) throws Exception {
+
+        final HttpHeaders headers = getHeaders(accessToken);
+
+        return mockMvc.perform(MockMvcRequestBuilders.multipart(path)
+                .file(getMockMultipartFile("frontContentFile"))
+                .file(getMockMultipartFile("backContentFile"))
+                .headers(headers)
+                .params(params));
+    }
+
+    protected ResultActions multipart(HttpMethod method, String path, String accessToken, MultiValueMap<String, String> params) throws Exception {
+
+        final HttpHeaders headers = getHeaders(accessToken);
+
+        return mockMvc.perform(MockMvcRequestBuilders.multipart(method, path)
+                .headers(headers)
+                .params(params));
+    }
+
     protected String getAccessToken(String memberId) {
         final JwtToken jwtToken = jwtGenerator.generate(memberId);
         return jwtToken.accessToken();
@@ -140,5 +163,10 @@ public class ControllerTest {
     protected String getRefreshToken(String memberId) {
         final JwtToken jwtToken = jwtGenerator.generate(memberId);
         return jwtToken.refreshToken();
+    }
+
+    private MockMultipartFile getMockMultipartFile(String contentFile) {
+        return new MockMultipartFile(contentFile, "test_file.png",
+                "image/png", "Spring Framework".getBytes());
     }
 }

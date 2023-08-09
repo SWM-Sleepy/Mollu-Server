@@ -10,14 +10,16 @@
     <tr>
         <th>ID</th>
         <th>MoLLU Time</th>
+        <th>Question</th>
         <th>Created At</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="molluTime: ${molluTimes}">
-        <td th:text="${molluTime.id}">ID</td>
-        <td th:text="${molluTime.getMolluTime}">MoLLU Time</td>
-        <td th:text="${molluTime.getCreatedAt}">Created At</td>
+        <td th:text="${molluTime.id}"></td>
+        <td th:text="${molluTime.getMolluTime}"></td>
+        <td th:text="${molluTime.question}"></td>
+        <td th:text="${molluTime.getCreatedAt}"></td>
     </tr>
     </tbody>
 </table>

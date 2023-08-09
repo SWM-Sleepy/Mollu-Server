@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,9 @@ class MolluAlarmSchedulerTest {
     private TimePicker timePicker;
 
     @Mock
+    private Picker picker;
+
+    @Mock
     private MolluAlarmRepository molluAlarmRepository;
 
     @Mock
@@ -53,6 +57,8 @@ class MolluAlarmSchedulerTest {
     @Nested
     @DisplayName("[스케쥴러 실행시] ")
     class SchedulerTest {
+
+        final String question = "question";
 
         @ParameterizedTest
         @ValueSource(strings = "local")
@@ -77,6 +83,7 @@ class MolluAlarmSchedulerTest {
             reflect(molluAlarmScheduler, "profile", profile);
             given(molluAlarmRepository.findTop()).willReturn(Optional.empty());
             given(timePicker.pick(any(LocalTime.class), any(LocalTime.class))).willReturn(LocalTime.now());
+            given(picker.pick(anyList())).willReturn(question);
             final MolluAlarm molluAlarm = mock(MolluAlarm.class);
             given(molluAlarmRepository.findTop()).willReturn(Optional.of(molluAlarm));
             given(molluAlarm.getMolluTime()).willReturn(LocalDateTime.now());
@@ -99,6 +106,7 @@ class MolluAlarmSchedulerTest {
             given(molluAlarmRepository.findTop()).willReturn(Optional.of(molluAlarm));
             given(molluAlarm.isToday(any())).willReturn(false);
             given(timePicker.pick(any(LocalTime.class), any(LocalTime.class))).willReturn(LocalTime.now());
+            given(picker.pick(anyList())).willReturn(question);
             given(molluAlarm.getMolluTime()).willReturn(LocalDateTime.now());
 
             // when

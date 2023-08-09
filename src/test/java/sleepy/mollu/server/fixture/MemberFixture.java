@@ -3,7 +3,6 @@ package sleepy.mollu.server.fixture;
 import sleepy.mollu.server.member.domain.Member;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 public class MemberFixture {
 

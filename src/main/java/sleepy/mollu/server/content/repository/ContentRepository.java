@@ -2,6 +2,7 @@ package sleepy.mollu.server.content.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -15,5 +16,7 @@ public interface ContentRepository extends JpaRepository<Content, String> {
 
     @Query("select c from Content c where c.member = :member and c.contentTime.uploadDateTime between :from and :to " +
             "order by c.contentTime.uploadDateTime desc")
-    List<Content> findAllByMemberAndDate(Member member, LocalDateTime from, LocalDateTime to);
+    List<Content> findAllByMemberAndDate(@Param("member") Member member,
+                                         @Param("from") LocalDateTime from,
+                                         @Param("to") LocalDateTime to);
 }

@@ -3,6 +3,7 @@ package sleepy.mollu.server.content.mollutime.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.exception.MolluAlarmNotFoundException;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 import sleepy.mollu.server.content.domain.content.Content;
@@ -32,18 +33,22 @@ public class MolluTimeServiceImpl implements MolluTimeService {
         final Optional<Content> optionalContent = getLatestContent(memberId);
 
         if (optionalContent.isEmpty()) {
-            return new SearchMolluTimeResponse(false, null);
+            return emptyResponse();
         }
 
         final Content content = optionalContent.get();
-        final LocalDateTime todayMolluTime = getTodayMolluTime();
-        final LocalDateTime yesterdayMolluTime = getYesterdayMolluTime();
+        final MolluAlarm todayMolluAlarm = getTodayMolluAlarm();
+        final MolluAlarm yesterdayMolluAlarm = getYesterdayMolluAlarm();
 
-        if (isUploadable(content, todayMolluTime, yesterdayMolluTime)) {
-            return new SearchMolluTimeResponse(true, yesterdayMolluTime);
+        if (shouldUploadYesterdayContent(content, todayMolluAlarm, yesterdayMolluAlarm)) {
+            return responseFromAlarm(yesterdayMolluAlarm);
         }
 
-        return new SearchMolluTimeResponse(false, null);
+        if (shouldUploadTodayContent(content, todayMolluAlarm)) {
+            return responseFromAlarm(todayMolluAlarm);
+        }
+
+        return emptyResponse();
     }
 
     private Optional<Content> getLatestContent(String memberId) {
@@ -56,25 +61,38 @@ public class MolluTimeServiceImpl implements MolluTimeService {
                 .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 회원입니다."));
     }
 
-    private LocalDateTime getTodayMolluTime() {
-        return molluAlarmRepository.findTop()
-                .orElseThrow(() -> new MolluAlarmNotFoundException("오늘의 MOLLU 타임이 존재하지 않습니다."))
-                .getMolluTime();
+    private boolean shouldUploadYesterdayContent(Content content, MolluAlarm todayMolluAlarm, MolluAlarm yesterdayMolluAlarm) {
+        return isBeforeTodayMolluTime(todayMolluAlarm) && isContentUploadedBefore(content, yesterdayMolluAlarm.getMolluTime());
     }
 
-    private LocalDateTime getYesterdayMolluTime() {
-        return molluAlarmRepository.findSecondTop()
-                .orElseThrow(() -> new MolluAlarmNotFoundException("어제의 MOLLU 타임이 존재하지 않습니다."))
-                .getMolluTime();
+    private boolean shouldUploadTodayContent(Content content, MolluAlarm todayMolluAlarm) {
+        return isContentUploadedBefore(content, todayMolluAlarm.getMolluTime());
     }
 
-    private boolean isUploadable(Content content, LocalDateTime todayMolluTime, LocalDateTime yesterdayMolluTime) {
+    private boolean isBeforeTodayMolluTime(MolluAlarm molluAlarm) {
         final LocalDateTime now = LocalDateTime.now(clock);
+        return now.isBefore(molluAlarm.getMolluTime());
+    }
 
-        if (now.isBefore(todayMolluTime)) {
-            return content.isUploadedBefore(yesterdayMolluTime);
-        }
+    private boolean isContentUploadedBefore(Content content, LocalDateTime localDateTime) {
+        return content.isUploadedBefore(localDateTime);
+    }
 
-        return content.isUploadedBefore(todayMolluTime);
+    private MolluAlarm getTodayMolluAlarm() {
+        return molluAlarmRepository.findTop()
+                .orElseThrow(() -> new MolluAlarmNotFoundException("오늘의 MOLLU 타임이 존재하지 않습니다."));
+    }
+
+    private MolluAlarm getYesterdayMolluAlarm() {
+        return molluAlarmRepository.findSecondTop()
+                .orElseThrow(() -> new MolluAlarmNotFoundException("어제의 MOLLU 타임이 존재하지 않습니다."));
+    }
+
+    private SearchMolluTimeResponse emptyResponse() {
+        return new SearchMolluTimeResponse(null, null);
+    }
+
+    private SearchMolluTimeResponse responseFromAlarm(MolluAlarm molluAlarm) {
+        return new SearchMolluTimeResponse(molluAlarm.getMolluTime(), molluAlarm.getQuestion());
     }
 }

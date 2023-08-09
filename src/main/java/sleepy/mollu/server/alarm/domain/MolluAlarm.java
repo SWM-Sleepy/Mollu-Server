@@ -22,11 +22,14 @@ public class MolluAlarm extends BaseEntity {
 
     private LocalDateTime molluTime;
 
+    private String question;
+
     private boolean send;
 
     @Builder
-    public MolluAlarm(LocalDateTime molluTime, boolean send) {
+    public MolluAlarm(LocalDateTime molluTime, String question, boolean send) {
         this.molluTime = molluTime;
+        this.question = question;
         this.send = send;
     }
 

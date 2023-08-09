@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MolluId {
 
-    public static final String SMALL_LETTER_ENGLISH_PATTERN = "^[a-z]*$";
+    public static final String MOLLU_ID_PATTERN = "^(?=.*[a-z])[a-z0-9_]+$";
+    private static final int MIN_MOLLU_ID_LENGTH = 3;
     private static final int MAX_MOLLU_ID_LENGTH = 20;
 
     @Column(name = "mollu_id", unique = true)
@@ -23,8 +24,8 @@ public class MolluId {
 
     private void validate(String value) {
         validateNullOrEmpty(value);
-        validateEnglish(value);
         validateLength(value);
+        validatePattern(value);
     }
 
     private void validateNullOrEmpty(String value) {
@@ -33,15 +34,15 @@ public class MolluId {
         }
     }
 
-    private void validateEnglish(String value) {
-        if (!value.matches(SMALL_LETTER_ENGLISH_PATTERN)) {
-            throw new IllegalArgumentException("MolluId는 영어 소문자만 가능합니다.");
+    private void validateLength(String value) {
+        if (value.length() > MAX_MOLLU_ID_LENGTH || value.length() < MIN_MOLLU_ID_LENGTH) {
+            throw new IllegalArgumentException("MolluId는 " + MIN_MOLLU_ID_LENGTH + "자 이상 " + MAX_MOLLU_ID_LENGTH + "자 이하여야 합니다.");
         }
     }
 
-    private void validateLength(String value) {
-        if (value.length() > MAX_MOLLU_ID_LENGTH) {
-            throw new IllegalArgumentException("MolluId는 " + MAX_MOLLU_ID_LENGTH + "자를 초과할 수 없습니다.");
+    private void validatePattern(String value) {
+        if (!value.matches(MOLLU_ID_PATTERN)) {
+            throw new IllegalArgumentException("MolluId는 영어 소문자만 가능합니다.");
         }
     }
 }

@@ -3,15 +3,12 @@ package sleepy.mollu.server.member.profile.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
-import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,15 +25,10 @@ class ProfileControllerTest extends ControllerTest {
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("molluId", "ysyss");
 
-            final JwtToken jwtToken = jwtGenerator.generate("memberId");
-            final String accessToken = jwtToken.accessToken();
-            final HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer " + accessToken);
+            final String accessToken = getAccessToken("memberId");
 
             // when
-            final ResultActions resultActions = mockMvc.perform(multipart(HttpMethod.PATCH, "/members/profile")
-                    .headers(headers)
-                    .params(params));
+            final ResultActions resultActions = multipart(HttpMethod.PATCH, "/members/profile", accessToken, params);
 
             // then
             resultActions.andExpect(status().isOk())

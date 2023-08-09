@@ -2,6 +2,7 @@ package sleepy.mollu.server.content.domain.content;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Content extends BaseEntity {
 
     @Id
@@ -22,6 +24,9 @@ public class Content extends BaseEntity {
 
     @Embedded
     private Location location;
+
+    @Embedded
+    private Question question;
 
     @Embedded
     private ContentTag contentTag;
@@ -38,21 +43,26 @@ public class Content extends BaseEntity {
     private Member member;
 
     @Builder
-    public Content(String id, String location, String contentTag, ContentTime contentTime, ContentSource contentSource, Member member) {
+    public Content(String id, String location, String contentTag, String question, ContentTime contentTime, ContentSource contentSource, Member member) {
         this.id = id;
         this.location = new Location(location);
         this.contentTag = new ContentTag(contentTag);
+        this.question = new Question(question);
         this.contentTime = contentTime;
         this.contentSource = contentSource;
         this.member = member;
+    }
+
+    public String getLocation() {
+        return location.getValue();
     }
 
     public String getContentTag() {
         return contentTag.getValue();
     }
 
-    public String getLocation() {
-        return location.getValue();
+    public String getQuestion() {
+        return question.getValue();
     }
 
     public String getFrontContentSource() {
@@ -81,5 +91,9 @@ public class Content extends BaseEntity {
 
     public boolean isUploadedBefore(LocalDateTime localDateTime) {
         return contentTime.isUploadedBefore(localDateTime);
+    }
+
+    public boolean hasSameId(Content content) {
+        return id.equals(content.id);
     }
 }

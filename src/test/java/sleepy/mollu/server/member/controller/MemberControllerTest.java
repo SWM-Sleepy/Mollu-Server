@@ -3,12 +3,9 @@ package sleepy.mollu.server.member.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
-import sleepy.mollu.server.member.service.MemberService;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class MemberControllerTest extends ControllerTest {
@@ -39,7 +36,7 @@ class MemberControllerTest extends ControllerTest {
             final String date = "2023-08-06";
 
             // when
-            final ResultActions resultActions = get("/members/contents?date="+date, accessToken);
+            final ResultActions resultActions = get("/members/contents?date=" + date, accessToken);
 
             // then
             resultActions

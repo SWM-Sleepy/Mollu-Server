@@ -1,6 +1,5 @@
 package sleepy.mollu.server.member.domain;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,22 +10,26 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class MolluIdTest {
 
     public static Stream<Arguments> ValidMolluIdSource() {
         return Stream.of(
-                Arguments.of("mollu"),
-                Arguments.of("a"),
-                Arguments.of("a".repeat(20)));
+                Arguments.of("a".repeat(3)),
+                Arguments.of("a".repeat(20)),
+                Arguments.of("_m_"),
+                Arguments.of("m_o"),
+                Arguments.of("m_o_01"));
     }
 
     public static Stream<Arguments> InValidMolluIdSource() {
         return Stream.of(
+                Arguments.of("a".repeat(2)),
                 Arguments.of("a".repeat(21)),
                 Arguments.of("한국어"),
-                Arguments.of("AAA"));
+                Arguments.of("AAA"),
+                Arguments.of("___"),
+                Arguments.of("111"));
     }
 
     @ParameterizedTest

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
-import sleepy.mollu.server.content.report.repository.ReportRepository;
+import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
@@ -19,7 +19,7 @@ public class ReportServiceImpl implements ReportService {
 
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
-    private final ReportRepository reportRepository;
+    private final ContentReportRepository contentReportRepository;
 
     @Override
     public Long reportContent(String memberId, String contentId, String reason) {
@@ -48,7 +48,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private Long saveContentReport(String reason, Member member, Content content) {
-        return reportRepository.save(ContentReport.builder()
+        return contentReportRepository.save(ContentReport.builder()
                         .reason(reason)
                         .member(member)
                         .content(content)

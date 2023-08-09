@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Name {
 
+    private static final int MIN_NAME_LENGTH = 2;
     private static final int MAX_NAME_LENGTH = 10;
 
     @Column(name = "name")
@@ -25,8 +26,8 @@ public class Name {
             throw new IllegalArgumentException("이름은 null이거나 공백일 수 없습니다.");
         }
 
-        if (value.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("이름은 " + MAX_NAME_LENGTH + "자를 초과할 수 없습니다.");
+        if (value.length() < MIN_NAME_LENGTH || value.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("이름은 " + MIN_NAME_LENGTH + "자 이상 " + MAX_NAME_LENGTH + "자 이하여야 합니다.");
         }
     }
 }
