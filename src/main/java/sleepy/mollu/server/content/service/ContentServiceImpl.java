@@ -17,6 +17,8 @@ import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchContentResponse;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
+import sleepy.mollu.server.content.report.domain.ContentReport;
+import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
@@ -43,6 +45,7 @@ public class ContentServiceImpl implements ContentService {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final ContentGroupRepository contentGroupRepository;
+    private final ContentReportRepository contentReportRepository;
 
     private final IdConstructor idConstructor;
     private final FileHandler fileHandler;
@@ -54,7 +57,7 @@ public class ContentServiceImpl implements ContentService {
         final Member member = getMember(memberId);
         final List<Group> groups = getGroups(member);
         final List<ContentGroup> contentGroups = getContentGroups(groups, cursorId, cursorEndDate);
-        final List<Content> contents = getContents(contentGroups);
+        final List<Content> contents = getContents(contentGroups, member);
         final Cursor cursor = getCursor(contentGroups);
 
         return getGroupSearchFeedResponse(cursor, contents);
@@ -77,10 +80,20 @@ public class ContentServiceImpl implements ContentService {
         return contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
     }
 
-    private List<Content> getContents(List<ContentGroup> contentGroups) {
+    private List<Content> getContents(List<ContentGroup> contentGroups, Member member) {
+        final List<ContentReport> contentReports = getContentReports(member);
+        final List<Content> reportedContents = contentReports.stream()
+                .map(ContentReport::getContent)
+                .toList();
+
         return contentGroups.stream()
                 .map(ContentGroup::getContent)
+                .filter(content -> !reportedContents.contains(content))
                 .toList();
+    }
+
+    private List<ContentReport> getContentReports(Member member) {
+        return contentReportRepository.findAllByMember(member);
     }
 
     private Cursor getCursor(List<ContentGroup> contentGroups) {

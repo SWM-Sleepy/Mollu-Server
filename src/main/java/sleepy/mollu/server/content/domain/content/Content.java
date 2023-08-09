@@ -2,6 +2,7 @@ package sleepy.mollu.server.content.domain.content;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Content extends BaseEntity {
 
     @Id
@@ -89,5 +91,9 @@ public class Content extends BaseEntity {
 
     public boolean isUploadedBefore(LocalDateTime localDateTime) {
         return contentTime.isUploadedBefore(localDateTime);
+    }
+
+    public boolean hasSameId(Content content) {
+        return id.equals(content.id);
     }
 }
