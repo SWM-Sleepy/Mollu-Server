@@ -2,6 +2,7 @@ package sleepy.mollu.server.alarm.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.TaskScheduler;
@@ -12,16 +13,17 @@ import sleepy.mollu.server.alarm.domain.MolluAlarmRange;
 import sleepy.mollu.server.alarm.exception.FileException;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MolluAlarmScheduler {
 
     private static final LocalDate NOW = LocalDate.now();
@@ -90,8 +92,8 @@ public class MolluAlarmScheduler {
     private List<String> getQuestions() {
         final ClassPathResource resource = new ClassPathResource("questions.txt");
 
-        try (Stream<String> lines = Files.lines(Paths.get(resource.getURI()))) {
-            return lines.toList();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+            return reader.lines().toList();
         } catch (IOException e) {
             throw new FileException("Questions 파일을 읽어오는데 실패했습니다.");
         }
