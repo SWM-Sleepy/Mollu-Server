@@ -76,4 +76,8 @@ public class SimpleRestAssured {
     public static <T> T toObject(ExtractableResponse<Response> response, Class<T> clazz) {
         return response.as(clazz);
     }
+
+    public static String getLocation(ExtractableResponse<Response> response) {
+        return response.header("Location");
+    }
 }
