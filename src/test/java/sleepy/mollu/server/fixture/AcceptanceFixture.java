@@ -1,8 +1,5 @@
 package sleepy.mollu.server.fixture;
 
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.report.dto.ReportRequest;
 import sleepy.mollu.server.member.dto.SignupRequest;
 
