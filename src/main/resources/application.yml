@@ -1,0 +1,119 @@
+# Global Configuration
+
+springdoc:
+  swagger-ui:
+    path: "/swagger"
+
+server:
+  servlet:
+    context-path: "/api"
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ap-northeast-2
+
+oauth2:
+  google:
+    clientId:
+      ios: ${GOOGLE_CLIENT_ID_IOS}
+      android: ${GOOGLE_CLIENT_ID_ANDROID}
+      web: ${GOOGLE_CLIENT_ID_WEB}
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+alarm:
+  fcm:
+    authorization-key: ${FCM_AUTHORIZATION_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+---
+
+# Local Configuration
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: create
+
+---
+
+# Dev Configuration
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://${DATABASE_HOST}:3306/${DATABASE_NAME_DEV}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    generate-ddl: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+---
+
+# Prod Configuration
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://${DATABASE_HOST}:3306/${DATABASE_NAME_PROD}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
