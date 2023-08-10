@@ -6,18 +6,14 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
-import sleepy.mollu.server.alarm.service.TimePicker;
 import sleepy.mollu.server.config.TestConfig;
-import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
-import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 
 import java.time.Clock;
@@ -33,22 +29,21 @@ import static sleepy.mollu.server.fixture.AcceptanceFixture.*;
 @Import(TestConfig.class)
 public class AcceptanceTest {
 
+    protected static final LocalDateTime NOW = LocalDateTime.now();
     private static final String BASE_URL = "/api";
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
     private static final String CONTENT_URL = BASE_URL + "/contents";
-    protected static final LocalDateTime NOW = LocalDateTime.now();
-
     @LocalServerPort
     protected int port;
-    @Autowired
-    private DBCleaner dbCleaner;
-    @Autowired
-    private GroupRepository groupRepository;
     @SpyBean
     protected Clock clock;
     @SpyBean
     protected MolluAlarmRepository molluAlarmRepository;
+    @Autowired
+    private DBCleaner dbCleaner;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @BeforeEach
     public void setUp() {
@@ -115,7 +110,7 @@ public class AcceptanceTest {
                 .post(CONTENT_URL));
     }
 
-    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime molluDateTime, LocalDateTime uploadDateTime, String question) {
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime molluDateTime, String question, LocalDateTime uploadDateTime) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))
                 .multiPart("location", "location")
