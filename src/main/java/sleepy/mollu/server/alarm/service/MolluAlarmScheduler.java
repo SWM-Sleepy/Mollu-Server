@@ -63,7 +63,7 @@ public class MolluAlarmScheduler {
         if (newMolluAlarm.isEmpty()) {
             generateAlarm(NOW.minusDays(1));
             generateAlarm(NOW);
-            scheduleAlarm();
+            registerAlarm();
             return null;
         }
 
@@ -76,7 +76,7 @@ public class MolluAlarmScheduler {
         }
 
         if (!molluAlarm.isSend()) {
-            scheduleAlarm();
+            registerAlarm();
         }
     }
 
@@ -100,9 +100,13 @@ public class MolluAlarmScheduler {
     }
 
     @Scheduled(cron = "0 0 0 * * *")
-    private void scheduleAlarm() {
-        final Instant startTime = getStartTime();
+    private void schedule() {
+        generateAlarm(LocalDate.now());
+        registerAlarm();
+    }
 
+    private void registerAlarm() {
+        final Instant startTime = getStartTime();
         taskScheduler.schedule(this::sendAlarm, startTime);
     }
 
