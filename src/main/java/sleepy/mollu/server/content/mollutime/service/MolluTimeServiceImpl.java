@@ -66,12 +66,18 @@ public class MolluTimeServiceImpl implements MolluTimeService {
     }
 
     private boolean shouldUploadTodayContent(Content content, MolluAlarm todayMolluAlarm) {
-        return isContentUploadedBefore(content, todayMolluAlarm.getMolluTime());
+        return isAfterTodayMolluTime(todayMolluAlarm) && isContentUploadedBefore(content, todayMolluAlarm.getMolluTime());
     }
 
     private boolean isBeforeTodayMolluTime(MolluAlarm molluAlarm) {
         final LocalDateTime now = LocalDateTime.now(clock);
         return now.isBefore(molluAlarm.getMolluTime());
+    }
+
+    private boolean isAfterTodayMolluTime(MolluAlarm molluAlarm) {
+        final LocalDateTime now = LocalDateTime.now(clock);
+        final LocalDateTime time = molluAlarm.getMolluTime();
+        return now.isAfter(time);
     }
 
     private boolean isContentUploadedBefore(Content content, LocalDateTime localDateTime) {

@@ -7,15 +7,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
+import sleepy.mollu.server.alarm.service.TimePicker;
 import sleepy.mollu.server.config.TestConfig;
 import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
+import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -32,15 +37,18 @@ public class AcceptanceTest {
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
     private static final String CONTENT_URL = BASE_URL + "/contents";
+    protected static final LocalDateTime NOW = LocalDateTime.now();
 
     @LocalServerPort
     protected int port;
-    @MockBean
-    protected MolluTimeService molluTimeService;
     @Autowired
     private DBCleaner dbCleaner;
     @Autowired
     private GroupRepository groupRepository;
+    @SpyBean
+    protected Clock clock;
+    @SpyBean
+    protected MolluAlarmRepository molluAlarmRepository;
 
     @BeforeEach
     public void setUp() {
@@ -95,26 +103,26 @@ public class AcceptanceTest {
         return get(CONTENT_URL + "/mollu-time", accessToken);
     }
 
-    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken) {
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))
                 .multiPart("location", "location")
                 .multiPart("tag", "tag")
-                .multiPart("uploadDateTime", NOW.toString())
+                .multiPart("uploadDateTime", uploadDateTime.toString())
                 .multiPart("frontContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
                 .multiPart("backContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
                 .when()
                 .post(CONTENT_URL));
     }
 
-    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime molluDateTime, String question) {
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime molluDateTime, LocalDateTime uploadDateTime, String question) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))
                 .multiPart("location", "location")
                 .multiPart("tag", "tag")
                 .multiPart("question", question)
                 .multiPart("molluDateTime", molluDateTime.toString())
-                .multiPart("uploadDateTime", NOW.toString())
+                .multiPart("uploadDateTime", uploadDateTime.toString())
                 .multiPart("frontContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
                 .multiPart("backContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
                 .when()
