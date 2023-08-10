@@ -30,5 +30,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" == "main-code-deploy"]; then
   PROFILE=prod
 else
   PROFILE=dev
+fi
 
 nohup java -jar -Duser.timezone=Asia/Seoul -Dspring.profiles.active=$PROFILE $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
