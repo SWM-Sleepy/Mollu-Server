@@ -83,9 +83,8 @@ class ContentAcceptanceTest extends AcceptanceTest {
         final String accessToken = response.accessToken();
 
         현재_시각을_MOLLU_타임_이후로_설정();
-        컨텐츠_업로드_요청(accessToken, NOW.minusSeconds(5));
-        final SearchMolluTimeResponse response1 = toObject(MOLLU_타임_조회_요청(accessToken), SearchMolluTimeResponse.class);
-        컨텐츠_업로드_요청(accessToken, NOW, response1.molluTime(), response1.question());
+        final SearchMolluTimeResponse response1 = MOLLU_타임_이전_첫_컨텐츠_업로드(accessToken);
+        MOLLU_타임_이후_컨텐츠_업로드(accessToken, response1);
 
         // when
         final ExtractableResponse<Response> mollu_타임_조회_응답 = MOLLU_타임_조회_요청(accessToken);
@@ -163,5 +162,14 @@ class ContentAcceptanceTest extends AcceptanceTest {
                 .question("question")
                 .send(true)
                 .build()));
+    }
+
+    private void MOLLU_타임_이후_컨텐츠_업로드(String accessToken, SearchMolluTimeResponse response1) {
+        컨텐츠_업로드_요청(accessToken, response1.molluTime(), response1.question(), NOW);
+    }
+
+    private SearchMolluTimeResponse MOLLU_타임_이전_첫_컨텐츠_업로드(String accessToken) {
+        컨텐츠_업로드_요청(accessToken, NOW.minusSeconds(5));
+        return toObject(MOLLU_타임_조회_요청(accessToken), SearchMolluTimeResponse.class);
     }
 }
