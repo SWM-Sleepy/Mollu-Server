@@ -7,11 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
-import sleepy.mollu.server.content.domain.content.Content;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -39,9 +36,6 @@ public class Member extends BaseEntity {
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "profile_source"))
     private FileSource profileSource = new FileSource("");
-
-    @OneToMany(mappedBy = "member")
-    private List<Content> contents = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "preference_id")
