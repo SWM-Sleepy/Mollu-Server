@@ -10,6 +10,7 @@ import sleepy.mollu.server.member.domain.Member;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn
 @Getter
 @NoArgsConstructor
 public abstract class Report extends BaseEntity {
