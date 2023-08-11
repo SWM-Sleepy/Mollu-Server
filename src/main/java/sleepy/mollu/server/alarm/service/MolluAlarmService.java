@@ -10,6 +10,7 @@ import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,18 +24,23 @@ public class MolluAlarmService implements AlarmService {
     @Transactional
     @Override
     public void sendAlarm() {
-        sendAlarmToAllowedMembers();
-        checkUpdateComplete();
-    }
-
-    private void sendAlarmToAllowedMembers() {
-        final List<Member> alarmAllowedMembers = memberRepository.findAllByMolluAlarmAllowed();
-        alarmAllowedMembers.forEach(member -> alarmClient.send(member.getPhoneToken()));
-    }
-
-    private void checkUpdateComplete() {
-        final MolluAlarm molluAlarm = molluAlarmRepository.findTop()
-                .orElseThrow(() -> new MolluAlarmNotFoundException("`MolluAlarm`이 존재하지 않습니다."));
+        final MolluAlarm molluAlarm = getMolluAlarm();
+        sendAlarmToAllowedMembers(molluAlarm.getQuestion());
         molluAlarm.updateSend();
+    }
+
+    private MolluAlarm getMolluAlarm() {
+        return molluAlarmRepository.findTop()
+                .orElseThrow(() -> new MolluAlarmNotFoundException("`MolluAlarm`이 존재하지 않습니다."));
+    }
+
+    private void sendAlarmToAllowedMembers(String question) {
+        final List<Member> alarmAllowedMembers = memberRepository.findAllByMolluAlarmAllowed();
+        final List<String> phoneTokens = alarmAllowedMembers.stream()
+                .map(Member::getPhoneToken)
+                .filter(Objects::nonNull)
+                .toList();
+
+        alarmClient.send(phoneTokens, question);
     }
 }
