@@ -26,7 +26,7 @@ chmod +x $JAR_NAME
 
 echo "> $JAR_NAME 실행"
 
-if [ "$DEPLOYMENT_GROUP_NAME" == "main-code-deploy"]; then
+if [ "$DEPLOYMENT_GROUP_NAME" == "main-code-deploy" ]; then
   PROFILE=prod
 else
   PROFILE=dev
