@@ -9,12 +9,15 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.alarm.admin.controller.AdminAlarmController;
+import sleepy.mollu.server.alarm.admin.service.AdminAlarmService;
+import sleepy.mollu.server.alarm.admin.service.AdminService;
 import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.content.report.service.ReportService;
 import sleepy.mollu.server.content.service.ContentService;
@@ -27,9 +30,7 @@ import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
 
-@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-        AdminAlarmController.class
-}))
+@WebMvcTest
 @Import(JwtConfig.class)
 public class ControllerTest {
 
@@ -57,6 +58,10 @@ public class ControllerTest {
     protected MolluTimeService molluTimeService;
     @MockBean
     private MemberService memberService;
+    @MockBean
+    private AdminService adminService;
+    @MockBean
+    private AdminAlarmService adminAlarmService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();
@@ -64,6 +69,11 @@ public class ControllerTest {
             headers.add("Authorization", "Bearer " + accessToken);
         }
         return headers;
+    }
+
+    protected ResultActions get(String path, MockHttpSession session) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get(path)
+                .session(session));
     }
 
     protected ResultActions get(String path, String accessToken) throws Exception {
@@ -75,7 +85,7 @@ public class ControllerTest {
     }
 
     protected ResultActions get(String path) throws Exception {
-        return get(path, null);
+        return mockMvc.perform(MockMvcRequestBuilders.get(path));
     }
 
     protected ResultActions post(String path, String accessToken, Object requestBody) throws Exception {

@@ -11,7 +11,7 @@ import sleepy.mollu.server.oauth2.controller.annotation.RefreshToken;
 import sleepy.mollu.server.oauth2.controller.parser.AuthorizationHeaderParser;
 
 @Component
-public class RefreshTokenResolver implements HandlerMethodArgumentResolver {
+public class RefreshTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
