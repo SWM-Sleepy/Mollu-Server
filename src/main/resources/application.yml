@@ -117,3 +117,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
+
+springdoc:
+  swagger-ui:
+    enabled: false
