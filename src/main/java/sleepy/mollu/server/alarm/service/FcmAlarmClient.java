@@ -11,8 +11,10 @@ import sleepy.mollu.server.alarm.dto.FcmAlarmRequest;
 import sleepy.mollu.server.alarm.dto.FcmAlarmRequest.Data;
 import sleepy.mollu.server.alarm.dto.FcmAlarmRequest.Notification;
 import sleepy.mollu.server.alarm.dto.FcmAlarmResponse;
+import sleepy.mollu.server.alarm.dto.FcmAlarmResponse.FcmResult;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Component
 @Slf4j
@@ -37,7 +39,7 @@ public class FcmAlarmClient implements AlarmClient {
         final HttpHeaders headers = getHeaders();
         final HttpEntity<FcmAlarmRequest> requestEntity = new HttpEntity<>(request, headers);
         final FcmAlarmResponse response = REST_TEMPLATE.postForEntity(FCM_URL, requestEntity, FcmAlarmResponse.class).getBody();
-        logResponse(response);
+        logResponse(phoneTokens, response);
     }
 
     private FcmAlarmRequest getRequest(List<String> phoneTokens, String question) {
@@ -55,7 +57,7 @@ public class FcmAlarmClient implements AlarmClient {
         return headers;
     }
 
-    private void logResponse(FcmAlarmResponse response) {
+    private void logResponse(List<String> phoneTokens, FcmAlarmResponse response) {
         if (response == null) {
             log.warn("FCM 서버로부터 응답이 없습니다.");
             return;
@@ -63,5 +65,15 @@ public class FcmAlarmClient implements AlarmClient {
 
         log.info("MOLLU 알림 전송 성공: {}", response.success());
         log.info("MOLLU 알림 전송 실패: {}", response.failure());
+
+        final List<FcmResult> results = response.results();
+        IntStream.range(0, phoneTokens.size())
+                .filter(i -> results.get(i).error() != null)
+                .forEach(i -> {
+                    final String phoneToken = phoneTokens.get(i);
+                    final String error = results.get(i).error();
+
+                    log.warn("Phone Token: {}, MOLLU 알림 전송 실패 이유: {}", phoneToken, error);
+                });
     }
 }
