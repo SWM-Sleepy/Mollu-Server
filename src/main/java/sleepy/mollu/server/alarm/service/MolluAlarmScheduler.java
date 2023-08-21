@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +22,7 @@ import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
+@Profile("prod")
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -33,28 +35,13 @@ public class MolluAlarmScheduler {
     private final TimePicker timePicker;
     private final Picker picker;
 
-
     private final TaskScheduler taskScheduler;
-
-    @Value("${spring.profiles.active}")
-    private String profile;
 
     @PostConstruct
     public void init() {
-
-        if (!isValidProfile()) return;
-
         final MolluAlarm molluAlarm = getMolluAlarm();
         if (molluAlarm == null) return;
         sendAlarm(molluAlarm);
-    }
-
-    private boolean isValidProfile() {
-        if (profile == null) return false;
-        final boolean isProfileDev = profile.equals("dev");
-        final boolean isProfileProd = profile.equals("prod");
-
-        return isProfileDev || isProfileProd;
     }
 
     private MolluAlarm getMolluAlarm() {
@@ -103,6 +90,7 @@ public class MolluAlarmScheduler {
     private void schedule() {
         generateAlarm(LocalDate.now());
         registerAlarm();
+        log.info("알림이 등록되었습니다.");
     }
 
     private void registerAlarm() {
