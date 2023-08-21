@@ -16,4 +16,6 @@ public interface OAuth2Service {
     CheckResponse checkId(String molluId);
 
     TokenResponse refresh(String refreshToken);
+
+    void logout(String memberId);
 }

@@ -154,4 +154,13 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
     }
+
+    @Transactional
+    @Override
+    public void logout(String memberId) {
+        final Member member = getMember(memberId);
+
+        member.updatePhoneToken(null);
+        member.updateRefreshToken(null);
+    }
 }
