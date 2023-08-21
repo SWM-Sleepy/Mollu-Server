@@ -70,6 +70,13 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("요청한 리소스를 찾을 수 없습니다."));
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ExceptionResponse> handleConflictException(ConflictException exception) {
+        log.warn(exception.getClass().getName());
+        log.warn(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ExceptionResponse("현재 서버의 상태와 충돌합니다."));
+    }
+
     @ExceptionHandler(ServletException.class)
     public ResponseEntity<ExceptionResponse> handleServletException(Exception exception) {
         log.error(exception.getClass().getName());

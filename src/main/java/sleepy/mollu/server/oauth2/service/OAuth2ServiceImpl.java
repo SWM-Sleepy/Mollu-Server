@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.common.exception.ConflictException;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
@@ -135,7 +136,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         final String memberId = getMemberIdFromRefreshToken(refreshToken);
         final Member member = getMember(memberId);
         if (!member.hasSameRefreshToken(refreshToken)) {
-            throw new TokenUnAuthenticatedException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
+            throw new ConflictException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
         }
 
         final JwtToken token = jwtRefresher.refresh(refreshToken);
