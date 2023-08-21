@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <property name="LOGS_ABSOLUTE_PATH" value="/home/ubuntu/mollu/logs"/>
-    <property name="PROFILE" value="${spring.profiles.active}"/>
-    <property name="LOGS_FILE_PATH" value="${LOGS_ABSOLUTE_PATH}/${PROFILE}"/>
+    <property name="LOGS_FILE_PATH" value="${LOGS_ABSOLUTE_PATH}"/>
     <property name="LOGS_ROLLING_PATH" value="${LOGS_FILE_PATH}/was-logs"/>
     <property name="LOGS_ROLLING_PATTERN" value="%d{yyyy-MM-dd}.%i.log.gz"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %logger{36} - %msg%n"/>

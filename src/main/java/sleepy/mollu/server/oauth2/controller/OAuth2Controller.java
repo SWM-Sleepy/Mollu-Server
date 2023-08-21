@@ -1,6 +1,7 @@
 package sleepy.mollu.server.oauth2.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import sleepy.mollu.server.swagger.OkResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+@Tag(name = "인증 관련 API")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
