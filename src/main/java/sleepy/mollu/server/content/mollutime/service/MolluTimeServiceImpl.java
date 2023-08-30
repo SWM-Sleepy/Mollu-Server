@@ -28,6 +28,7 @@ public class MolluTimeServiceImpl implements MolluTimeService {
     @Override
     public SearchMolluTimeResponse searchMolluTime(String memberId) {
 
+        // TODO: 회원가입 직후 컨텐츠를 업로드 할 때, 질문을 보여주는 것으로 기능을 수정한다.
         final Optional<Content> optionalContent = getLatestContent(memberId);
 
         if (optionalContent.isEmpty()) {
