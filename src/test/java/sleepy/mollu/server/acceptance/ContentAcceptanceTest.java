@@ -10,7 +10,6 @@ import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeRespo
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,33 +37,6 @@ class ContentAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        final ExtractableResponse<Response> 컨텐츠_업로드_응답 = 컨텐츠_업로드_요청(accessToken,NOW);
-
-        // then
-        assertAll(
-                () -> assertThat(컨텐츠_업로드_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(컨텐츠_업로드_응답.header("Location")).isNotNull()
-        );
-    }
-
-    @Test
-    void MOLLU_타임_이전_컨텐츠_업로드() {
-        // given
-        final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청("google");
-        final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
-        final String accessToken = response.accessToken();
-
-        현재_시각을_MOLLU_타임_이전으로_설정();
-        컨텐츠_업로드_요청(accessToken, NOW);
-
-        final SearchMolluTimeResponse mollu_타임_조회_응답 = toObject(MOLLU_타임_조회_요청(accessToken), SearchMolluTimeResponse.class);
-
-        assertAll(
-                () -> assertThat(mollu_타임_조회_응답.molluTime()).isNull(),
-                () -> assertThat(mollu_타임_조회_응답.question()).isNull()
-        );
-
-        // when
         final ExtractableResponse<Response> 컨텐츠_업로드_응답 = 컨텐츠_업로드_요청(accessToken, NOW);
 
         // then
@@ -75,28 +47,41 @@ class ContentAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void MOLLU_타임_컨텐츠_업로드_이후_MOLLU_타임_조회() {
+    void MOLLU_타임_이전_컨텐츠_업로드_이후_MOLLU_타임_조회() {
         // given
-        System.out.println("NOW = " + NOW);
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청("google");
         final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
         final String accessToken = response.accessToken();
 
-        현재_시각을_MOLLU_타임_이후로_설정();
-        final SearchMolluTimeResponse response1 = MOLLU_타임_이전_첫_컨텐츠_업로드(accessToken);
-        MOLLU_타임_이후_컨텐츠_업로드(accessToken, response1);
+        MOLLU_타임_이전에_컨텐츠를_업로드한다(accessToken);
 
         // when
-        final ExtractableResponse<Response> mollu_타임_조회_응답 = MOLLU_타임_조회_요청(accessToken);
-        final SearchMolluTimeResponse timeResponse = toObject(mollu_타임_조회_응답, SearchMolluTimeResponse.class);
+        final SearchMolluTimeResponse mollu_타임_조회_응답 = toObject(MOLLU_타임_조회_요청(accessToken), SearchMolluTimeResponse.class);
 
         // then
         assertAll(
-                () -> assertThat(mollu_타임_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(timeResponse.molluTime()).isNull(),
-                () -> assertThat(timeResponse.question()).isNull()
+                () -> assertThat(mollu_타임_조회_응답.molluTime()).isNotNull(),
+                () -> assertThat(mollu_타임_조회_응답.question()).isNotNull()
         );
+    }
 
+    @Test
+    void MOLLU_타임_이후의_컨텐츠_업로드_이후_MOLLU_타임_조회() {
+        // given
+        final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청("google");
+        final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
+        final String accessToken = response.accessToken();
+
+        MOLLU_타임_이후에_컨텐츠를_업로드한다(accessToken);
+
+        // when
+        final SearchMolluTimeResponse mollu_타임_조회_응답 = toObject(MOLLU_타임_조회_요청(accessToken), SearchMolluTimeResponse.class);
+
+        // then
+        assertAll(
+                () -> assertThat(mollu_타임_조회_응답.molluTime()).isNull(),
+                () -> assertThat(mollu_타임_조회_응답.question()).isNull()
+        );
     }
 
     @Test
@@ -105,7 +90,7 @@ class ContentAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> 다른_사람_회원가입_응답 = 다른_사람_회원가입_요청("google");
         final TokenResponse response = toObject(다른_사람_회원가입_응답, TokenResponse.class);
 
-        final String contentId = getContentId(컨텐츠_업로드_요청(response.accessToken(),NOW));
+        final String contentId = getContentId(컨텐츠_업로드_요청(response.accessToken(), NOW));
 
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청("google");
         final TokenResponse response1 = toObject(회원가입_응답, TokenResponse.class);
@@ -130,46 +115,27 @@ class ContentAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private void 현재_시각을_MOLLU_타임_이전으로_설정() {
-        given(clock.instant()).willReturn(NOW.atZone(ZoneId.systemDefault()).toInstant());
-        given(clock.getZone()).willReturn(ZoneId.systemDefault());
+    private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {
+        MOLLU_타임_설정();
+        컨텐츠_업로드_요청(accessToken, NOW.minusHours(2));
+    }
 
+    private void MOLLU_타임_이후에_컨텐츠를_업로드한다(String accessToken) {
+        MOLLU_타임_설정();
+        컨텐츠_업로드_요청(accessToken, NOW);
+    }
+
+    private void MOLLU_타임_설정() {
         given(molluAlarmRepository.findTop()).willReturn(Optional.of(MolluAlarm.builder()
-                .molluTime(NOW.plusSeconds(1))
+                .molluTime(NOW.plusDays(1))
                 .question("question")
                 .send(false)
                 .build()));
 
         given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(MolluAlarm.builder()
-                .molluTime(NOW.minusDays(1))
+                .molluTime(NOW.minusHours(1))
                 .question("question")
                 .send(true)
                 .build()));
-    }
-
-    private void 현재_시각을_MOLLU_타임_이후로_설정() {
-        given(clock.instant()).willReturn(NOW.atZone(ZoneId.systemDefault()).toInstant());
-        given(clock.getZone()).willReturn(ZoneId.systemDefault());
-
-        given(molluAlarmRepository.findTop()).willReturn(Optional.of(MolluAlarm.builder()
-                .molluTime(NOW.minusSeconds(1))
-                .question("question")
-                .send(true)
-                .build()));
-
-        given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(MolluAlarm.builder()
-                .molluTime(NOW.minusDays(1))
-                .question("question")
-                .send(true)
-                .build()));
-    }
-
-    private void MOLLU_타임_이후_컨텐츠_업로드(String accessToken, SearchMolluTimeResponse response1) {
-        컨텐츠_업로드_요청(accessToken, response1.molluTime(), response1.question(), NOW);
-    }
-
-    private SearchMolluTimeResponse MOLLU_타임_이전_첫_컨텐츠_업로드(String accessToken) {
-        컨텐츠_업로드_요청(accessToken, NOW.minusSeconds(5));
-        return toObject(MOLLU_타임_조회_요청(accessToken), SearchMolluTimeResponse.class);
     }
 }
