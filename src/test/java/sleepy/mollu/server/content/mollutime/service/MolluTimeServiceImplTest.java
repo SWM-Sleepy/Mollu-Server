@@ -41,9 +41,6 @@ class MolluTimeServiceImplTest {
     @Mock
     private MolluAlarmRepository molluAlarmRepository;
 
-    @Mock
-    private Clock clock;
-
     @Nested
     @DisplayName("[MOLLU 타임 조회 메서드 호출시] ")
     class searchMolluTime {
@@ -52,8 +49,7 @@ class MolluTimeServiceImplTest {
         final Member member = mock(Member.class);
         final Content content = mock(Content.class);
         final LocalDateTime now = LocalDateTime.now();
-        final MolluAlarm todayMolluAlarm = mock(MolluAlarm.class);
-        final MolluAlarm yesterdayMolluAlarm = mock(MolluAlarm.class);
+        final MolluAlarm currentMolluAlarm = mock(MolluAlarm.class);
 
         @Test
         @DisplayName("업로드한 컨텐츠가 없는 경우 MOLLU 타임을 조회할 수 없다.")
@@ -70,25 +66,11 @@ class MolluTimeServiceImplTest {
         }
 
         @Test
-        @DisplayName("오늘의 MOLLU 타임이 없으면, NotFound 예외를 던진다.")
+        @DisplayName("현재의 몰루 타임이 없으면, NotFound 예외를 던진다.")
         void searchMolluTime1() {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
-            given(molluAlarmRepository.findTop()).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> molluTimeService.searchMolluTime(memberId))
-                    .isInstanceOf(MolluAlarmNotFoundException.class);
-        }
-
-        @Test
-        @DisplayName("어제의 MOLLU 타임이 없으면, NotFound 예외를 던진다.")
-        void searchMolluTime2() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
-            given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
-            setTodayMolluTime(now);
             given(molluAlarmRepository.findSecondTop()).willReturn(Optional.empty());
 
             // when & then
@@ -97,90 +79,37 @@ class MolluTimeServiceImplTest {
         }
 
         @Test
-        @DisplayName("현재 시각이 오늘의 MOLLU 타임 이전이고, 가장 최근에 업로드한 컨텐츠가 어제의 MOLLU 타임 이전이면, 어제의 MOLLU 타임을 조회할 수 있다.")
+        @DisplayName("가장 최근에 업로드한 컨텐츠가 현재의 MOLLU 타임 이전이면, 현재의 MOLLU 타임을 조회할 수 있다.")
+        void searchMolluTime2() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
+            given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(currentMolluAlarm));
+            given(currentMolluAlarm.getMolluTime()).willReturn(now.minusSeconds(1));
+            given(content.isUploadedBefore(currentMolluAlarm.getMolluTime())).willReturn(true);
+
+            // when
+            final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
+
+            // then
+            assertThat(response.molluTime()).isEqualTo(currentMolluAlarm.getMolluTime());
+        }
+
+        @Test
+        @DisplayName("가장 최근에 업로드한 컨텐츠가 현재의 MOLLU 타임 이후면, 현재의 MOLLU 타임을 조회할 수 없다.")
         void searchMolluTime3() {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
-            setTodayMolluTime(now.plusSeconds(1));
-            setYesterdayMolluTime(now);
-            setClock(now);
-            given(content.isUploadedBefore(yesterdayMolluAlarm.getMolluTime())).willReturn(true);
-
-            // when
-            final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
-
-            // then
-            assertThat(response.molluTime()).isEqualTo(yesterdayMolluAlarm.getMolluTime());
-        }
-
-        @Test
-        @DisplayName("현재 시각이 오늘의 MOLLU 타임 이전이고, 가장 최근에 업로드한 컨텐츠가 어제의 MOLLU 타임 이후이면, MOLLU 타임을 조회할 수 없다.")
-        void searchMolluTime4() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
-            given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
-            setTodayMolluTime(now.plusSeconds(1));
-            setYesterdayMolluTime(now);
-            setClock(now);
-            given(content.isUploadedBefore(yesterdayMolluAlarm.getMolluTime())).willReturn(false);
+            given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(currentMolluAlarm));
+            given(currentMolluAlarm.getMolluTime()).willReturn(now.plusSeconds(1));
+            given(content.isUploadedBefore(currentMolluAlarm.getMolluTime())).willReturn(false);
 
             // when
             final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
 
             // then
             assertThat(response.molluTime()).isNull();
-        }
-
-        @Test
-        @DisplayName("현재 시각이 오늘의 MOLLU 타임 이후이고, 가장 최근에 업로드한 컨텐츠가 오늘의 MOLLU 타임 이전이면, 오늘의 MOLLU 타임을 조회할 수 있다.")
-        void searchMolluTime5() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
-            given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
-            setTodayMolluTime(now.minusSeconds(1));
-            setYesterdayMolluTime(now);
-            setClock(now);
-            given(content.isUploadedBefore(todayMolluAlarm.getMolluTime())).willReturn(true);
-
-            // when
-            final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
-
-            // then
-            assertThat(response.molluTime()).isEqualTo(todayMolluAlarm.getMolluTime());
-        }
-
-        @Test
-        @DisplayName("현재 시각이 오늘의 MOLLU 타임 이후이고, 가장 최근에 업로드한 컨텐츠가 오늘의 MOLLU 타임 이후이면, MOLLU 타임을 조회할 수 없다.")
-        void searchMolluTime6() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
-            given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
-            setTodayMolluTime(now.minusSeconds(1));
-            setYesterdayMolluTime(now);
-            setClock(now);
-            given(content.isUploadedBefore(todayMolluAlarm.getMolluTime())).willReturn(false);
-
-            // when
-            final SearchMolluTimeResponse response = molluTimeService.searchMolluTime(memberId);
-
-            // then
-            assertThat(response.molluTime()).isNull();
-        }
-
-        private void setClock(LocalDateTime localDateTime) {
-            given(clock.instant()).willReturn(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-            given(clock.getZone()).willReturn(ZoneId.systemDefault());
-        }
-
-        private void setTodayMolluTime(LocalDateTime localDateTime) {
-            given(molluAlarmRepository.findTop()).willReturn(Optional.of(todayMolluAlarm));
-            given(todayMolluAlarm.getMolluTime()).willReturn(localDateTime);
-        }
-
-        private void setYesterdayMolluTime(LocalDateTime localDateTime) {
-            given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(yesterdayMolluAlarm));
-            given(yesterdayMolluAlarm.getMolluTime()).willReturn(localDateTime);
         }
     }
 }
