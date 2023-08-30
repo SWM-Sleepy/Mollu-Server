@@ -14,5 +14,7 @@ public interface AdminAlarmService {
 
     List<MolluTimeResponse> searchMolluTimes();
 
+    List<MemberAdminResponse> searchMembers();
+
     void sendMolluAlarm();
 }
