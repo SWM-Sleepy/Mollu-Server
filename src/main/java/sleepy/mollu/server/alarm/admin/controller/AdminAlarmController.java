@@ -13,6 +13,7 @@ import sleepy.mollu.server.alarm.admin.dto.MolluRangeRequest;
 import sleepy.mollu.server.alarm.admin.dto.MolluRangeResponse;
 import sleepy.mollu.server.alarm.admin.dto.MolluTimeResponse;
 import sleepy.mollu.server.alarm.admin.service.AdminAlarmService;
+import sleepy.mollu.server.alarm.admin.service.MemberAdminResponse;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
@@ -65,7 +66,10 @@ public class AdminAlarmController {
     @OkResponse
     @InternalServerErrorResponse
     @GetMapping("/mollu-alarm")
-    public String molluAlarmPage() {
+    public String molluAlarmPage(Model model) {
+
+        final List<MemberAdminResponse> members = adminAlarmService.searchMembers();
+        model.addAttribute("members", members);
 
         return "mollu-alarm";
     }
