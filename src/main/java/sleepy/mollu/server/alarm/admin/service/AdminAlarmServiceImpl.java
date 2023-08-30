@@ -9,6 +9,8 @@ import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.domain.MolluAlarmRange;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 import sleepy.mollu.server.alarm.service.AlarmService;
+import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -20,6 +22,7 @@ public class AdminAlarmServiceImpl implements AdminAlarmService {
 
     private final MolluAlarmRepository molluAlarmRepository;
     private final AlarmService alarmService;
+    private final MemberRepository memberRepository;
 
     @Override
     public MolluRangeResponse searchMolluAlarmRange() {
@@ -45,6 +48,20 @@ public class AdminAlarmServiceImpl implements AdminAlarmService {
                         molluAlarm.getMolluTime(),
                         molluAlarm.getQuestion(),
                         molluAlarm.getCreatedAt()))
+                .toList();
+    }
+
+    @Override
+    public List<MemberAdminResponse> searchMembers() {
+
+        final List<Member> members = memberRepository.findAll();
+
+        return members.stream()
+                .map(member -> new MemberAdminResponse(
+                        member.getId(),
+                        member.getMolluId(),
+                        member.getName(),
+                        member.getPhoneToken()))
                 .toList();
     }
 
