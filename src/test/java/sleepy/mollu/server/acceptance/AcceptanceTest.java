@@ -15,6 +15,7 @@ import sleepy.mollu.server.config.TestConfig;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
+import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public class AcceptanceTest {
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
     private static final String CONTENT_URL = BASE_URL + "/contents";
+    private static final String MEMBER_EMOJI_URL = MEMBER_URL + "/emojis";
     @LocalServerPort
     protected int port;
     @SpyBean
@@ -130,6 +132,21 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> 컨텐츠_신고_요청(String accessToken, String contentId) {
         return post(CONTENT_URL + "/" + contentId + "/report", accessToken, 신고_요청_데이터);
+    }
+
+    protected ExtractableResponse<Response> 내_이모티콘_등록_요청(String accessToken) {
+        return thenExtract(RestAssured.given()
+                .headers(Map.of("Authorization", "Bearer " + accessToken))
+                .multiPart("emoji", "emoticon1")
+                .multiPart("emojiFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
+                .when()
+                .post(MEMBER_EMOJI_URL));
+    }
+
+    protected String 회원가입_요청_및_응답(String type) {
+        final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
+        final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
+        return response.accessToken();
     }
 
     protected String getContentId(ExtractableResponse<Response> response) {
