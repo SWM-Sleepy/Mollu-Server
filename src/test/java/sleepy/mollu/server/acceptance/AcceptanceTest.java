@@ -134,13 +134,17 @@ public class AcceptanceTest {
         return post(CONTENT_URL + "/" + contentId + "/report", accessToken, 신고_요청_데이터);
     }
 
-    protected ExtractableResponse<Response> 내_이모티콘_등록_요청(String accessToken) {
+    protected ExtractableResponse<Response> 내_이모티콘_등록_요청(String accessToken, String emojiType) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))
-                .multiPart("emoji", "emoticon1")
+                .multiPart("emoji", emojiType)
                 .multiPart("emojiFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
                 .when()
                 .post(MEMBER_EMOJI_URL));
+    }
+
+    protected ExtractableResponse<Response> 내_이모티콘_조회_요청(String accessToken) {
+        return get(MEMBER_EMOJI_URL, accessToken);
     }
 
     protected String 회원가입_요청_및_응답(String type) {
