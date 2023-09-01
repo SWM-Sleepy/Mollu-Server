@@ -133,7 +133,11 @@ public class Member extends BaseEntity {
         this.emoji.assignMember(this);
     }
 
-    public void updateEmoji(String emoji, String emojiSource) {
-        this.emoji.update(emoji, emojiSource);
+    public void updateEmoji(String emojiType, String emojiSource) {
+        this.emoji.update(emojiType, emojiSource);
+    }
+
+    public void deleteEmoji(String emojiType) {
+        this.emoji.delete(emojiType);
     }
 }

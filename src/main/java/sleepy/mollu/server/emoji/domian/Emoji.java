@@ -2,7 +2,6 @@ package sleepy.mollu.server.emoji.domian;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.member.domain.Member;
 
@@ -11,6 +10,8 @@ import java.util.List;
 @Entity
 @Getter
 public class Emoji extends BaseEntity {
+
+    private static final String EMPTY_EMOJI_SOURCE = "";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +28,11 @@ public class Emoji extends BaseEntity {
     private Member member;
 
     public Emoji() {
-        this.emoji1 = "";
-        this.emoji2 = "";
-        this.emoji3 = "";
-        this.emoji4 = "";
-        this.emoji5 = "";
+        this.emoji1 = EMPTY_EMOJI_SOURCE;
+        this.emoji2 = EMPTY_EMOJI_SOURCE;
+        this.emoji3 = EMPTY_EMOJI_SOURCE;
+        this.emoji4 = EMPTY_EMOJI_SOURCE;
+        this.emoji5 = EMPTY_EMOJI_SOURCE;
     }
 
     public void assignMember(Member member) {
@@ -43,6 +44,14 @@ public class Emoji extends BaseEntity {
     }
 
     public void update(String emojiType, String emojiSource) {
+        updateEmojiByType(emojiType, emojiSource);
+    }
+
+    public void delete(String emojiType) {
+        updateEmojiByType(emojiType, EMPTY_EMOJI_SOURCE);
+    }
+
+    private void updateEmojiByType(String emojiType, String emojiSource) {
         switch (emojiType) {
             case "emoticon1" -> this.emoji1 = emojiSource;
             case "emoticon2" -> this.emoji2 = emojiSource;
