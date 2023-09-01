@@ -87,4 +87,39 @@ class MemberEmojiControllerTest extends ControllerTest {
         resultActions.andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @Nested
+    @DisplayName("[내 이모티콘 삭제 API 호출시] ")
+    class DeleteMyEmojiTest {
+
+        @Test
+        @DisplayName("emoji를 설정하지 않으면 400을 반환한다.")
+        void DeleteMyEmojiTest0() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+
+            // when
+            final ResultActions resultActions = delete("/members/emojis", accessToken);
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("파라미터를 모두 설정했으면 204를 반환한다.")
+        void DeleteMyEmojiTest1() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+            final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("emoji", "emotion1");
+
+            // when
+            final ResultActions resultActions = delete("/members/emojis?emoji=", accessToken);
+
+            // then
+            resultActions.andExpect(status().isNoContent())
+                    .andDo(print());
+        }
+    }
 }
