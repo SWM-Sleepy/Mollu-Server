@@ -34,8 +34,8 @@ public class AcceptanceTest {
     private static final String BASE_URL = "/api";
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
-    private static final String CONTENT_URL = BASE_URL + "/contents";
     private static final String MEMBER_EMOJI_URL = MEMBER_URL + "/emojis";
+    private static final String CONTENT_URL = BASE_URL + "/contents";
     @LocalServerPort
     protected int port;
     @SpyBean

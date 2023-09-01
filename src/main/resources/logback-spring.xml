@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <conversionRule conversionWord="uuidOrThread" converterClass="sleepy.mollu.server.common.domain.UuidOrTheadConverter"/>
+    <conversionRule conversionWord="uuidOrThread"
+                    converterClass="sleepy.mollu.server.common.domain.UuidOrTheadConverter"/>
 
     <property name="LOGS_ABSOLUTE_PATH" value="/home/ubuntu/mollu/logs"/>
     <property name="LOGS_FILE_PATH" value="${LOGS_ABSOLUTE_PATH}"/>
     <property name="LOGS_ROLLING_PATH" value="${LOGS_FILE_PATH}/was-logs"/>
     <property name="LOGS_ROLLING_PATTERN" value="%d{yyyy-MM-dd}.%i.log.gz"/>
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%uuidOrThread] %highlight(%-5level) %logger{36} - %msg%n"/>
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss} [%uuidOrThread] %highlight(%-5level) %logger{36} - %msg%n"/>
     <springProperty name="AWS_ACCESS_KEY" source="cloud.aws.credentials.accessKey"/>
     <springProperty name="AWS_SECRET_KEY" source="cloud.aws.credentials.secretKey"/>
 
