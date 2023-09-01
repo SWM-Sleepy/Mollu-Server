@@ -64,7 +64,7 @@ public class ControllerTest {
     @MockBean
     private AdminAlarmService adminAlarmService;
     @MockBean
-    private MemberEmojiService memberEmojiService;
+    protected MemberEmojiService memberEmojiService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();

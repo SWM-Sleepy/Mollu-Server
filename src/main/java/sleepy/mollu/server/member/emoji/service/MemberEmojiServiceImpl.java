@@ -10,8 +10,11 @@ import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.emoji.domian.Emoji;
 import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
+
+import java.util.List;
 
 @Transactional(readOnly = true)
 @Service
@@ -44,5 +47,22 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
         }
 
         return member.getEmoji();
+    }
+
+    @Override
+    public SearchMyEmojiResponse searchMyEmoji(String memberId) {
+        final Member member = getMember(memberId);
+        final Emoji emoji = member.getEmoji();
+
+        return getMyEmojiResponse(emoji);
+    }
+
+    private SearchMyEmojiResponse getMyEmojiResponse(Emoji emoji) {
+        if (emoji == null) {
+            final List<String> defaultEmojis = List.of("", "", "", "", "");
+            return new SearchMyEmojiResponse(defaultEmojis);
+        }
+
+        return new SearchMyEmojiResponse(emoji.getEmojis());
     }
 }

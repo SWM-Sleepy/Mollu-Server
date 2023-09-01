@@ -6,9 +6,10 @@ import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.member.domain.Member;
 
+import java.util.List;
+
 @Entity
 @Getter
-@NoArgsConstructor
 public class Emoji extends BaseEntity {
 
     @Id
@@ -25,8 +26,20 @@ public class Emoji extends BaseEntity {
     @OneToOne(mappedBy = "emoji", fetch = FetchType.LAZY)
     private Member member;
 
+    public Emoji() {
+        this.emoji1 = "";
+        this.emoji2 = "";
+        this.emoji3 = "";
+        this.emoji4 = "";
+        this.emoji5 = "";
+    }
+
     public void assignMember(Member member) {
         this.member = member;
+    }
+
+    public List<String> getEmojis() {
+        return List.of(emoji1, emoji2, emoji3, emoji4, emoji5);
     }
 
     public void update(String emojiType, String emojiSource) {
