@@ -6,11 +6,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.member.emoji.controller.dto.CreateMyEmojiRequest;
+import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.member.emoji.service.MemberEmojiService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
 import sleepy.mollu.server.swagger.*;
@@ -35,5 +33,16 @@ public class MemberEmojiController {
         memberEmojiService.createMyEmoji(memberId, request.emoji(), request.emojiFile());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "내 이모티콘 조회")
+    @OkResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping
+    public ResponseEntity<SearchMyEmojiResponse> searchMyEmoji(@Login String memberId) {
+
+        return ResponseEntity.ok().body(memberEmojiService.searchMyEmoji(memberId));
     }
 }

@@ -10,6 +10,7 @@ import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.emoji.domian.Emoji;
 import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
@@ -44,5 +45,10 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
         }
 
         return member.getEmoji();
+    }
+
+    @Override
+    public SearchMyEmojiResponse searchMyEmoji(String memberId) {
+        return null;
     }
 }

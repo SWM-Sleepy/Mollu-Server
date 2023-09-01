@@ -3,12 +3,17 @@ package sleepy.mollu.server.member.emoji.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
+import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,5 +70,21 @@ class MemberEmojiControllerTest extends ControllerTest {
             resultActions.andExpect(status().isCreated())
                     .andDo(print());
         }
+    }
+
+    @Test
+    @DisplayName("내 이모티콘 조회 API 호출시 200을 반환한다.")
+    void MemberEmojiControllerTest() throws Exception {
+        // given
+        final String accessToken = getAccessToken("memberId");
+        given(memberEmojiService.searchMyEmoji("memberId"))
+                .willReturn(new SearchMyEmojiResponse(List.of("url1", "", "", "", "")));
+
+        // when
+        final ResultActions resultActions = get("/members/emojis", accessToken);
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andDo(print());
     }
 }
