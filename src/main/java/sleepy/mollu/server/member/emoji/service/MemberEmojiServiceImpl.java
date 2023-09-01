@@ -14,6 +14,8 @@ import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
+import java.util.List;
+
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
@@ -49,6 +51,18 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
 
     @Override
     public SearchMyEmojiResponse searchMyEmoji(String memberId) {
-        return null;
+        final Member member = getMember(memberId);
+        final Emoji emoji = member.getEmoji();
+
+        return getMyEmojiResponse(emoji);
+    }
+
+    private SearchMyEmojiResponse getMyEmojiResponse(Emoji emoji) {
+        if (emoji == null) {
+            final List<String> defaultEmojis = List.of("", "", "", "", "");
+            return new SearchMyEmojiResponse(defaultEmojis);
+        }
+
+        return new SearchMyEmojiResponse(emoji.getEmojis());
     }
 }
