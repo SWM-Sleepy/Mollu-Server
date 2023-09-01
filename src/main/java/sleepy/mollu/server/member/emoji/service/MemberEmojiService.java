@@ -8,4 +8,6 @@ public interface MemberEmojiService {
     void createMyEmoji(String memberId, String emojiType, MultipartFile emojiFile);
 
     SearchMyEmojiResponse searchMyEmoji(String memberId);
+
+    void deleteMyEmoji(String memberId, String emoji);
 }

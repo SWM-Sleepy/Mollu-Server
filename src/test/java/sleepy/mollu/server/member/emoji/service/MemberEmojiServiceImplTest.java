@@ -103,7 +103,7 @@ class MemberEmojiServiceImplTest {
 
             // then
             then(fileHandler).should(times(1)).upload(any(ContentFile.class));
-            then(emoji).should(times(1)).update(emojiType, emojiSource);
+            then(member).should(times(1)).updateEmoji(emojiType, emojiSource);
         }
     }
 }

@@ -45,4 +45,17 @@ public class MemberEmojiController {
 
         return ResponseEntity.ok().body(memberEmojiService.searchMyEmoji(memberId));
     }
+
+    @Operation(summary = "내 이모티콘 삭제")
+    @NoContentResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMyEmoji(@Login String memberId, @RequestParam String emoji) {
+
+        memberEmojiService.deleteMyEmoji(memberId, emoji);
+        return ResponseEntity.noContent().build();
+    }
 }
