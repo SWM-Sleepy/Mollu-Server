@@ -8,9 +8,9 @@ public class ImageContentFile extends ContentFile {
     private static final String VALID_START_TYPE = "image";
     private static final String INVALID_END_TYPE = "gif";
 
-    public ImageContentFile(MultipartFile file) {
+    public ImageContentFile(MultipartFile file, ContentType contentType) {
 
-        super(file);
+        super(file, contentType);
         validateType(file);
     }
 

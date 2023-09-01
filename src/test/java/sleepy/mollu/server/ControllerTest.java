@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,15 +11,16 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.MultiValueMap;
-import sleepy.mollu.server.alarm.admin.controller.AdminAlarmController;
 import sleepy.mollu.server.alarm.admin.service.AdminAlarmService;
 import sleepy.mollu.server.alarm.admin.service.AdminService;
 import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.content.report.service.ReportService;
 import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
+import sleepy.mollu.server.member.emoji.service.MemberEmojiService;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.profile.service.ProfileService;
 import sleepy.mollu.server.member.service.MemberService;
@@ -29,6 +28,8 @@ import sleepy.mollu.server.oauth2.jwt.config.JwtConfig;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
 import sleepy.mollu.server.oauth2.service.OAuth2Service;
+
+import java.util.Arrays;
 
 @WebMvcTest
 @Import(JwtConfig.class)
@@ -62,6 +63,8 @@ public class ControllerTest {
     private AdminService adminService;
     @MockBean
     private AdminAlarmService adminAlarmService;
+    @MockBean
+    private MemberEmojiService memberEmojiService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();
@@ -145,24 +148,33 @@ public class ControllerTest {
         return delete(path, null);
     }
 
-    protected ResultActions multipart(String path, String accessToken, MultiValueMap<String, String> params) throws Exception {
+    protected ResultActions multipart(HttpMethod method, String path, String[] files, String accessToken, MultiValueMap<String, String> params) throws Exception {
 
         final HttpHeaders headers = getHeaders(accessToken);
 
-        return mockMvc.perform(MockMvcRequestBuilders.multipart(path)
-                .file(getMockMultipartFile("frontContentFile"))
-                .file(getMockMultipartFile("backContentFile"))
-                .headers(headers)
-                .params(params));
+        final MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(method, path);
+
+        if (files != null) {
+            Arrays.stream(files).forEach(file -> builder.file(getMockMultipartFile(file)));
+        }
+
+        builder.headers(headers);
+
+        if (params != null) {
+            builder.params(params);
+        }
+
+        return mockMvc.perform(builder);
     }
 
     protected ResultActions multipart(HttpMethod method, String path, String accessToken, MultiValueMap<String, String> params) throws Exception {
 
-        final HttpHeaders headers = getHeaders(accessToken);
+        return multipart(method, path, null, accessToken, params);
+    }
 
-        return mockMvc.perform(MockMvcRequestBuilders.multipart(method, path)
-                .headers(headers)
-                .params(params));
+    protected ResultActions multipart(HttpMethod method, String path, String[] files, String accessToken) throws Exception {
+
+        return multipart(method, path, files, accessToken, null);
     }
 
     protected String getAccessToken(String memberId) {

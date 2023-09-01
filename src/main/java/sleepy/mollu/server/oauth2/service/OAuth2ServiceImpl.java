@@ -19,7 +19,6 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
-import sleepy.mollu.server.oauth2.exception.TokenUnAuthenticatedException;
 import sleepy.mollu.server.oauth2.jwt.dto.ExtractType;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtPayload;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
