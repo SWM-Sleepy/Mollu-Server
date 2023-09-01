@@ -26,10 +26,10 @@ chmod +x $JAR_NAME
 
 echo "> $JAR_NAME 실행"
 
-if [ "$DEPLOYMENT_GROUP_NAME" == "main-code-deploy" ]; then
-  PROFILE=prod
-else
+if [ "$DEPLOYMENT_GROUP_NAME" == "github-code-deploy-group" ]; then
   PROFILE=dev
+else
+  PROFILE=prod
 fi
 
 nohup java -jar -Duser.timezone=Asia/Seoul -Dspring.profiles.active=$PROFILE $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
