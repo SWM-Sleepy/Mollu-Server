@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
+import sleepy.mollu.server.emoji.domian.Emoji;
 
 import java.time.LocalDate;
 
@@ -40,6 +41,10 @@ public class Member extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "preference_id")
     private Preference preference;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "emoji_id")
+    private Emoji emoji;
 
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday, String refreshToken, Preference preference) {
@@ -117,5 +122,18 @@ public class Member extends BaseEntity {
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public boolean hasEmoji() {
+        return this.emoji != null;
+    }
+
+    public void createEmoji() {
+        this.emoji = new Emoji();
+        this.emoji.assignMember(this);
+    }
+
+    public void updateEmoji(String emoji, String emojiSource) {
+        this.emoji.update(emoji, emojiSource);
     }
 }
