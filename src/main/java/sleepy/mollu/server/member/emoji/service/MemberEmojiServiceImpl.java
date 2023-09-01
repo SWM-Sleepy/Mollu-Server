@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.content.domain.file.ContentFile;
+import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.emoji.domian.Emoji;
@@ -26,7 +27,7 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
 
         final Member member = getMember(memberId);
         final Emoji emoji = getEmoji(member);
-        final ContentFile contentFile = new ImageContentFile(emojiFile);
+        final ContentFile contentFile = new ImageContentFile(emojiFile, ContentType.EMOJIS);
         final String emojiSource = fileHandler.upload(contentFile);
 
         emoji.update(emojiType, emojiSource);

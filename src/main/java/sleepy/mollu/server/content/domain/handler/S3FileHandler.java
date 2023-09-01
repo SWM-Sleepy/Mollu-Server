@@ -26,7 +26,7 @@ public class S3FileHandler implements FileHandler {
     @Override
     public String upload(ContentFile contentFile) {
         MultipartFile file = contentFile.getFile();
-        final String key = UUID.randomUUID().toString() + '_' + file.getOriginalFilename();
+        final String key = getFileKey(contentFile);
 
         final ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(file.getSize());
@@ -40,5 +40,12 @@ public class S3FileHandler implements FileHandler {
         }
 
         return amazonS3.getUrl(bucketName, key).toString();
+    }
+
+    private String getFileKey(ContentFile contentFile) {
+        final String directory = contentFile.getContentType().toString().toLowerCase() + "/";
+        final String fileName = UUID.randomUUID().toString() + '_' + contentFile.getFile().getOriginalFilename();
+
+        return directory + fileName;
     }
 }

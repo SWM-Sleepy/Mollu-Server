@@ -7,9 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 public abstract class ContentFile {
 
     private final MultipartFile file;
+    private final ContentType contentType;
 
-    protected ContentFile(MultipartFile file) {
+    protected ContentFile(MultipartFile file, ContentType contentType) {
 
         this.file = file;
+        this.contentType = contentType;
     }
 }

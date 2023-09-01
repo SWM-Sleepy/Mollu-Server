@@ -11,6 +11,7 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.content.ContentSource;
 import sleepy.mollu.server.content.domain.content.ContentTime;
 import sleepy.mollu.server.content.domain.file.ContentFile;
+import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
@@ -140,7 +141,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private String uploadContent(MultipartFile file) {
-        final ContentFile frontContentFile = new ImageContentFile(file);
+        final ContentFile frontContentFile = new ImageContentFile(file, ContentType.CONTENTS);
 
         return fileHandler.upload(frontContentFile);
     }
