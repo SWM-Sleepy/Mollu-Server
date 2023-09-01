@@ -4,6 +4,7 @@ files:
   - source: /
     destination: /home/ubuntu/mollu/zip/
     overwrite: yes
+file_exist_behavior: OVERWRITE
 
 permissions:
   - object: /
