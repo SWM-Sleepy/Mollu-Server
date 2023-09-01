@@ -147,6 +147,10 @@ public class AcceptanceTest {
         return get(MEMBER_EMOJI_URL, accessToken);
     }
 
+    protected ExtractableResponse<Response> 내_이모티콘_삭제_요청(String accessToken, String emojiType) {
+        return delete(MEMBER_EMOJI_URL + "?emoji=" + emojiType, accessToken);
+    }
+
     protected String 회원가입_요청_및_응답(String type) {
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
         final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
