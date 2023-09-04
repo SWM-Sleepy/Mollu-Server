@@ -1,4 +1,4 @@
-package sleepy.mollu.server.emoji.domian;
+package sleepy.mollu.server.member.emoji.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

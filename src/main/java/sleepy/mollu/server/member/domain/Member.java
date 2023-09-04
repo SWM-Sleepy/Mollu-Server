@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
-import sleepy.mollu.server.emoji.domian.Emoji;
+import sleepy.mollu.server.member.emoji.domain.Emoji;
 
 import java.time.LocalDate;
 

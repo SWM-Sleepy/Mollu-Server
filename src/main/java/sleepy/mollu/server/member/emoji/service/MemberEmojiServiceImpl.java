@@ -8,7 +8,7 @@ import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
-import sleepy.mollu.server.emoji.domian.Emoji;
+import sleepy.mollu.server.member.emoji.domain.Emoji;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;

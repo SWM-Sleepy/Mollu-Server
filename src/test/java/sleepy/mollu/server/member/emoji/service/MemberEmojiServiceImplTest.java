@@ -11,7 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
-import sleepy.mollu.server.emoji.domian.Emoji;
+import sleepy.mollu.server.member.emoji.domain.Emoji;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
