@@ -108,10 +108,12 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private GroupSearchFeedResponse getGroupSearchFeedResponse(Cursor cursor, List<Content> contents) {
+        final Group group = getGroup();
         return new GroupSearchFeedResponse(cursor.cursorId, cursor.cursorEndDate,
                 contents.stream()
-                        .map(content ->
-                                new GroupSearchContentResponse(getMemberResponse(content.getMember()), getContentResponse(content)))
+                        .map(content -> new GroupSearchContentResponse(
+                                getMemberResponse(content.getMember()),
+                                getContentResponse(content, group.getName())))
                         .toList());
     }
 
@@ -119,9 +121,8 @@ public class ContentServiceImpl implements ContentService {
         return new GroupSearchContentResponse.Member(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource());
     }
 
-    private GroupSearchContentResponse.Content getContentResponse(Content content) {
-        final Group group = getGroup();
-        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), group.getName(), content.getMolluDateTime(),
+    private GroupSearchContentResponse.Content getContentResponse(Content content, String groupName) {
+        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), groupName, content.getMolluDateTime(),
                 content.getCreatedAt(), content.getContentTag(),
                 content.getFrontContentSource(), content.getBackContentSource());
     }
