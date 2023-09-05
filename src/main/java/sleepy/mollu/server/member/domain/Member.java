@@ -11,6 +11,7 @@ import sleepy.mollu.server.member.emoji.domain.Emoji;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -55,6 +56,18 @@ public class Member extends BaseEntity {
         this.birthday = new Birthday(birthday);
         this.refreshToken = refreshToken;
         setPreference(preference);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Member member)) return false;
+        return Objects.equals(getId(), member.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 
     private void setPreference(Preference preference) {
@@ -142,7 +155,11 @@ public class Member extends BaseEntity {
         this.emoji.delete(emojiType);
     }
 
-    public String getEmojiSourceFromType(EmojiType emojiType) {
-        return null;
+    public String getEmojiSourceFrom(EmojiType emojiType) {
+        return this.emoji.getSourceFrom(emojiType);
+    }
+
+    public boolean hasEmojiFrom(EmojiType emojiType) {
+        return this.emoji.hasFrom(emojiType);
     }
 }

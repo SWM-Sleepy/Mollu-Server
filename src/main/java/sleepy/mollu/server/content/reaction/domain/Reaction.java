@@ -22,6 +22,7 @@ public class Reaction {
     private EmojiType type;
 
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "reaction_source"))
     private FileSource reactionSource;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,10 +34,10 @@ public class Reaction {
     private Content content;
 
     @Builder
-    public Reaction(String id, EmojiType type, FileSource reactionSource, Member member, Content content) {
+    public Reaction(String id, EmojiType type, String reactionSource, Member member, Content content) {
         this.id = id;
         this.type = type;
-        this.reactionSource = reactionSource;
+        this.reactionSource = new FileSource(reactionSource);
         this.member = member;
         this.content = content;
     }

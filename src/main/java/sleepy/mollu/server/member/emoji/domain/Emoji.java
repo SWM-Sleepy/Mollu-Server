@@ -43,22 +43,34 @@ public class Emoji extends BaseEntity {
         return List.of(emoji1, emoji2, emoji3, emoji4, emoji5);
     }
 
-    public void update(String emojiType, String emojiSource) {
-        updateEmojiByType(emojiType, emojiSource);
+    public void update(EmojiType emojiType, String emojiSource) {
+        updateEmojiBy(emojiType, emojiSource);
     }
 
-    public void delete(String emojiType) {
-        updateEmojiByType(emojiType, EMPTY_EMOJI_SOURCE);
+    public void delete(EmojiType emojiType) {
+        updateEmojiBy(emojiType, EMPTY_EMOJI_SOURCE);
     }
 
-    private void updateEmojiByType(String emojiType, String emojiSource) {
+    private void updateEmojiBy(EmojiType emojiType, String emojiSource) {
         switch (emojiType) {
-            case "emoticon1" -> this.emoji1 = emojiSource;
-            case "emoticon2" -> this.emoji2 = emojiSource;
-            case "emoticon3" -> this.emoji3 = emojiSource;
-            case "emoticon4" -> this.emoji4 = emojiSource;
-            case "emoticon5" -> this.emoji5 = emojiSource;
-            default -> throw new IllegalArgumentException("[" + emojiType + "]는 존재하지 않는 이모티콘입니다.");
+            case EMOTICON1 -> this.emoji1 = emojiSource;
+            case EMOTICON2 -> this.emoji2 = emojiSource;
+            case EMOTICON3 -> this.emoji3 = emojiSource;
+            case EMOTICON4 -> this.emoji4 = emojiSource;
+            case EMOTICON5 -> this.emoji5 = emojiSource;
         }
+    }
+
+    public String getSourceFrom(EmojiType emojiType) {
+        if (emojiType == EmojiType.EMOTICON1) return this.emoji1;
+        if (emojiType == EmojiType.EMOTICON2) return this.emoji2;
+        if (emojiType == EmojiType.EMOTICON3) return this.emoji3;
+        if (emojiType == EmojiType.EMOTICON4) return this.emoji4;
+        return this.emoji5;
+    }
+
+    public boolean hasFrom(EmojiType emojiType) {
+        final String source = getSourceFrom(emojiType);
+        return !source.equals(EMPTY_EMOJI_SOURCE);
     }
 }
