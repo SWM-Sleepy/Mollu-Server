@@ -1,7 +1,7 @@
 package sleepy.mollu.server.member.emoji.domain;
 
 public enum EmojiType {
-    EMOTION1, EMOTION2, EMOTION3, EMOTION4, EMOTION5;
+    EMOTICON1, EMOTICON2, EMOTICON3, EMOTICON4, EMOTICON5;
 
     public static EmojiType from(String type) {
         try {

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.member.emoji.domain.Emoji;
+import sleepy.mollu.server.member.emoji.domain.EmojiType;
 
 import java.time.LocalDate;
 
@@ -133,11 +134,15 @@ public class Member extends BaseEntity {
         this.emoji.assignMember(this);
     }
 
-    public void updateEmoji(String emojiType, String emojiSource) {
+    public void updateEmoji(EmojiType emojiType, String emojiSource) {
         this.emoji.update(emojiType, emojiSource);
     }
 
-    public void deleteEmoji(String emojiType) {
+    public void deleteEmoji(EmojiType emojiType) {
         this.emoji.delete(emojiType);
+    }
+
+    public String getEmojiSourceFromType(EmojiType emojiType) {
+        return null;
     }
 }

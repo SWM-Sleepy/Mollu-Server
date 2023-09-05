@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class EmojiTypeTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"emotion1", "emotion2", "emotion3", "emotion4", "emotion5"})
+    @ValueSource(strings = {"emoticon1", "emoticon2", "emoticon3", "emoticon4", "emoticon5"})
     @DisplayName("유효한 이모티콘 타입을 입력하면 해당 이모티콘 타입을 반환한다.")
     void EmojiTypeTest0(String type) {
         assertThatCode(() -> EmojiType.from(type))

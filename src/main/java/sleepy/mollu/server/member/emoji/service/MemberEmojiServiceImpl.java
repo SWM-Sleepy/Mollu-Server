@@ -11,6 +11,7 @@ import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.member.emoji.domain.Emoji;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
+import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
@@ -32,7 +33,7 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
         createEmojiIfNotExists(member);
         final String emojiSource = uploadEmoji(emojiFile);
 
-        member.updateEmoji(emojiType, emojiSource);
+        member.updateEmoji(EmojiType.from(emojiType), emojiSource);
     }
 
     private Member getMember(String memberId) {
@@ -72,6 +73,6 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
     @Override
     public void deleteMyEmoji(String memberId, String emojiType) {
         final Member member = getMember(memberId);
-        member.deleteEmoji(emojiType);
+        member.deleteEmoji(EmojiType.from(emojiType));
     }
 }
