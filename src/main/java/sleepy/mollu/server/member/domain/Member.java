@@ -7,9 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
-import sleepy.mollu.server.emoji.domian.Emoji;
+import sleepy.mollu.server.member.emoji.domain.Emoji;
+import sleepy.mollu.server.member.emoji.domain.EmojiType;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -54,6 +56,18 @@ public class Member extends BaseEntity {
         this.birthday = new Birthday(birthday);
         this.refreshToken = refreshToken;
         setPreference(preference);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Member member)) return false;
+        return Objects.equals(getId(), member.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 
     private void setPreference(Preference preference) {
@@ -133,11 +147,19 @@ public class Member extends BaseEntity {
         this.emoji.assignMember(this);
     }
 
-    public void updateEmoji(String emojiType, String emojiSource) {
+    public void updateEmoji(EmojiType emojiType, String emojiSource) {
         this.emoji.update(emojiType, emojiSource);
     }
 
-    public void deleteEmoji(String emojiType) {
+    public void deleteEmoji(EmojiType emojiType) {
         this.emoji.delete(emojiType);
+    }
+
+    public String getEmojiSourceFrom(EmojiType emojiType) {
+        return this.emoji.getSourceFrom(emojiType);
+    }
+
+    public boolean hasEmojiFrom(EmojiType emojiType) {
+        return this.emoji.hasFrom(emojiType);
     }
 }

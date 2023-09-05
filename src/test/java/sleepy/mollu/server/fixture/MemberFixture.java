@@ -18,4 +18,7 @@ public class MemberFixture {
                 .preference(PreferenceFixture.create())
                 .build();
     }
+
+    public static final Member 멤버1 = create("memberId1", "mollu_id1");
+    public static final Member 멤버2 = create("memberId2", "mollu_id2");
 }

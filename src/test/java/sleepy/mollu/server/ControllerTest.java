@@ -17,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.alarm.admin.service.AdminAlarmService;
 import sleepy.mollu.server.alarm.admin.service.AdminService;
 import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
+import sleepy.mollu.server.content.reaction.service.ContentReactionService;
 import sleepy.mollu.server.content.report.service.ReportService;
 import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.group.service.GroupService;
@@ -65,6 +66,8 @@ public class ControllerTest {
     private AdminAlarmService adminAlarmService;
     @MockBean
     protected MemberEmojiService memberEmojiService;
+    @MockBean
+    private ContentReactionService contentReactionService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();

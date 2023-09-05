@@ -18,4 +18,6 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, String
     List<GroupMember> findAllWithMemberByGroup(@Param("group") Group group);
 
     List<GroupMember> findAllByGroup(Group group);
+
+    List<GroupMember> findAllByGroupIn(List<Group> groups);
 }

@@ -1,0 +1,101 @@
+package sleepy.mollu.server.content.reaction.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
+import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
+import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.exception.ContentNotFoundException;
+import sleepy.mollu.server.content.reaction.domain.Reaction;
+import sleepy.mollu.server.content.reaction.exception.ReactionConflictException;
+import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
+import sleepy.mollu.server.content.repository.ContentRepository;
+import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.groupmember.domain.GroupMember;
+import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
+import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.emoji.domain.EmojiType;
+import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
+import sleepy.mollu.server.member.exception.MemberNotFoundException;
+import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
+import sleepy.mollu.server.member.repository.MemberRepository;
+
+import java.util.List;
+
+@Transactional(readOnly = true)
+@Service
+@RequiredArgsConstructor
+public class ContentReactionServiceImpl implements ContentReactionService {
+
+    private final MemberRepository memberRepository;
+    private final ContentRepository contentRepository;
+    private final ReactionRepository reactionRepository;
+    private final ContentGroupRepository contentGroupRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final IdConstructor idConstructor;
+
+    @Transactional
+    @Override
+    public void createReaction(String memberId, String contentId, String type) {
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        final EmojiType emojiType = EmojiType.from(type);
+
+        authorizeMemberForContent(member, content);
+        checkReactionExists(member, content);
+        checkEmojiExists(member, emojiType);
+        saveReaction(member, content, emojiType);
+    }
+
+    private List<Member> getGroupMembersByContent(Content content) {
+        final List<Group> groupsByContent = contentGroupRepository.findAllByContent(content)
+                .stream()
+                .map(ContentGroup::getGroup)
+                .toList();
+        return groupMemberRepository.findAllByGroupIn(groupsByContent)
+                .stream()
+                .map(GroupMember::getMember)
+                .toList();
+    }
+
+    private void authorizeMemberForContent(Member member, Content content) {
+        final List<Member> membersByGroups = getGroupMembersByContent(content);
+        if (!membersByGroups.contains(member)) {
+            throw new MemberUnAuthorizedException("컨텐츠에 대한 접근 권한이 없습니다.");
+        }
+    }
+
+    private void checkReactionExists(Member member, Content content) {
+        if (reactionRepository.existsByMemberAndContent(member, content)) {
+            throw new ReactionConflictException("이미 반응한 컨텐츠입니다.");
+        }
+    }
+
+    private void checkEmojiExists(Member member, EmojiType emojiType) {
+        if (!member.hasEmojiFrom(emojiType)) {
+            throw new EmojiNotFoundException("[" + emojiType + "] 타입의 이모지를 찾을 수 없습니다.");
+        }
+    }
+
+    private void saveReaction(Member member, Content content, EmojiType emojiType) {
+        reactionRepository.save(Reaction.builder()
+                .id(idConstructor.create())
+                .type(emojiType)
+                .reactionSource(member.getEmojiSourceFrom(emojiType))
+                .member(member)
+                .content(content)
+                .build());
+    }
+
+    private Member getMember(String memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
+    }
+
+    private Content getContent(String contentId) {
+        return contentRepository.findById(contentId)
+                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
+    }
+}

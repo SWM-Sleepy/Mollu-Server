@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
+import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.time.LocalDateTime;
@@ -112,7 +113,22 @@ class ContentAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(신고_이후_그룹원_피드_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response3.feed()).isEmpty()
         );
+    }
 
+    @Test
+    void 사용자는_컨텐츠에_자신만의_이모티콘으로_반응을_남길_수_있다() {
+        // given
+        final String emojiType = "emoticon1";
+        final String accessToken = 회원가입_요청_및_응답("google");
+        내_이모티콘_등록_요청(accessToken, emojiType);
+
+        final String contentId = getContentId(컨텐츠_업로드_요청(accessToken));
+
+        // when
+        final ExtractableResponse<Response> 컨텐츠_반응_추가_응답 = 컨텐츠_반응_추가_요청(accessToken, contentId);
+
+        // then
+        assertThat(컨텐츠_반응_추가_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {
