@@ -15,5 +15,5 @@ public class AcceptanceFixture {
     public static final SignupRequest 회원가입_요청_데이터 = new SignupRequest("name", NOW_DATE, "mollu");
     public static final SignupRequest 회원가입_요청_데이터2 = new SignupRequest("name", NOW_DATE, "mollu1");
     public static final ReportRequest 신고_요청_데이터 = new ReportRequest("신고 사유");
-    public static final CreateReactionRequest 반응_요청_데이터 = new CreateReactionRequest("emotion1");
+    public static final CreateReactionRequest 컨텐츠_반응_추가_요청_데이터 = new CreateReactionRequest("emoticon1");
 }

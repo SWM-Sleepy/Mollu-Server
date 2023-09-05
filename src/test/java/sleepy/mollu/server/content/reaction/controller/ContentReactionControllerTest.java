@@ -8,7 +8,7 @@ import sleepy.mollu.server.ControllerTest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static sleepy.mollu.server.fixture.AcceptanceFixture.반응_요청_데이터;
+import static sleepy.mollu.server.fixture.AcceptanceFixture.컨텐츠_반응_추가_요청_데이터;
 
 class ContentReactionControllerTest extends ControllerTest {
 
@@ -37,7 +37,7 @@ class ContentReactionControllerTest extends ControllerTest {
             final String accessToken = getAccessToken("memberId");
 
             // when
-            final ResultActions resultActions = post("/contents/contentId/reactions", accessToken, 반응_요청_데이터);
+            final ResultActions resultActions = post("/contents/contentId/reactions", accessToken, 컨텐츠_반응_추가_요청_데이터);
 
             // then
             resultActions.andExpect(status().isCreated())

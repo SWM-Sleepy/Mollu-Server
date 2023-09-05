@@ -112,18 +112,8 @@ public class AcceptanceTest {
                 .post(CONTENT_URL));
     }
 
-    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime molluDateTime, String question, LocalDateTime uploadDateTime) {
-        return thenExtract(RestAssured.given()
-                .headers(Map.of("Authorization", "Bearer " + accessToken))
-                .multiPart("location", "location")
-                .multiPart("tag", "tag")
-                .multiPart("question", question)
-                .multiPart("molluDateTime", molluDateTime.toString())
-                .multiPart("uploadDateTime", uploadDateTime.toString())
-                .multiPart("frontContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
-                .multiPart("backContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
-                .when()
-                .post(CONTENT_URL));
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken) {
+        return 컨텐츠_업로드_요청(accessToken, NOW);
     }
 
     protected ExtractableResponse<Response> 그룹원_피드_조회_요청(String accessToken) {
@@ -149,6 +139,10 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> 내_이모티콘_삭제_요청(String accessToken, String emojiType) {
         return delete(MEMBER_EMOJI_URL + "?emoji=" + emojiType, accessToken);
+    }
+
+    protected ExtractableResponse<Response> 컨텐츠_반응_추가_요청(String accessToken, String contentId) {
+        return post(CONTENT_URL + "/" + contentId + "/reactions", accessToken, 컨텐츠_반응_추가_요청_데이터);
     }
 
     protected String 회원가입_요청_및_응답(String type) {
