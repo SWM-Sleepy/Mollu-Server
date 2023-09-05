@@ -8,6 +8,7 @@ import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.exception.ReactionConflictException;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
@@ -97,5 +98,10 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     private Content getContent(String contentId) {
         return contentRepository.findById(contentId)
                 .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public SearchReactionResponse searchReaction(String memberId, String contentId) {
+        return null;
     }
 }

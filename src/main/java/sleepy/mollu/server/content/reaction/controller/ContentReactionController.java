@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.content.reaction.controller.dto.CreateReactionRequest;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.service.ContentReactionService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
 import sleepy.mollu.server.swagger.*;
@@ -34,5 +35,19 @@ public class ContentReactionController {
 
         contentReactionService.createReaction(memberId, contentId, request.emoji());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "컨텐츠 반응 조회")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @ForbiddenResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping
+    public ResponseEntity<SearchReactionResponse> searchReaction(@Login String memberId,
+                                                                 @PathVariable String contentId) {
+
+        return ResponseEntity.ok(contentReactionService.searchReaction(memberId, contentId));
     }
 }
