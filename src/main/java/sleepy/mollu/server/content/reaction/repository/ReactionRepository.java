@@ -16,6 +16,6 @@ public interface ReactionRepository extends JpaRepository<Reaction, String> {
 
     Optional<Reaction> findByMemberAndContent(Member member, Content content);
 
-    @Query("select r from Reaction r where r.content = :content and r.member != :member")
+    @Query("select r from Reaction r join fetch r.member where r.content = :content and r.member != :member")
     List<Reaction> findAllByContentExcludesMember(@Param("content") Content content, @Param("member") Member member);
 }
