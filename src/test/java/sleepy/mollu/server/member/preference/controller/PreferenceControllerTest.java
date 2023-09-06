@@ -66,7 +66,7 @@ class PreferenceControllerTest extends ControllerTest {
         @DisplayName("201을 응답한다")
         void UpdatePhoneToken1() throws Exception {
             // given
-            final PhoneTokenRequest request = new PhoneTokenRequest("phoneToken");
+            final PhoneTokenRequest request = new PhoneTokenRequest("phoneToken", "ios");
 
             // when
             final ResultActions resultActions = post("/members/preference/token", request);

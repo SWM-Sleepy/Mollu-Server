@@ -57,7 +57,7 @@ public class PreferenceController {
     @PostMapping("/token")
     public ResponseEntity<Void> updatePhoneToken(@Login String memberId, @RequestBody @Valid PhoneTokenRequest request) {
 
-        preferenceService.updatePhoneToken(memberId, request.phoneToken());
+        preferenceService.updatePhoneToken(memberId, request.phoneToken(), request.platform());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

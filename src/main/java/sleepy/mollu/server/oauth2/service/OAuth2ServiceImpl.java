@@ -159,7 +159,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     public void logout(String memberId) {
         final Member member = getMember(memberId);
 
-        member.updatePhoneToken(null);
+        member.updatePhoneToken(null, null);
         member.updateRefreshToken(null);
     }
 }
