@@ -9,5 +9,5 @@ public interface PreferenceService {
 
     PreferenceResponse searchPreference(String memberId);
 
-    void updatePhoneToken(String memberId, String phoneToken);
+    void updatePhoneToken(String memberId, String phoneToken, String platform);
 }

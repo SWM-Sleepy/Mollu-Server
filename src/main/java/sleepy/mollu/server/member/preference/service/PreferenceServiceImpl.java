@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.domain.Platform;
 import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
@@ -50,9 +51,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Transactional
     @Override
-    public void updatePhoneToken(String memberId, String phoneToken) {
+    public void updatePhoneToken(String memberId, String phoneToken, String platform) {
 
         final Member member = getMember(memberId);
-        member.updatePhoneToken(phoneToken);
+        member.updatePhoneToken(phoneToken, Platform.from(platform));
     }
 }

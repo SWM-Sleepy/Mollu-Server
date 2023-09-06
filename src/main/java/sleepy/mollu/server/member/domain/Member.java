@@ -34,6 +34,9 @@ public class Member extends BaseEntity {
 
     private String phoneToken;
 
+    @Enumerated(EnumType.STRING)
+    private Platform platform;
+
     private String refreshToken;
 
     @Embedded
@@ -95,8 +98,9 @@ public class Member extends BaseEntity {
         return this.profileSource.getValue();
     }
 
-    public void updatePhoneToken(String phoneToken) {
+    public void updatePhoneToken(String phoneToken, Platform platform) {
         this.phoneToken = phoneToken;
+        this.platform = platform;
     }
 
     public void updateProfile(String molluId, String name, LocalDate birthday, String profileSource) {
