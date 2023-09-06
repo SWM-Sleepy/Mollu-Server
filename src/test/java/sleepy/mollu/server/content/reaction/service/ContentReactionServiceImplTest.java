@@ -13,6 +13,7 @@ import sleepy.mollu.server.common.exception.UnAuthorizedException;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
@@ -27,6 +28,7 @@ import sleepy.mollu.server.member.repository.MemberRepository;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -160,6 +162,62 @@ class ContentReactionServiceImplTest {
 
             // then
             then(reactionRepository).should(times(1)).save(any(Reaction.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("[컨텐츠 반응 조회 서비스 호출시] ")
+    class ContentReactionServiceImplTest1 {
+
+        final String memberId = "memberId";
+        final String contentId = "contentId";
+
+        final Member member = mock(Member.class);
+        final Content content = mock(Content.class);
+        final GroupMember groupMember = mock(GroupMember.class);
+        final Reaction reaction1 = mock(Reaction.class);
+        final Reaction reaction2 = mock(Reaction.class);
+
+        @Test
+        @DisplayName("내가 반응을 하지 않았다면, 다른 사람들의 반응만 응답한다.")
+        void ContentReactionServiceImplTest0() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
+            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
+            given(groupMember.getMember()).willReturn(member);
+            given(reactionRepository.findByMemberAndContent(member, content)).willReturn(Optional.empty());
+            given(reactionRepository.findAllByContentExcludesMember(content, member)).willReturn(List.of(reaction1, reaction2));
+            given(reaction1.getId()).willReturn("reaction1");
+            given(reaction2.getId()).willReturn("reaction2");
+
+            // when
+            final SearchReactionResponse response = contentReactionService.searchReaction(memberId, contentId);
+
+            // then
+            assertThat(response.reactions()).extracting("reactionId").containsExactly(reaction1.getId(), reaction2.getId());
+        }
+
+        @Test
+        @DisplayName("내가 반응을 했다면, 내 반응은 첫 번째로 응답한다.")
+        void ContentReactionServiceImplTest1() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
+            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
+            given(groupMember.getMember()).willReturn(member);
+            given(reactionRepository.findByMemberAndContent(member, content)).willReturn(Optional.of(reaction1));
+            given(reactionRepository.findAllByContentExcludesMember(content, member)).willReturn(List.of(reaction2));
+            given(reaction1.getId()).willReturn("reaction1");
+            given(reaction2.getId()).willReturn("reaction2");
+
+            // when
+            final SearchReactionResponse response = contentReactionService.searchReaction(memberId, contentId);
+
+            // then
+            assertThat(response.reactions()).extracting("reactionId").containsExactly(reaction1.getId(), reaction2.getId());
         }
     }
 }

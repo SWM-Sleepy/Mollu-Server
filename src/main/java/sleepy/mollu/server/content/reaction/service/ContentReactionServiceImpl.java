@@ -9,6 +9,7 @@ import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepositor
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse.ReactionResponse;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.exception.ReactionConflictException;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
@@ -24,6 +25,8 @@ import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Transactional(readOnly = true)
 @Service
@@ -102,6 +105,30 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     @Override
     public SearchReactionResponse searchReaction(String memberId, String contentId) {
-        return null;
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        authorizeMemberForContent(member, content);
+
+        final Optional<Reaction> myReaction = getMyReaction(member, content);
+        final List<Reaction> otherReactions = getOtherReactions(member, content);
+
+        return getSearchReactionResponse(Stream.concat(myReaction.stream(), otherReactions.stream()).toList());
+    }
+
+    private SearchReactionResponse getSearchReactionResponse(List<Reaction> reactions) {
+        return new SearchReactionResponse(reactions.stream()
+                .map(reaction -> new ReactionResponse(
+                        reaction.getId(),
+                        reaction.getReactionSource(),
+                        reaction.getMemberName()))
+                .toList());
+    }
+
+    private Optional<Reaction> getMyReaction(Member member, Content content) {
+        return reactionRepository.findByMemberAndContent(member, content);
+    }
+
+    private List<Reaction> getOtherReactions(Member member, Content content) {
+        return reactionRepository.findAllByContentExcludesMember(content, member);
     }
 }

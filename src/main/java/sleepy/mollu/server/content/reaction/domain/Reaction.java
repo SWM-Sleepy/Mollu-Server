@@ -41,4 +41,12 @@ public class Reaction {
         this.member = member;
         this.content = content;
     }
+
+    public String getReactionSource() {
+        return this.reactionSource.getValue();
+    }
+
+    public String getMemberName() {
+        return this.member.getName();
+    }
 }
