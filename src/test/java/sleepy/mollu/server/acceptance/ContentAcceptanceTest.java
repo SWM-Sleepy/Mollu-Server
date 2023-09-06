@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
@@ -123,12 +124,17 @@ class ContentAcceptanceTest extends AcceptanceTest {
         내_이모티콘_등록_요청(accessToken, emojiType);
 
         final String contentId = getContentId(컨텐츠_업로드_요청(accessToken));
+        컨텐츠_반응_추가_요청(accessToken, contentId);
 
         // when
-        final ExtractableResponse<Response> 컨텐츠_반응_추가_응답 = 컨텐츠_반응_추가_요청(accessToken, contentId);
+        final ExtractableResponse<Response> 컨텐츠_반응_조회_응답 = 컨텐츠_반응_조회_요청(accessToken, contentId);
+        final SearchReactionResponse response = toObject(컨텐츠_반응_조회_응답, SearchReactionResponse.class);
 
         // then
-        assertThat(컨텐츠_반응_추가_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(컨텐츠_반응_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.reactions()).hasSize(1)
+        );
     }
 
     private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {

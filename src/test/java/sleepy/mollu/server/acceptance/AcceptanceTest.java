@@ -145,6 +145,10 @@ public class AcceptanceTest {
         return post(CONTENT_URL + "/" + contentId + "/reactions", accessToken, 컨텐츠_반응_추가_요청_데이터);
     }
 
+    protected ExtractableResponse<Response> 컨텐츠_반응_조회_요청(String accessToken, String contentId) {
+        return get(CONTENT_URL + "/" + contentId + "/reactions", accessToken);
+    }
+
     protected String 회원가입_요청_및_응답(String type) {
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
         final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
