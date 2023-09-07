@@ -149,6 +149,10 @@ public class AcceptanceTest {
         return get(CONTENT_URL + "/" + contentId + "/reactions", accessToken);
     }
 
+    protected ExtractableResponse<Response> 컨텐츠_반응_삭제_요청(String accessToken, String contentId, String reactionId) {
+        return delete(CONTENT_URL + "/" + contentId + "/reactions/" + reactionId, accessToken);
+    }
+
     protected String 회원가입_요청_및_응답(String type) {
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
         final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
@@ -157,5 +161,9 @@ public class AcceptanceTest {
 
     protected String getContentId(ExtractableResponse<Response> response) {
         return getLocation(response).split("/")[2];
+    }
+
+    protected String getReactionId(ExtractableResponse<Response> response) {
+        return getLocation(response).split("/")[4];
     }
 }

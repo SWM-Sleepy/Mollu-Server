@@ -4,7 +4,9 @@ import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionRespons
 
 public interface ContentReactionService {
 
-    void createReaction(String memberId, String contentId, String type);
+    String createReaction(String memberId, String contentId, String type);
 
     SearchReactionResponse searchReaction(String memberId, String contentId);
+
+    void deleteReaction(String memberId, String contentId, String reactionId);
 }

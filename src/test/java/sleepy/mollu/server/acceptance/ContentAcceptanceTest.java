@@ -9,6 +9,7 @@ import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
+import software.amazon.awssdk.http.HttpStatusCode;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -122,14 +123,35 @@ class ContentAcceptanceTest extends AcceptanceTest {
         final String accessToken = 회원가입_요청_및_응답("google");
         내_이모티콘_등록_요청(accessToken, emojiType);
 
-        final String contentId = getContentId(컨텐츠_업로드_요청(accessToken));
-        컨텐츠_반응_추가_요청(accessToken, contentId);
+        final String contentId = 컨텐츠를_업로드_한다(accessToken);
 
         // when
+        final String reactionId = 컨텐츠에_반응을_추가한다(accessToken, contentId);
+        컨텐츠의_반응을_조회한다(accessToken, contentId);
+        final ExtractableResponse<Response> 컨텐츠_반응_삭제_응답 = 컨텐츠_반응_삭제_요청(accessToken, contentId, reactionId);
+
+        // then
+        assertThat(컨텐츠_반응_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private String 컨텐츠를_업로드_한다(String accessToken) {
+        final ExtractableResponse<Response> 컨텐츠_업로드_응답 = 컨텐츠_업로드_요청(accessToken);
+        assertThat(컨텐츠_업로드_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        return getContentId(컨텐츠_업로드_응답);
+    }
+
+    private String 컨텐츠에_반응을_추가한다(String accessToken, String contentId) {
+        final ExtractableResponse<Response> 컨텐츠_반응_추가_응답 = 컨텐츠_반응_추가_요청(accessToken, contentId);
+        assertThat(컨텐츠_반응_추가_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        return getReactionId(컨텐츠_반응_추가_응답);
+    }
+
+    private void 컨텐츠의_반응을_조회한다(String accessToken, String contentId) {
         final ExtractableResponse<Response> 컨텐츠_반응_조회_응답 = 컨텐츠_반응_조회_요청(accessToken, contentId);
         final SearchReactionResponse response = toObject(컨텐츠_반응_조회_응답, SearchReactionResponse.class);
 
-        // then
         assertAll(
                 () -> assertThat(컨텐츠_반응_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.reactions()).hasSize(1)

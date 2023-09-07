@@ -42,7 +42,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     @Transactional
     @Override
-    public void createReaction(String memberId, String contentId, String type) {
+    public String createReaction(String memberId, String contentId, String type) {
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
         final EmojiType emojiType = EmojiType.from(type);
@@ -50,7 +50,8 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         authorizeMemberForContent(member, content);
         checkReactionExists(member, content);
         checkEmojiExists(member, emojiType);
-        saveReaction(member, content, emojiType);
+
+        return saveReaction(member, content, emojiType).getId();
     }
 
     private List<Member> getGroupMembersByContent(Content content) {
@@ -67,7 +68,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     private void authorizeMemberForContent(Member member, Content content) {
         final List<Member> membersByGroups = getGroupMembersByContent(content);
         if (!membersByGroups.contains(member)) {
-            throw new MemberUnAuthorizedException("컨텐츠에 대한 접근 권한이 없습니다.");
+            throw new MemberUnAuthorizedException("해당 컨텐츠에 대한 접근 권한이 없습니다.");
         }
     }
 
@@ -83,8 +84,8 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         }
     }
 
-    private void saveReaction(Member member, Content content, EmojiType emojiType) {
-        reactionRepository.save(Reaction.builder()
+    private Reaction saveReaction(Member member, Content content, EmojiType emojiType) {
+        return reactionRepository.save(Reaction.builder()
                 .id(idConstructor.create())
                 .type(emojiType)
                 .reactionSource(member.getEmojiSourceFrom(emojiType))
@@ -130,5 +131,29 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     private List<Reaction> getOtherReactions(Member member, Content content) {
         return reactionRepository.findAllByContentExcludesMember(content, member);
+    }
+
+    @Transactional
+    @Override
+    public void deleteReaction(String memberId, String contentId, String reactionId) {
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        final Reaction reaction = getReaction(reactionId);
+
+        authorizeMemberForContent(member, content);
+        authorizeMemberForReaction(member, reaction);
+
+        reactionRepository.delete(reaction);
+    }
+
+    private Reaction getReaction(String reactionId) {
+        return reactionRepository.findById(reactionId)
+                .orElseThrow(() -> new ReactionConflictException("ID가 [" + reactionId + "]인 반응을 찾을 수 없습니다."));
+    }
+
+    private void authorizeMemberForReaction(Member member, Reaction reaction) {
+        if (!reaction.isOwner(member)) {
+            throw new MemberUnAuthorizedException("해당 반응에 대한 삭제 권한이 없습니다.");
+        }
     }
 }
