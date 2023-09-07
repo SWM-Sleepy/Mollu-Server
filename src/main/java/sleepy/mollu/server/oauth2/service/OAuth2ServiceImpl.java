@@ -1,6 +1,7 @@
 package sleepy.mollu.server.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
@@ -29,6 +30,7 @@ import sleepy.mollu.server.oauth2.jwt.service.JwtRefresher;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -131,9 +133,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Transactional
     @Override
     public TokenResponse refresh(String refreshToken) {
-
         final String memberId = getMemberIdFromRefreshToken(refreshToken);
-        final Member member = getMember(memberId);
+        final Member member = getMemberWithLock(memberId);
         if (!member.hasSameRefreshToken(refreshToken)) {
             throw new ConflictException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
         }
@@ -151,6 +152,11 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
     private Member getMember(String memberId) {
         return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
+    }
+
+    private Member getMemberWithLock(String memberId) {
+        return memberRepository.findByIdForUpdate(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
     }
 
