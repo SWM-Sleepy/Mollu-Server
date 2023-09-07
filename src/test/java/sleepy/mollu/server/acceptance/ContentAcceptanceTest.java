@@ -8,7 +8,6 @@ import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
-import sleepy.mollu.server.member.emoji.controller.dto.SearchMyEmojiResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.time.LocalDateTime;

@@ -59,13 +59,13 @@ public class ControllerTest {
     @MockBean
     protected MolluTimeService molluTimeService;
     @MockBean
+    protected MemberEmojiService memberEmojiService;
+    @MockBean
     private MemberService memberService;
     @MockBean
     private AdminService adminService;
     @MockBean
     private AdminAlarmService adminAlarmService;
-    @MockBean
-    protected MemberEmojiService memberEmojiService;
     @MockBean
     private ContentReactionService contentReactionService;
 

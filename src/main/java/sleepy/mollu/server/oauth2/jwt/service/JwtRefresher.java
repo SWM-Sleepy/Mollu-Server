@@ -5,4 +5,6 @@ import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 public interface JwtRefresher {
 
     JwtToken refresh(String refreshToken);
+
+    boolean canRefresh(String refreshToken);
 }
