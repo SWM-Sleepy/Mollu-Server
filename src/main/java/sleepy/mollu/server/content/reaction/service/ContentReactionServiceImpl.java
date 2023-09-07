@@ -67,7 +67,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     private void authorizeMemberForContent(Member member, Content content) {
         final List<Member> membersByGroups = getGroupMembersByContent(content);
         if (!membersByGroups.contains(member)) {
-            throw new MemberUnAuthorizedException("컨텐츠에 대한 접근 권한이 없습니다.");
+            throw new MemberUnAuthorizedException("해당 컨텐츠에 대한 접근 권한이 없습니다.");
         }
     }
 
@@ -132,8 +132,27 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         return reactionRepository.findAllByContentExcludesMember(content, member);
     }
 
+    @Transactional
     @Override
     public void deleteReaction(String memberId, String contentId, String reactionId) {
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        final Reaction reaction = getReaction(reactionId);
 
+        authorizeMemberForContent(member, content);
+        authorizeMemberForReaction(member, reaction);
+
+        reactionRepository.delete(reaction);
+    }
+
+    private Reaction getReaction(String reactionId) {
+        return reactionRepository.findById(reactionId)
+                .orElseThrow(() -> new ReactionConflictException("ID가 [" + reactionId + "]인 반응을 찾을 수 없습니다."));
+    }
+
+    private void authorizeMemberForReaction(Member member, Reaction reaction) {
+        if (!reaction.isOwner(member)) {
+            throw new MemberUnAuthorizedException("해당 반응에 대한 삭제 권한이 없습니다.");
+        }
     }
 }

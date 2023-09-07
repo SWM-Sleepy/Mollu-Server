@@ -49,4 +49,8 @@ public class Reaction {
     public String getMemberName() {
         return this.member.getName();
     }
+
+    public boolean isOwner(Member member) {
+        return this.member.equals(member);
+    }
 }
