@@ -50,4 +50,21 @@ public class ContentReactionController {
 
         return ResponseEntity.ok(contentReactionService.searchReaction(memberId, contentId));
     }
+
+    @Operation(summary = "컨텐츠 반응 삭제")
+    @NoContentResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @ForbiddenResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @DeleteMapping("/{reactionId}")
+    public ResponseEntity<Void> deleteReaction(@Login String memberId,
+                                               @PathVariable String contentId,
+                                               @PathVariable String reactionId) {
+
+        contentReactionService.deleteReaction(memberId, contentId, reactionId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -44,5 +44,4 @@ class ContentReactionControllerTest extends ControllerTest {
                     .andDo(print());
         }
     }
-
 }

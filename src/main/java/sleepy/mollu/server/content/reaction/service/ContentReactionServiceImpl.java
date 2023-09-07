@@ -131,4 +131,9 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     private List<Reaction> getOtherReactions(Member member, Content content) {
         return reactionRepository.findAllByContentExcludesMember(content, member);
     }
+
+    @Override
+    public void deleteReaction(String memberId, String contentId, String reactionId) {
+
+    }
 }

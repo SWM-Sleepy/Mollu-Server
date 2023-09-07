@@ -7,4 +7,6 @@ public interface ContentReactionService {
     void createReaction(String memberId, String contentId, String type);
 
     SearchReactionResponse searchReaction(String memberId, String contentId);
+
+    void deleteReaction(String memberId, String contentId, String reactionId);
 }
