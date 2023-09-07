@@ -1,6 +1,7 @@
 package sleepy.mollu.server.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
@@ -34,6 +35,7 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2ServiceImpl implements OAuth2Service {
 
     private static final String BEAN_NAME_FORMAT = "OAuth2Client";
@@ -132,12 +134,16 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Override
     public TokenResponse refresh(String refreshToken) {
         final String memberId = getMemberIdFromRefreshToken(refreshToken);
-        final Member member = getMemberWithLock(memberId);
-        if (!member.hasSameRefreshToken(refreshToken)) {
-            throw new ConflictException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
+        if (!jwtRefresher.canRefresh(refreshToken)) {
+            log.info("토큰 재발급 X");
+            final Member member = getMember(memberId);
+            final JwtToken token = getNewToken(member, refreshToken);
+            return new TokenResponse(token.accessToken(), refreshToken);
         }
 
-        final JwtToken token = jwtRefresher.refresh(refreshToken);
+        log.info("토큰 재발급 O");
+        final Member member = getMemberWithLock(memberId);
+        final JwtToken token = getNewToken(member, refreshToken);
         member.updateRefreshToken(token.refreshToken());
 
         return new TokenResponse(token.accessToken(), token.refreshToken());
@@ -156,6 +162,14 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private Member getMemberWithLock(String memberId) {
         return memberRepository.findByIdForUpdate(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
+    }
+
+    private JwtToken getNewToken(Member member, String refreshToken) {
+        if (!member.hasSameRefreshToken(refreshToken)) {
+            throw new ConflictException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
+        }
+
+        return jwtRefresher.refresh(refreshToken);
     }
 
     @Transactional

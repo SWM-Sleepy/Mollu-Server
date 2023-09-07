@@ -11,9 +11,14 @@ import sleepy.mollu.server.oauth2.jwt.dto.ExtractType;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtPayload;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class JwtManager implements JwtExtractor, JwtGenerator, JwtRefresher {
+
+    private static final int REFRESH_LEFT_DAYS = 5;
 
     TokenManager accessTokenManager;
     TokenManager refreshTokenManager;
@@ -50,6 +55,13 @@ public class JwtManager implements JwtExtractor, JwtGenerator, JwtRefresher {
                 .accessToken(accessTokenManager.generate(jwtPayload.id()))
                 .refreshToken(refreshTokenManager.generate(jwtPayload.id()))
                 .build();
+    }
+
+    @Override
+    public boolean canRefresh(String refreshToken) {
+        final JwtPayload payload = refreshTokenManager.extract(refreshToken);
+        final long leftExpireDays = Duration.between(LocalDateTime.now(), payload.expireAt()).toDays();
+        return leftExpireDays < REFRESH_LEFT_DAYS;
     }
 
     private TokenManager getTokenManager(ExtractType type) {
