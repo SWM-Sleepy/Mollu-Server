@@ -42,7 +42,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     @Transactional
     @Override
-    public void createReaction(String memberId, String contentId, String type) {
+    public String createReaction(String memberId, String contentId, String type) {
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
         final EmojiType emojiType = EmojiType.from(type);
@@ -50,7 +50,8 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         authorizeMemberForContent(member, content);
         checkReactionExists(member, content);
         checkEmojiExists(member, emojiType);
-        saveReaction(member, content, emojiType);
+
+        return saveReaction(member, content, emojiType).getId();
     }
 
     private List<Member> getGroupMembersByContent(Content content) {
@@ -83,8 +84,8 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         }
     }
 
-    private void saveReaction(Member member, Content content, EmojiType emojiType) {
-        reactionRepository.save(Reaction.builder()
+    private Reaction saveReaction(Member member, Content content, EmojiType emojiType) {
+        return reactionRepository.save(Reaction.builder()
                 .id(idConstructor.create())
                 .type(emojiType)
                 .reactionSource(member.getEmojiSourceFrom(emojiType))
