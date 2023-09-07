@@ -72,6 +72,7 @@ class ContentReactionServiceImplTest {
         final Member member2 = mock(Member.class);
         final Content content = mock(Content.class);
         final GroupMember groupMember = mock(GroupMember.class);
+        final Reaction reaction = mock(Reaction.class);
 
         @Test
         @DisplayName("멤버가 없으면, NotFound 예외를 던진다.")
@@ -156,6 +157,8 @@ class ContentReactionServiceImplTest {
             given(reactionRepository.existsByMemberAndContent(member, content)).willReturn(false);
             given(member.hasEmojiFrom(EmojiType.from(type))).willReturn(true);
             given(idConstructor.create()).willReturn("reactionId");
+            given(reactionRepository.save(any(Reaction.class))).willReturn(reaction);
+            given(reaction.getId()).willReturn("reactionId");
 
             // when
             contentReactionService.createReaction(memberId, contentId, type);
