@@ -1,13 +1,9 @@
 package sleepy.mollu.server.fixture;
 
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.domain.content.ContentSource;
-import sleepy.mollu.server.content.domain.content.ContentTime;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
-
-import java.time.LocalDateTime;
 
 public class ReactionFixture {
 

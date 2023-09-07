@@ -1,7 +1,6 @@
 package sleepy.mollu.server.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
@@ -30,7 +29,6 @@ import sleepy.mollu.server.oauth2.jwt.service.JwtRefresher;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
