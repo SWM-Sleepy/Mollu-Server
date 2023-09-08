@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionExistsResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -121,11 +122,13 @@ class ContentAcceptanceTest extends AcceptanceTest {
         // given
         final String emojiType = "emoticon1";
         final String accessToken = 회원가입_요청_및_응답("google");
+
         내_이모티콘_등록_요청(accessToken, emojiType);
 
         final String contentId = 컨텐츠를_업로드_한다(accessToken);
 
         // when
+        먼저_컨텐츠에_반응을_남겼는지_확인한다(accessToken, contentId);
         final String reactionId = 컨텐츠에_반응을_추가한다(accessToken, contentId);
         컨텐츠의_반응을_조회한다(accessToken, contentId);
         final ExtractableResponse<Response> 컨텐츠_반응_삭제_응답 = 컨텐츠_반응_삭제_요청(accessToken, contentId, reactionId);
@@ -139,6 +142,16 @@ class ContentAcceptanceTest extends AcceptanceTest {
         assertThat(컨텐츠_업로드_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         return getContentId(컨텐츠_업로드_응답);
+    }
+
+    private void 먼저_컨텐츠에_반응을_남겼는지_확인한다(String accessToken, String contentId) {
+        final ExtractableResponse<Response> 컨텐츠_반응_여부_조회_응답 = 컨텐츠_반응_여부_조회_요청(accessToken, contentId);
+        final SearchReactionExistsResponse response = toObject(컨텐츠_반응_여부_조회_응답, SearchReactionExistsResponse.class);
+
+        assertAll(
+                () -> assertThat(컨텐츠_반응_여부_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.reacted()).isFalse()
+        );
     }
 
     private String 컨텐츠에_반응을_추가한다(String accessToken, String contentId) {
