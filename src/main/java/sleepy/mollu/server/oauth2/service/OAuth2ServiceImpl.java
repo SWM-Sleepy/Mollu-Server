@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
-import sleepy.mollu.server.common.exception.ConflictException;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
@@ -20,6 +19,7 @@ import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
+import sleepy.mollu.server.oauth2.exception.TokenUnAuthenticatedException;
 import sleepy.mollu.server.oauth2.jwt.dto.ExtractType;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtPayload;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
@@ -49,6 +49,12 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
     private final IdConstructor idConstructor;
+
+    private static void checkRefreshTokenValid(String refreshToken, Member member) {
+        if (!member.hasSameRefreshToken(refreshToken)) {
+            throw new TokenUnAuthenticatedException("데이터베이스에 저장된 리프레시 토큰과 다릅니다.");
+        }
+    }
 
     @Transactional
     @Override
@@ -133,23 +139,15 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Transactional
     @Override
     public TokenResponse refresh(String refreshToken) {
-        final String memberId = getMemberIdFromRefreshToken(refreshToken);
-        if (!jwtRefresher.canRefresh(refreshToken)) {
-            log.info("토큰 재발급 X");
-            final Member member = getMember(memberId);
-            final JwtToken token = getNewToken(member, refreshToken);
-            return new TokenResponse(token.accessToken(), refreshToken);
-        }
+        final String memberId = getMemberIdFrom(refreshToken);
+        final Member member = getMember(memberId);
 
-        log.info("토큰 재발급 O");
-        final Member member = getMemberWithLock(memberId);
-        final JwtToken token = getNewToken(member, refreshToken);
-        member.updateRefreshToken(token.refreshToken());
+        checkRefreshTokenValid(refreshToken, member);
 
-        return new TokenResponse(token.accessToken(), token.refreshToken());
+        return new TokenResponse(getNewAccessToken(refreshToken), refreshToken);
     }
 
-    private String getMemberIdFromRefreshToken(String refreshToken) {
+    private String getMemberIdFrom(String refreshToken) {
         final JwtPayload payload = jwtExtractor.extract(refreshToken, ExtractType.REFRESH);
         return payload.id();
     }
@@ -159,16 +157,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
                 .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
     }
 
-    private Member getMemberWithLock(String memberId) {
-        return memberRepository.findByIdForUpdate(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
-    }
-
-    private JwtToken getNewToken(Member member, String refreshToken) {
-        if (!member.hasSameRefreshToken(refreshToken)) {
-            throw new ConflictException("[" + refreshToken + "]은 저장된 토큰과 다릅니다.");
-        }
-
+    private String getNewAccessToken(String refreshToken) {
         return jwtRefresher.refresh(refreshToken);
     }
 
