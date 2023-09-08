@@ -8,6 +8,7 @@ import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
+import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionExistsResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse.ReactionResponse;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
@@ -155,5 +156,19 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         if (!reaction.isOwner(member)) {
             throw new MemberUnAuthorizedException("해당 반응에 대한 삭제 권한이 없습니다.");
         }
+    }
+
+    @Override
+    public SearchReactionExistsResponse searchReactionExists(String memberId, String contentId) {
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+
+        authorizeMemberForContent(member, content);
+
+        return new SearchReactionExistsResponse(getContentReactionStatus(member, content));
+    }
+
+    private boolean getContentReactionStatus(Member member, Content content) {
+        return reactionRepository.existsByMemberAndContent(member, content);
     }
 }
