@@ -7,8 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
+import sleepy.mollu.server.member.emoji.domain.Emoji;
+import sleepy.mollu.server.member.emoji.domain.EmojiType;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -31,6 +34,9 @@ public class Member extends BaseEntity {
 
     private String phoneToken;
 
+    @Enumerated(EnumType.STRING)
+    private Platform platform;
+
     private String refreshToken;
 
     @Embedded
@@ -41,6 +47,10 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "preference_id")
     private Preference preference;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "emoji_id")
+    private Emoji emoji;
+
     @Builder
     public Member(String id, String name, String molluId, LocalDate birthday, String refreshToken, Preference preference) {
         this.id = id;
@@ -49,6 +59,18 @@ public class Member extends BaseEntity {
         this.birthday = new Birthday(birthday);
         this.refreshToken = refreshToken;
         setPreference(preference);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Member member)) return false;
+        return Objects.equals(getId(), member.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 
     private void setPreference(Preference preference) {
@@ -76,8 +98,9 @@ public class Member extends BaseEntity {
         return this.profileSource.getValue();
     }
 
-    public void updatePhoneToken(String phoneToken) {
+    public void updatePhoneToken(String phoneToken, Platform platform) {
         this.phoneToken = phoneToken;
+        this.platform = platform;
     }
 
     public void updateProfile(String molluId, String name, LocalDate birthday, String profileSource) {
@@ -117,5 +140,30 @@ public class Member extends BaseEntity {
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public boolean hasEmoji() {
+        return this.emoji != null;
+    }
+
+    public void createEmoji() {
+        this.emoji = new Emoji();
+        this.emoji.assignMember(this);
+    }
+
+    public void updateEmoji(EmojiType emojiType, String emojiSource) {
+        this.emoji.update(emojiType, emojiSource);
+    }
+
+    public void deleteEmoji(EmojiType emojiType) {
+        this.emoji.delete(emojiType);
+    }
+
+    public String getEmojiSourceFrom(EmojiType emojiType) {
+        return this.emoji.getSourceFrom(emojiType);
+    }
+
+    public boolean hasEmojiFrom(EmojiType emojiType) {
+        return this.emoji.hasFrom(emojiType);
     }
 }

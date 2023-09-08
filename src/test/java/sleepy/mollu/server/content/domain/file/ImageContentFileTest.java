@@ -23,7 +23,7 @@ class ImageContentFileTest {
                 "Spring Framework".getBytes());
 
         // when & then
-        assertThatThrownBy(() -> new ImageContentFile(mockFile))
+        assertThatThrownBy(() -> new ImageContentFile(mockFile, ContentType.CONTENTS))
                 .isInstanceOf(ImageContentFileBadRequestException.class);
     }
 
@@ -36,7 +36,7 @@ class ImageContentFileTest {
                 "Spring Framework".getBytes());
 
         // when & then
-        assertThatCode(() -> new ImageContentFile(mockFile)).doesNotThrowAnyException();
+        assertThatCode(() -> new ImageContentFile(mockFile, ContentType.CONTENTS)).doesNotThrowAnyException();
     }
 
 }

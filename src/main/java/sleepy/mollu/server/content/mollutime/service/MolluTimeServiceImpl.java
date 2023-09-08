@@ -38,7 +38,7 @@ public class MolluTimeServiceImpl implements MolluTimeService {
         final Content content = optionalContent.get();
         final MolluAlarm currentMolluAlarm = getCurrentMolluAlarm();
 
-        if(shouldUploadContent(content, currentMolluAlarm)) {
+        if (shouldUploadContent(content, currentMolluAlarm)) {
             return responseFromAlarm(currentMolluAlarm);
         }
 

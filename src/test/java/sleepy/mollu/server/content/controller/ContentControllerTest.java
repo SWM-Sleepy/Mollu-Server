@@ -3,6 +3,7 @@ package sleepy.mollu.server.content.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -73,10 +74,11 @@ class ContentControllerTest extends ControllerTest {
         void ContentUploadTest3() throws Exception {
             // given
             final String accessToken = getAccessToken();
+            final String[] files = {"frontContentFile", "backContentFile"};
             final MultiValueMap<String, String> params = getParams(List.of("location", "tag"));
 
             // when
-            final ResultActions resultActions = multipart("/contents", accessToken, params);
+            final ResultActions resultActions = multipart(HttpMethod.POST, "/contents", files, accessToken, params);
 
             // then
             resultActions.andExpect(status().isBadRequest())
@@ -88,10 +90,11 @@ class ContentControllerTest extends ControllerTest {
         void ContentUploadTest() throws Exception {
             // given
             final String accessToken = getAccessToken();
+            final String[] files = {"frontContentFile", "backContentFile"};
             final MultiValueMap<String, String> params = getParams(List.of("location", "uploadDateTime"));
 
             // when
-            final ResultActions resultActions = multipart("/contents", accessToken, params);
+            final ResultActions resultActions = multipart(HttpMethod.POST, "/contents", files, accessToken, params);
 
             // then
             resultActions.andExpect(status().isCreated())
@@ -103,10 +106,11 @@ class ContentControllerTest extends ControllerTest {
         void ContentUploadTest1() throws Exception {
             // given
             final String accessToken = getAccessToken();
+            final String[] files = {"frontContentFile", "backContentFile"};
             final MultiValueMap<String, String> params = getParams(List.of("location", "tag", "question", "molluDateTime", "uploadDateTime"));
 
             // when
-            final ResultActions resultActions = multipart("/contents", accessToken, params);
+            final ResultActions resultActions = multipart(HttpMethod.POST, "/contents", files, accessToken, params);
 
             // then
             resultActions.andExpect(status().isCreated())

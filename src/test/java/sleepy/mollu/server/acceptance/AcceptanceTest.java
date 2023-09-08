@@ -15,6 +15,7 @@ import sleepy.mollu.server.config.TestConfig;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
+import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class AcceptanceTest {
     private static final String BASE_URL = "/api";
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
+    private static final String MEMBER_EMOJI_URL = MEMBER_URL + "/emojis";
     private static final String CONTENT_URL = BASE_URL + "/contents";
     @LocalServerPort
     protected int port;
@@ -110,18 +112,8 @@ public class AcceptanceTest {
                 .post(CONTENT_URL));
     }
 
-    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime molluDateTime, String question, LocalDateTime uploadDateTime) {
-        return thenExtract(RestAssured.given()
-                .headers(Map.of("Authorization", "Bearer " + accessToken))
-                .multiPart("location", "location")
-                .multiPart("tag", "tag")
-                .multiPart("question", question)
-                .multiPart("molluDateTime", molluDateTime.toString())
-                .multiPart("uploadDateTime", uploadDateTime.toString())
-                .multiPart("frontContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
-                .multiPart("backContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
-                .when()
-                .post(CONTENT_URL));
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken) {
+        return 컨텐츠_업로드_요청(accessToken, NOW);
     }
 
     protected ExtractableResponse<Response> 그룹원_피드_조회_요청(String accessToken) {
@@ -132,7 +124,50 @@ public class AcceptanceTest {
         return post(CONTENT_URL + "/" + contentId + "/report", accessToken, 신고_요청_데이터);
     }
 
+    protected ExtractableResponse<Response> 내_이모티콘_등록_요청(String accessToken, String emojiType) {
+        return thenExtract(RestAssured.given()
+                .headers(Map.of("Authorization", "Bearer " + accessToken))
+                .multiPart("emoji", emojiType)
+                .multiPart("emojiFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
+                .when()
+                .post(MEMBER_EMOJI_URL));
+    }
+
+    protected ExtractableResponse<Response> 내_이모티콘_조회_요청(String accessToken) {
+        return get(MEMBER_EMOJI_URL, accessToken);
+    }
+
+    protected ExtractableResponse<Response> 내_이모티콘_삭제_요청(String accessToken, String emojiType) {
+        return delete(MEMBER_EMOJI_URL + "?emoji=" + emojiType, accessToken);
+    }
+
+    protected ExtractableResponse<Response> 컨텐츠_반응_추가_요청(String accessToken, String contentId) {
+        return post(CONTENT_URL + "/" + contentId + "/reactions", accessToken, 컨텐츠_반응_추가_요청_데이터);
+    }
+
+    protected ExtractableResponse<Response> 컨텐츠_반응_여부_조회_요청(String accessToken, String contentId) {
+        return get(CONTENT_URL + "/" + contentId + "/reactions/my", accessToken);
+    }
+
+    protected ExtractableResponse<Response> 컨텐츠_반응_조회_요청(String accessToken, String contentId) {
+        return get(CONTENT_URL + "/" + contentId + "/reactions", accessToken);
+    }
+
+    protected ExtractableResponse<Response> 컨텐츠_반응_삭제_요청(String accessToken, String contentId, String reactionId) {
+        return delete(CONTENT_URL + "/" + contentId + "/reactions/" + reactionId, accessToken);
+    }
+
+    protected String 회원가입_요청_및_응답(String type) {
+        final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
+        final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
+        return response.accessToken();
+    }
+
     protected String getContentId(ExtractableResponse<Response> response) {
         return getLocation(response).split("/")[2];
+    }
+
+    protected String getReactionId(ExtractableResponse<Response> response) {
+        return getLocation(response).split("/")[4];
     }
 }

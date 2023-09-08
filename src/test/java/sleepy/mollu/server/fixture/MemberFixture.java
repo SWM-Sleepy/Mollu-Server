@@ -8,6 +8,8 @@ public class MemberFixture {
 
     public static final String DEFAULT_NAME = "name";
     public static final LocalDate DEFAULT_BIRTHDAY = LocalDate.now();
+    public static final Member 멤버1 = create("memberId1", "mollu_id1");
+    public static final Member 멤버2 = create("memberId2", "mollu_id2");
 
     public static Member create(String id, String molluId) {
         return Member.builder()

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <conversionRule conversionWord="uuidOrThread"
+                    converterClass="sleepy.mollu.server.common.domain.UuidOrTheadConverter"/>
+
     <property name="LOGS_ABSOLUTE_PATH" value="/home/ubuntu/mollu/logs"/>
     <property name="LOGS_FILE_PATH" value="${LOGS_ABSOLUTE_PATH}"/>
     <property name="LOGS_ROLLING_PATH" value="${LOGS_FILE_PATH}/was-logs"/>
     <property name="LOGS_ROLLING_PATTERN" value="%d{yyyy-MM-dd}.%i.log.gz"/>
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %logger{36} - %msg%n"/>
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss} [%uuidOrThread] %highlight(%-5level) %logger{36} - %msg%n"/>
+    <springProperty name="AWS_ACCESS_KEY" source="cloud.aws.credentials.accessKey"/>
+    <springProperty name="AWS_SECRET_KEY" source="cloud.aws.credentials.secretKey"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -69,6 +75,24 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="CLOUD_WATCH_LOG" class="ca.pjer.logback.AwsLogsAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <layout>
+            <pattern>${LOG_PATTERN}</pattern>
+        </layout>
+        <logGroupName>MOLLU-log</logGroupName>
+        <logStreamUuidPrefix>MOLLU-log-</logStreamUuidPrefix>
+        <logRegion>ap-northeast-2</logRegion>
+        <maxBatchLogEvents>100</maxBatchLogEvents>
+        <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+        <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+        <retentionsTimeDays>7</retentionsTimeDays>
+        <accessKeyId>${AWS_ACCESS_KEY}</accessKeyId>
+        <secretAccessKey>${AWS_SECRET_KEY}</secretAccessKey>
+    </appender>
+
     <springProfile name="local">
         <root level="INFO">
             <springProfile name="local">
@@ -77,12 +101,22 @@
         </root>
     </springProfile>
 
-    <springProfile name="dev, prod">
+    <springProfile name="dev">
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="INFO_LOG"/>
             <appender-ref ref="WARN_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="INFO_LOG"/>
+            <appender-ref ref="WARN_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="CLOUD_WATCH_LOG"/>
         </root>
     </springProfile>
 </configuration>

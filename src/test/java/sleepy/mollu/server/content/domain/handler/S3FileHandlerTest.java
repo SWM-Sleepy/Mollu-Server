@@ -11,6 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.common.config.AwsConfig;
 import sleepy.mollu.server.content.domain.file.ContentFile;
+import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -29,7 +30,7 @@ class S3FileHandlerTest {
         // given
         final MultipartFile file = new MockMultipartFile("photo", "test_file.png", "image/png",
                 "Spring Framework".getBytes());
-        final ContentFile contentFile = new ImageContentFile(file);
+        final ContentFile contentFile = new ImageContentFile(file, ContentType.CONTENTS);
 
         assertThatCode(() -> fileHandler.upload(contentFile)).doesNotThrowAnyException();
     }

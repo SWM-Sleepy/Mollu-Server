@@ -3,10 +3,12 @@ package sleepy.mollu.server.common.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -16,6 +18,8 @@ public class WebInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        MDC.put("uuid", UUID.randomUUID().toString());
+
         final long start = System.currentTimeMillis();
         request.setAttribute(ATTRIBUTE_TIME, start);
 
@@ -34,5 +38,7 @@ public class WebInterceptor implements HandlerInterceptor {
         final long end = System.currentTimeMillis();
 
         log.info("[" + handler + "] executeTime : " + (end - start) + "ms");
+
+        MDC.remove("uuid");
     }
 }

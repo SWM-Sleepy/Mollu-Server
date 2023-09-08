@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.member.domain.Member;
@@ -47,7 +48,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private String getProfileSource(MultipartFile profileFile) {
         if (profileFile != null) {
-            final ImageContentFile contentFile = new ImageContentFile(profileFile);
+            final ImageContentFile contentFile = new ImageContentFile(profileFile, ContentType.PROFILES);
             return fileHandler.upload(contentFile);
         }
 

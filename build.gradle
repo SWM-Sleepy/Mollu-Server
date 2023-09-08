@@ -38,6 +38,7 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:2.2.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
 
     // Querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'

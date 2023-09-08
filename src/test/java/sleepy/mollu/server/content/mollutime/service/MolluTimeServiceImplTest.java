@@ -16,9 +16,7 @@ import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,11 +1,14 @@
 package sleepy.mollu.server.member.repository;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sleepy.mollu.server.member.domain.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
 
@@ -14,4 +17,8 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     @Query("select m from Member m join m.preference p where p.molluAlarm = true")
     List<Member> findAllByMolluAlarmAllowed();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from Member m where m.id = :memberId")
+    Optional<Member> findByIdForUpdate(@Param("memberId") String memberId);
 }
