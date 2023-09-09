@@ -33,9 +33,9 @@ public class Comment {
     private Comment parent;
 
     @Builder
-    public Comment(String id, Message message, Member member, Content content) {
+    public Comment(String id, String message, Member member, Content content) {
         this.id = id;
-        this.message = message;
+        this.message = new Message(message);
         this.member = member;
         this.content = content;
     }
