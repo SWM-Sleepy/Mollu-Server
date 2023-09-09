@@ -30,4 +30,15 @@ class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response2.emojis().get(0)).isBlank();
     }
 
+    @Test
+    void 앱을_실행할_때_마다_클라이언트는_알림_토큰을_서버로_보낸다() {
+        // given
+        final String accessToken = 회원가입_요청_및_응답("google");
+        
+        // when
+        final ExtractableResponse<Response> 알림_토큰_설정_응답 = 알림_토큰_설정_요청(accessToken);
+
+        // then
+        assertThat(알림_토큰_설정_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
 }
