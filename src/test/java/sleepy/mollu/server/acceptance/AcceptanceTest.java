@@ -34,6 +34,7 @@ public class AcceptanceTest {
     private static final String BASE_URL = "/api";
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
+    private static final String MEMBER_PREFERENCE_URL = MEMBER_URL + "/preference";
     private static final String MEMBER_EMOJI_URL = MEMBER_URL + "/emojis";
     private static final String CONTENT_URL = BASE_URL + "/contents";
     @LocalServerPort
@@ -90,6 +91,10 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> 회원탈퇴_요청(String accessToken) {
         return delete(MEMBER_URL, accessToken);
+    }
+
+    protected ExtractableResponse<Response> 알림_토큰_설정_요청(String accessToken) {
+        return post(MEMBER_PREFERENCE_URL + "/token", accessToken, 알림_토큰_설정_요청_데이터);
     }
 
     protected ExtractableResponse<Response> 프로필_조회_요청(String accessToken) {
