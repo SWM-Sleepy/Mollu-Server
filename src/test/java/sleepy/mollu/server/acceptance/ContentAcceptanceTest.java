@@ -10,7 +10,6 @@ import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeRespo
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionExistsResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
-import software.amazon.awssdk.http.HttpStatusCode;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -137,6 +136,46 @@ class ContentAcceptanceTest extends AcceptanceTest {
         assertThat(컨텐츠_반응_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @Test
+    void 사용자는_컨텐츠에_댓글을_작성할_수_있다() {
+        // given
+        final String accessToken = 회원가입_요청_및_응답("apple");
+        final String contentId = 다른_사람이_컨텐츠를_업로드_한다();
+
+        // when
+        final ExtractableResponse<Response> 댓글_작성_응답 = 댓글_등록_요청(accessToken, contentId);
+
+        // then
+        assertAll(
+                () -> assertThat(댓글_작성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(getCommentId(댓글_작성_응답)).isNotNull()
+        );
+    }
+
+    private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {
+        MOLLU_타임_설정();
+        컨텐츠_업로드_요청(accessToken, NOW.minusHours(2));
+    }
+
+    private void MOLLU_타임_이후에_컨텐츠를_업로드한다(String accessToken) {
+        MOLLU_타임_설정();
+        컨텐츠_업로드_요청(accessToken, NOW);
+    }
+
+    private void MOLLU_타임_설정() {
+        given(molluAlarmRepository.findTop()).willReturn(Optional.of(MolluAlarm.builder()
+                .molluTime(NOW.plusDays(1))
+                .question("question")
+                .send(false)
+                .build()));
+
+        given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(MolluAlarm.builder()
+                .molluTime(NOW.minusHours(1))
+                .question("question")
+                .send(true)
+                .build()));
+    }
+
     private String 컨텐츠를_업로드_한다(String accessToken) {
         final ExtractableResponse<Response> 컨텐츠_업로드_응답 = 컨텐츠_업로드_요청(accessToken);
         assertThat(컨텐츠_업로드_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -171,27 +210,8 @@ class ContentAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {
-        MOLLU_타임_설정();
-        컨텐츠_업로드_요청(accessToken, NOW.minusHours(2));
-    }
-
-    private void MOLLU_타임_이후에_컨텐츠를_업로드한다(String accessToken) {
-        MOLLU_타임_설정();
-        컨텐츠_업로드_요청(accessToken, NOW);
-    }
-
-    private void MOLLU_타임_설정() {
-        given(molluAlarmRepository.findTop()).willReturn(Optional.of(MolluAlarm.builder()
-                .molluTime(NOW.plusDays(1))
-                .question("question")
-                .send(false)
-                .build()));
-
-        given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(MolluAlarm.builder()
-                .molluTime(NOW.minusHours(1))
-                .question("question")
-                .send(true)
-                .build()));
+    private String 다른_사람이_컨텐츠를_업로드_한다() {
+        final TokenResponse response = toObject(다른_사람_회원가입_요청("google"), TokenResponse.class);
+        return getContentId(컨텐츠_업로드_요청(response.accessToken()));
     }
 }
