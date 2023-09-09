@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.common.domain.FileSource;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.member.domain.Member;
@@ -14,7 +15,7 @@ import sleepy.mollu.server.member.emoji.domain.EmojiType;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Reaction {
+public class Reaction extends BaseEntity {
 
     @Id
     @Column(name = "reaction_id")
