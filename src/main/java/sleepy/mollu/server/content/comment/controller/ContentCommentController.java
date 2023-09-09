@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.content.comment.controller.dto.CreateCommentRequest;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.comment.service.ContentCommentService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
 import sleepy.mollu.server.swagger.*;
@@ -37,4 +38,20 @@ public class ContentCommentController {
         final URI uri = URI.create("/contents/" + contentId + "/comments/" + commentId);
         return ResponseEntity.created(uri).build();
     }
+
+    @Operation(summary = "댓글 조회")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @ForbiddenResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping
+    public ResponseEntity<SearchCommentResponse> searchComment(@Login String memberId,
+                                                               @PathVariable String contentId) {
+
+        return ResponseEntity.ok(contentCommentService.searchComment(memberId, contentId));
+    }
+
+
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
@@ -33,6 +34,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     private final CommentRepository commentRepository;
     private final IdConstructor idConstructor;
 
+    @Transactional
     @Override
     public String createComment(String memberId, String contentId, String comment) {
         final Member member = getMember(memberId);
@@ -82,5 +84,8 @@ public class ContentCommentServiceImpl implements ContentCommentService {
         return newComment.getId();
     }
 
-
+    @Override
+    public SearchCommentResponse searchComment(String memberId, String contentId) {
+        return null;
+    }
 }
