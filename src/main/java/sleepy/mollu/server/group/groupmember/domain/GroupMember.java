@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class GroupMember {
+public class GroupMember extends BaseEntity {
 
     @Id
     @Column(name = "group_member_id")
