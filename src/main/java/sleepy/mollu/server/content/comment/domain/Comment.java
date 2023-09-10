@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.member.domain.Member;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @Column(name = "comment_id")
@@ -38,5 +39,21 @@ public class Comment {
         this.message = new Message(message);
         this.member = member;
         this.content = content;
+    }
+
+    public String getMessage() {
+        return this.message.getValue();
+    }
+
+    public String getMemberId() {
+        return this.member.getId();
+    }
+
+    public String getMemberName() {
+        return this.member.getName();
+    }
+
+    public String getMemberProfileSource() {
+        return this.member.getProfileSource();
     }
 }

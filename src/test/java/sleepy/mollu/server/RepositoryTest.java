@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Import;
 import sleepy.mollu.server.common.config.JpaAuditingConfig;
 import sleepy.mollu.server.common.config.QueryDslConfig;
 import sleepy.mollu.server.common.domain.BaseEntity;
+import sleepy.mollu.server.content.comment.domain.Comment;
+import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
@@ -44,6 +46,8 @@ public class RepositoryTest {
     @Autowired
     protected ReactionRepository reactionRepository;
     @Autowired
+    protected CommentRepository commentRepository;
+    @Autowired
     protected EntityManager em;
 
     protected Member saveMember(String memberId, String molluId) {
@@ -64,16 +68,20 @@ public class RepositoryTest {
         return contentRepository.save(ContentFixture.create(contentId, tag, uploadDateTime, member));
     }
 
-    protected ContentGroup saveContentGroup(Content content, Group group) throws NoSuchFieldException, IllegalAccessException {
+    protected ContentGroup saveContentGroup(Content content, Group group) {
         return contentGroupRepository.save(ContentGroupFixture.create(content, group));
     }
 
-    protected List<ContentGroup> saveContentGroups(List<Content> contents, List<Group> groups) {
-        return contentGroupRepository.saveAll(ContentGroupFixture.createAll(contents, groups));
+    protected void saveContentGroups(List<Content> contents, List<Group> groups) {
+        contentGroupRepository.saveAll(ContentGroupFixture.createAll(contents, groups));
     }
 
     protected Reaction saveReaction(String reactionId, Member member, Content content) {
         return reactionRepository.save(ReactionFixture.create(reactionId, member, content));
+    }
+
+    protected Comment saveComment(String commentId, Member member, Content content) {
+        return commentRepository.save(CommentFixture.create(commentId, member, content));
     }
 
     protected void reflect(Object object, Object value) throws NoSuchFieldException, IllegalAccessException {
