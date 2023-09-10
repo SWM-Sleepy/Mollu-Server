@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionExistsResponse;
@@ -143,12 +144,14 @@ class ContentAcceptanceTest extends AcceptanceTest {
         final String contentId = 다른_사람이_컨텐츠를_업로드_한다();
 
         // when
-        final ExtractableResponse<Response> 댓글_작성_응답 = 댓글_등록_요청(accessToken, contentId);
+        컨텐츠에_댓글을_단다(accessToken, contentId);
+        final ExtractableResponse<Response> 댓글_조회_응답 = 댓글_조회_요청(accessToken, contentId);
+        final SearchCommentResponse response = toObject(댓글_조회_응답, SearchCommentResponse.class);
 
         // then
         assertAll(
-                () -> assertThat(댓글_작성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(getCommentId(댓글_작성_응답)).isNotNull()
+                () -> assertThat(댓글_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.comments()).hasSize(1)
         );
     }
 
@@ -213,5 +216,14 @@ class ContentAcceptanceTest extends AcceptanceTest {
     private String 다른_사람이_컨텐츠를_업로드_한다() {
         final TokenResponse response = toObject(다른_사람_회원가입_요청("google"), TokenResponse.class);
         return getContentId(컨텐츠_업로드_요청(response.accessToken()));
+    }
+
+    private void 컨텐츠에_댓글을_단다(String accessToken, String contentId) {
+        final ExtractableResponse<Response> 댓글_작성_응답 = 댓글_등록_요청(accessToken, contentId);
+
+        assertAll(
+                () -> assertThat(댓글_작성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(getCommentId(댓글_작성_응답)).isNotNull()
+        );
     }
 }
