@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.CommentResponse;
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
@@ -86,6 +87,25 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     @Override
     public SearchCommentResponse searchComment(String memberId, String contentId) {
-        return null;
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        authorizeMemberForContent(member, content);
+        final List<Comment> comments = commentRepository.findAllWithMemberByContent(content);
+
+        return getSearchCommentResponse(comments);
+
+        // TODO: 신고한 댓글은 제외하는 로직 작성
+    }
+
+    private SearchCommentResponse getSearchCommentResponse(List<Comment> comments) {
+        return new SearchCommentResponse(comments.stream()
+                .map(comment -> new CommentResponse(
+                        comment.getId(),
+                        comment.getMessage(),
+                        comment.getMemberId(),
+                        comment.getMemberName(),
+                        comment.getMemberProfileSource(),
+                        comment.getCreatedAt()))
+                .toList());
     }
 }
