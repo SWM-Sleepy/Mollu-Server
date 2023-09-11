@@ -9,6 +9,7 @@ import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.report.controller.dto.CommentReportResponse;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
@@ -75,7 +76,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CommentReport reportComment(String memberId, String contentId, String commentId, String reason) {
+    public CommentReportResponse reportComment(String memberId, String contentId, String commentId, String reason) {
 
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
@@ -83,9 +84,10 @@ public class ReportServiceImpl implements ReportService {
 
         validateOwner(member, comment);
         authorizeMemberForContent(member, content);
-        authorizeMemberForComment(member, comment);
+        authorizeMemberForComment(content, comment);
 
-        return saveCommentReport(reason, member, comment);
+        final CommentReport commentReport = saveCommentReport(reason, member, comment);
+        return getCommentReportResponse(commentReport);
     }
 
     private Comment getComment(String commentId) {
@@ -96,6 +98,13 @@ public class ReportServiceImpl implements ReportService {
     private void validateOwner(Member member, Comment comment) {
         if (comment.isOwner(member)) {
             throw new ReportBadRequestException("자신의 댓글은 신고할 수 없습니다.");
+        }
+    }
+
+    private void authorizeMemberForContent(Member member, Content content) {
+        final List<Member> membersByGroups = getGroupMembersByContent(content);
+        if (!membersByGroups.contains(member)) {
+            throw new MemberUnAuthorizedException("해당 컨텐츠에 대한 접근 권한이 없습니다.");
         }
     }
 
@@ -110,16 +119,9 @@ public class ReportServiceImpl implements ReportService {
                 .toList();
     }
 
-    private void authorizeMemberForContent(Member member, Content content) {
-        final List<Member> membersByGroups = getGroupMembersByContent(content);
-        if (!membersByGroups.contains(member)) {
-            throw new MemberUnAuthorizedException("해당 컨텐츠에 대한 접근 권한이 없습니다.");
-        }
-    }
-
-    private void authorizeMemberForComment(Member member, Comment comment) {
-        if (!comment.isOwner(member)) {
-            throw new MemberUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
+    private void authorizeMemberForComment(Content content, Comment comment) {
+        if (!comment.belongsTo(content)) {
+            throw new MemberUnAuthorizedException("해당 댓글에 대한 접근 권한이 없습니다.");
         }
     }
 
@@ -129,5 +131,13 @@ public class ReportServiceImpl implements ReportService {
                 .member(member)
                 .comment(comment)
                 .build());
+    }
+
+    private CommentReportResponse getCommentReportResponse(CommentReport commentReport) {
+        return new CommentReportResponse(
+                commentReport.getId(),
+                commentReport.getReason(),
+                commentReport.getMember().getId(),
+                commentReport.getComment().getId());
     }
 }
