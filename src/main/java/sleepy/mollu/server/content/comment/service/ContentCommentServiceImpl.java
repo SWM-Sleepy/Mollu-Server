@@ -118,7 +118,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
         final Comment comment = getComment(commentId);
 
         authorizeMemberForContent(member, content);
-        authorizeMemberForReaction(member, comment);
+        authorizeMemberForComment(member, comment);
 
         commentRepository.delete(comment);
     }
@@ -128,7 +128,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
                 .orElseThrow(() -> new CommentNotFoundException("ID가 [" + commentId + "]인 댓글을 찾을 수 없습니다."));
     }
 
-    private void authorizeMemberForReaction(Member member, Comment comment) {
+    private void authorizeMemberForComment(Member member, Comment comment) {
         if (!comment.isOwner(member)) {
             throw new MemberUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
         }
