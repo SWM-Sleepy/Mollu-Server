@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
 import sleepy.mollu.server.content.report.repository.ContentReportRepository;
@@ -29,6 +30,11 @@ public class ReportServiceImpl implements ReportService {
         validateOwner(member, content);
 
         return saveContentReport(reason, member, content);
+    }
+
+    @Override
+    public CommentReport reportComment(String memberId, String contentId, String commentId, String reason) {
+        return null;
     }
 
     private Member getMember(String memberId) {
