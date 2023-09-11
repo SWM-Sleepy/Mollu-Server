@@ -1,7 +1,6 @@
 package sleepy.mollu.server.content.report.service;
 
 import sleepy.mollu.server.content.report.controller.dto.CommentReportResponse;
-import sleepy.mollu.server.content.report.domain.CommentReport;
 
 public interface ReportService {
 

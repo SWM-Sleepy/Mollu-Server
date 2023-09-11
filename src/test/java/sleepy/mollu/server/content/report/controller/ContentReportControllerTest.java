@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
 import sleepy.mollu.server.content.report.controller.dto.CommentReportResponse;
-import sleepy.mollu.server.content.report.domain.CommentReport;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
