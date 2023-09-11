@@ -7,6 +7,7 @@ import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.CommentResponse;
 import sleepy.mollu.server.content.comment.domain.Comment;
+import sleepy.mollu.server.content.comment.exception.CommentNotFoundException;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
@@ -107,5 +108,28 @@ public class ContentCommentServiceImpl implements ContentCommentService {
                         comment.getMemberProfileSource(),
                         comment.getCreatedAt()))
                 .toList());
+    }
+
+    @Override
+    public void deleteComment(String memberId, String contentId, String commentId) {
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        final Comment comment = getComment(commentId);
+
+        authorizeMemberForContent(member, content);
+        authorizeMemberForReaction(member, comment);
+
+        commentRepository.delete(comment);
+    }
+
+    private Comment getComment(String commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("ID가 [" + commentId + "]인 댓글을 찾을 수 없습니다."));
+    }
+
+    private void authorizeMemberForReaction(Member member, Comment comment) {
+        if (!comment.isOwner(member)) {
+            throw new MemberUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
+        }
     }
 }
