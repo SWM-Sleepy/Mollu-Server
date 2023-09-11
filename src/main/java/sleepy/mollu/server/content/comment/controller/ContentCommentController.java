@@ -53,5 +53,21 @@ public class ContentCommentController {
         return ResponseEntity.ok(contentCommentService.searchComment(memberId, contentId));
     }
 
+    @Operation(summary = "댓글 삭제")
+    @NoContentResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @ForbiddenResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@Login String memberId,
+                                              @PathVariable String contentId,
+                                              @PathVariable String commentId) {
+
+        contentCommentService.deleteComment(memberId, contentId, commentId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
