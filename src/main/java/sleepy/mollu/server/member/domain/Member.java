@@ -11,11 +11,11 @@ import sleepy.mollu.server.member.emoji.domain.Emoji;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Member extends BaseEntity {
 
     @Id
@@ -58,18 +58,6 @@ public class Member extends BaseEntity {
         this.birthday = new Birthday(birthday);
         this.refreshToken = refreshToken;
         setPreference(preference);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Member member)) return false;
-        return Objects.equals(getId(), member.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
     }
 
     private void setPreference(Preference preference) {

@@ -2,6 +2,7 @@ package sleepy.mollu.server.content.comment.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleepy.mollu.server.common.domain.BaseEntity;
@@ -11,6 +12,7 @@ import sleepy.mollu.server.member.domain.Member;
 @Entity
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Comment extends BaseEntity {
 
     @Id
@@ -59,5 +61,9 @@ public class Comment extends BaseEntity {
 
     public boolean isOwner(Member member) {
         return this.member.equals(member);
+    }
+
+    public boolean belongsTo(Content content) {
+        return this.content.equals(content);
     }
 }
