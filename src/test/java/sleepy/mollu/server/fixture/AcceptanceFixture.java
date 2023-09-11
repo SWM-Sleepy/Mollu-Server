@@ -7,7 +7,6 @@ import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.member.preference.dto.PhoneTokenRequest;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class AcceptanceFixture {
 
