@@ -174,8 +174,18 @@ public class AcceptanceTest {
         return delete(CONTENT_URL + "/" + contentId + "/comments/" + commentId, accessToken);
     }
 
+    protected ExtractableResponse<Response> 댓글_신고_요청(String accessToken, String contentId, String commentId) {
+        return post(CONTENT_URL + "/" + contentId + "/comments/" + commentId + "/report", accessToken);
+    }
+
     protected String 회원가입_요청_및_응답(String type) {
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
+        final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
+        return response.accessToken();
+    }
+
+    protected String 다른_사람_회원가입_요청_및_응답(String type) {
+        final ExtractableResponse<Response> 회원가입_응답 = 다른_사람_회원가입_요청(type);
         final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);
         return response.accessToken();
     }

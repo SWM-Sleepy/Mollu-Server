@@ -152,6 +152,23 @@ class ContentAcceptanceTest extends AcceptanceTest {
         assertThat(댓글_삭제_요청.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @Test
+    void 사용자는_댓글을_신고할_수_있다() {
+        // given
+        final String me = 회원가입_요청_및_응답("apple");
+        final String contentId = getContentId(컨텐츠_업로드_요청(me));
+        final String commentId = 다른_사람이_컨텐츠에_댓글을_단다(contentId);
+
+        // when
+        final ExtractableResponse<Response> 댓글_신고_응답 = 댓글_신고_요청(me, contentId, commentId);
+        assertThat(댓글_신고_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final SearchCommentResponse 댓글_조회_응답 = toObject(댓글_조회_요청(me, contentId), SearchCommentResponse.class);
+
+        // then
+        assertThat(댓글_조회_응답.comments()).isEmpty();
+    }
+
     private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {
         MOLLU_타임_설정();
         컨텐츠_업로드_요청(accessToken, NOW.minusHours(2));
@@ -235,5 +252,10 @@ class ContentAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(댓글_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.comments()).hasSize(1)
         );
+    }
+
+    private String 다른_사람이_컨텐츠에_댓글을_단다(String contentId) {
+        final String other = 다른_사람_회원가입_요청_및_응답("google");
+        return 컨텐츠에_댓글을_단다(other, contentId);
     }
 }
