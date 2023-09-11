@@ -110,6 +110,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
                 .toList());
     }
 
+    @Transactional
     @Override
     public void deleteComment(String memberId, String contentId, String commentId) {
         final Member member = getMember(memberId);
