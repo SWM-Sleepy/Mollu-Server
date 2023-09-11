@@ -44,6 +44,7 @@ public class ReportServiceImpl implements ReportService {
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
         validateOwner(member, content);
+        authorizeMemberForContent(member, content);
 
         return saveContentReport(reason, member, content);
     }
@@ -80,6 +81,7 @@ public class ReportServiceImpl implements ReportService {
         final Content content = getContent(contentId);
         final Comment comment = getComment(commentId);
 
+        validateOwner(member, comment);
         authorizeMemberForContent(member, content);
         authorizeMemberForComment(member, comment);
 
@@ -89,6 +91,12 @@ public class ReportServiceImpl implements ReportService {
     private Comment getComment(String commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("ID가 [" + commentId + "]인 댓글을 찾을 수 없습니다."));
+    }
+
+    private void validateOwner(Member member, Comment comment) {
+        if (comment.isOwner(member)) {
+            throw new ReportBadRequestException("자신의 댓글은 신고할 수 없습니다.");
+        }
     }
 
     private List<Member> getGroupMembersByContent(Content content) {
