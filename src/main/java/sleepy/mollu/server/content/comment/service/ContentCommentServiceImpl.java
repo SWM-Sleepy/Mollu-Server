@@ -13,6 +13,8 @@ import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.exception.ContentNotFoundException;
+import sleepy.mollu.server.content.report.domain.CommentReport;
+import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
@@ -34,6 +36,8 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     private final ContentGroupRepository contentGroupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final CommentRepository commentRepository;
+    private final CommentReportRepository commentReportRepository;
+
     private final IdConstructor idConstructor;
 
     @Transactional
@@ -91,11 +95,28 @@ public class ContentCommentServiceImpl implements ContentCommentService {
         final Member member = getMember(memberId);
         final Content content = getContent(contentId);
         authorizeMemberForContent(member, content);
-        final List<Comment> comments = commentRepository.findAllWithMemberByContent(content);
+        final List<Comment> filteredComments = getFilteredComments(member, content);
 
-        return getSearchCommentResponse(comments);
+        return getSearchCommentResponse(filteredComments);
+    }
 
-        // TODO: 신고한 댓글은 제외하는 로직 작성
+    private List<Comment> getFilteredComments(Member member, Content content) {
+        final List<Comment> reportedComments = getReportedComments(member);
+        final List<Comment> comments = getCommentsBy(content);
+        return comments.stream()
+                .filter(comment -> !reportedComments.contains(comment))
+                .toList();
+    }
+
+    private List<Comment> getReportedComments(Member member) {
+        final List<CommentReport> commentReports = commentReportRepository.findAllByMember(member);
+        return commentReports.stream()
+                .map(CommentReport::getComment)
+                .toList();
+    }
+
+    private List<Comment> getCommentsBy(Content content) {
+        return commentRepository.findAllWithMemberByContent(content);
     }
 
     private SearchCommentResponse getSearchCommentResponse(List<Comment> comments) {
