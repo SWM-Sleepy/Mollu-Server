@@ -16,7 +16,6 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
 public class Member extends BaseEntity {
 
     @Id

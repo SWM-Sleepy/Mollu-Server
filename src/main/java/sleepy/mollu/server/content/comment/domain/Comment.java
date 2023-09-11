@@ -56,4 +56,8 @@ public class Comment extends BaseEntity {
     public String getMemberProfileSource() {
         return this.member.getProfileSource();
     }
+
+    public boolean isOwner(Member member) {
+        return this.member.equals(member);
+    }
 }

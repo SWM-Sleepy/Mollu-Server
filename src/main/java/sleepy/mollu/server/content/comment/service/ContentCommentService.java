@@ -7,4 +7,6 @@ public interface ContentCommentService {
     String createComment(String memberId, String contentId, String comment);
 
     SearchCommentResponse searchComment(String memberId, String contentId);
+
+    void deleteComment(String memberId, String contentId, String commentId);
 }

@@ -170,6 +170,10 @@ public class AcceptanceTest {
         return get(CONTENT_URL + "/" + contentId + "/comments", accessToken);
     }
 
+    protected ExtractableResponse<Response> 댓글_삭제_요청(String accessToken, String contentId, String commentId) {
+        return delete(CONTENT_URL + "/" + contentId + "/comments/" + commentId, accessToken);
+    }
+
     protected String 회원가입_요청_및_응답(String type) {
         final ExtractableResponse<Response> 회원가입_응답 = 회원가입_요청(type);
         final TokenResponse response = toObject(회원가입_응답, TokenResponse.class);

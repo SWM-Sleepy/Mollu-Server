@@ -144,15 +144,12 @@ class ContentAcceptanceTest extends AcceptanceTest {
         final String contentId = 다른_사람이_컨텐츠를_업로드_한다();
 
         // when
-        컨텐츠에_댓글을_단다(accessToken, contentId);
-        final ExtractableResponse<Response> 댓글_조회_응답 = 댓글_조회_요청(accessToken, contentId);
-        final SearchCommentResponse response = toObject(댓글_조회_응답, SearchCommentResponse.class);
+        final String commentId = 컨텐츠에_댓글을_단다(accessToken, contentId);
+        컨텐츠의_댓글을_조회한다(accessToken, contentId);
+        final ExtractableResponse<Response> 댓글_삭제_요청 = 댓글_삭제_요청(accessToken, contentId, commentId);
 
         // then
-        assertAll(
-                () -> assertThat(댓글_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.comments()).hasSize(1)
-        );
+        assertThat(댓글_삭제_요청.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void MOLLU_타임_이전에_컨텐츠를_업로드한다(String accessToken) {
@@ -218,12 +215,25 @@ class ContentAcceptanceTest extends AcceptanceTest {
         return getContentId(컨텐츠_업로드_요청(response.accessToken()));
     }
 
-    private void 컨텐츠에_댓글을_단다(String accessToken, String contentId) {
+    private String 컨텐츠에_댓글을_단다(String accessToken, String contentId) {
         final ExtractableResponse<Response> 댓글_작성_응답 = 댓글_등록_요청(accessToken, contentId);
+        final String commentId = getCommentId(댓글_작성_응답);
 
         assertAll(
                 () -> assertThat(댓글_작성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(getCommentId(댓글_작성_응답)).isNotNull()
+                () -> assertThat(commentId).isNotNull()
+        );
+
+        return commentId;
+    }
+
+    private void 컨텐츠의_댓글을_조회한다(String accessToken, String contentId) {
+        final ExtractableResponse<Response> 댓글_조회_응답 = 댓글_조회_요청(accessToken, contentId);
+        final SearchCommentResponse response = toObject(댓글_조회_응답, SearchCommentResponse.class);
+
+        assertAll(
+                () -> assertThat(댓글_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.comments()).hasSize(1)
         );
     }
 }
