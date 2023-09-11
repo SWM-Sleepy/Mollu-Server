@@ -12,6 +12,7 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
+import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
