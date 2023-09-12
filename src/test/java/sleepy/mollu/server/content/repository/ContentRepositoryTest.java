@@ -70,4 +70,22 @@ class ContentRepositoryTest extends RepositoryTest {
                 () -> assertThat(contents).hasSize(expectedSize)
         );
     }
+
+    @Test
+    @DisplayName("[findAllByMember 호출시] 멤버가 업로드한 컨텐츠를 최신순으로 조회한다.")
+    void ContentRepositoryTest3() {
+        // given
+        final Member member = saveMember("memberId", "mollu");
+        saveContent("contentId1", "tag1", NOW.plusDays(1), member);
+        saveContent("contentId2", "tag1", NOW.plusDays(2), member);
+        saveContent("contentId3", "tag1", NOW.plusDays(3), member);
+        saveContent("contentId4", "tag1", NOW.plusDays(4), member);
+
+        // when
+        final List<Content> contents = contentRepository.findAllByMember(member);
+
+        // then
+        assertThat(contents).extracting(Content::getId)
+                .containsExactly("contentId4", "contentId3", "contentId2", "contentId1");
+    }
 }

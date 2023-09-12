@@ -11,8 +11,10 @@ public class ContentFixture {
 
     public static final String DEFAULT_LOCATION = "DEFAULT_LOCATION";
     public static final String DEFAULT_QUESTION = "DEFAULT_QUESTION";
-    public static final String DEFAULT_FRONT_CONTENT_FILE_URL = "DEFAULT_FRONT_CONTENT_FILE_URL";
-    public static final String DEFAULT_BACK_CONTENT_FILE_URL = "DEFAULT_BACK_CONTENT_FILE_URL";
+    public static final String DEFAULT_FRONT_SOURCE = "DEFAULT_FRONT_SOURCE";
+    public static final String DEFAULT_BACK_SOURCE = "DEFAULT_BACK_SOURCE";
+    public static final String DEFAULT_THUMBNAIL_FRONT_SOURCE = "DEFAULT_THUMBNAIL_FRONT_SOURCE";
+    public static final String DEFAULT_THUMBNAIL_BACK_SOURCE = "DEFAULT_THUMBNAIL_BACK_SOURCE";
     public static final LocalDateTime DEFAULT_MOLLU_TIME = LocalDateTime.now();
 
     public static Content create(String contentId, String tag, LocalDateTime uploadDateTime, Member member) {
@@ -22,7 +24,9 @@ public class ContentFixture {
                 .contentTag(tag)
                 .question(DEFAULT_QUESTION)
                 .contentTime(ContentTime.of(DEFAULT_MOLLU_TIME, uploadDateTime))
-                .contentSource(ContentSource.of(DEFAULT_FRONT_CONTENT_FILE_URL, DEFAULT_BACK_CONTENT_FILE_URL))
+                .contentSource(ContentSource.of(
+                        DEFAULT_FRONT_SOURCE, DEFAULT_BACK_SOURCE,
+                        DEFAULT_THUMBNAIL_FRONT_SOURCE, DEFAULT_THUMBNAIL_BACK_SOURCE))
                 .member(member)
                 .build();
     }

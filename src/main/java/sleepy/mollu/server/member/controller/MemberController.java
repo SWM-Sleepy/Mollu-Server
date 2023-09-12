@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sleepy.mollu.server.member.controller.dto.MyCalendarResponse;
 import sleepy.mollu.server.member.controller.dto.MyContentsResponse;
 import sleepy.mollu.server.member.service.MemberService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
@@ -32,7 +33,20 @@ public class MemberController {
         return ResponseEntity.ok(memberService.searchMyContents(memberId, date));
     }
 
-    @Operation(summary = "내 컨텐츠 조회")
+    @Operation(summary = "캘린더 조회")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping("/calendar")
+    public ResponseEntity<MyCalendarResponse> searchCalendar(@Login String memberId) {
+
+        return ResponseEntity.ok(memberService.searchCalendar(memberId));
+    }
+
+
+    @Operation(summary = "회원탈퇴")
     @NoContentResponse
     @BadRequestResponse
     @UnAuthorizedResponse

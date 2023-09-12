@@ -8,6 +8,7 @@ import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.repository.GroupRepository;
+import sleepy.mollu.server.member.controller.dto.MyCalendarResponse;
 import sleepy.mollu.server.member.controller.dto.MyContentsResponse;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.content.SearchRange;
@@ -25,6 +26,13 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
     private final GroupRepository groupRepository;
+
+    private static MyCalendarResponse.CalendarResponse getCalendarResponse(Content content) {
+        return new MyCalendarResponse.CalendarResponse(
+                content.getId(),
+                content.getUploadDateTime(),
+                content.getThumbnailFrontSource());
+    }
 
     @Override
     public MyContentsResponse searchMyContents(String memberId, LocalDate date) {
@@ -45,7 +53,6 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
     }
 
-
     private MyContentsResponse getMyContentsResponse(List<Content> contents) {
         final Group group = getGroup();
         return new MyContentsResponse(contents.stream()
@@ -63,6 +70,24 @@ public class MemberServiceImpl implements MemberService {
                 content.getContentTag(),
                 content.getFrontContentSource(),
                 content.getBackContentSource());
+    }
+
+    @Override
+    public MyCalendarResponse searchCalendar(String memberId) {
+        final Member member = getMember(memberId);
+        final List<Content> contents = getContents(member);
+
+        return getMyCalendarResponse(contents);
+    }
+
+    private List<Content> getContents(Member member) {
+        return contentRepository.findAllByMember(member);
+    }
+
+    private MyCalendarResponse getMyCalendarResponse(List<Content> contents) {
+        return new MyCalendarResponse(contents.stream()
+                .map(MemberServiceImpl::getCalendarResponse)
+                .toList());
     }
 
     @Transactional
