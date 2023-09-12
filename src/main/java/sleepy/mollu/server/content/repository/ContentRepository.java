@@ -19,4 +19,6 @@ public interface ContentRepository extends JpaRepository<Content, String> {
     List<Content> findAllByMemberAndDate(@Param("member") Member member,
                                          @Param("from") LocalDateTime from,
                                          @Param("to") LocalDateTime to);
+
+    List<Content> findAllByMemberOrderByUploadDateTimeDesc(Member member);
 }

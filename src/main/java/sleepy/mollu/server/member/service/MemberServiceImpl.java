@@ -27,6 +27,13 @@ public class MemberServiceImpl implements MemberService {
     private final ContentRepository contentRepository;
     private final GroupRepository groupRepository;
 
+    private static MyCalendarResponse.CalendarResponse getCalendarResponse(Content content) {
+        return new MyCalendarResponse.CalendarResponse(
+                content.getId(),
+                content.getUploadDateTime(),
+                content.getThumbnailFrontSource());
+    }
+
     @Override
     public MyContentsResponse searchMyContents(String memberId, LocalDate date) {
         final Member member = getMember(memberId);
@@ -45,7 +52,6 @@ public class MemberServiceImpl implements MemberService {
         return groupRepository.findDefaultGroup()
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
     }
-
 
     private MyContentsResponse getMyContentsResponse(List<Content> contents) {
         final Group group = getGroup();
@@ -71,16 +77,17 @@ public class MemberServiceImpl implements MemberService {
         final Member member = getMember(memberId);
         final List<Content> contents = getContents(member);
 
-        return new MyCalendarResponse(contents.stream()
-                .map(content -> new MyCalendarResponse.CalendarResponse(
-                        content.getId(),
-                        content.getUploadDateTime(),
-                        content.getThumbnailFrontSource()))
-                .toList());
+        return getMyCalendarResponse(contents);
     }
 
     private List<Content> getContents(Member member) {
         return contentRepository.findAllByMemberOrderByUploadDateTimeDesc(member);
+    }
+
+    private MyCalendarResponse getMyCalendarResponse(List<Content> contents) {
+        return new MyCalendarResponse(contents.stream()
+                .map(MemberServiceImpl::getCalendarResponse)
+                .toList());
     }
 
     @Transactional
