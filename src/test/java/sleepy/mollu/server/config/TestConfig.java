@@ -4,6 +4,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
+import sleepy.mollu.server.content.domain.handler.dto.OriginThumbnail;
 import sleepy.mollu.server.oauth2.service.AppleOAuth2Client;
 import sleepy.mollu.server.oauth2.service.GoogleOAuth2Client;
 
@@ -36,7 +37,13 @@ public class TestConfig {
     @Bean
     public FileHandler fileHandler() {
         final FileHandler fileHandler = mock(FileHandler.class);
-        given(fileHandler.upload(any(ContentFile.class))).willReturn("https://mollu.sleepy.zone");
+        final String originSource = "https://mollu.sleepy.zone";
+        final String thumbnailSource = "https://mollu.sleepy.zone/thumbnail";
+
+        given(fileHandler.upload(any(ContentFile.class))).willReturn(originSource);
+        given(fileHandler.uploadWithThumbnail(any(ContentFile.class)))
+                .willReturn(new OriginThumbnail(originSource, thumbnailSource));
+
         return fileHandler;
     }
 }
