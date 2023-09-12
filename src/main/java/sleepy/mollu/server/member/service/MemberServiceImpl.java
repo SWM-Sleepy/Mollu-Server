@@ -8,6 +8,7 @@ import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.repository.GroupRepository;
+import sleepy.mollu.server.member.controller.dto.MyCalendarResponse;
 import sleepy.mollu.server.member.controller.dto.MyContentsResponse;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.content.SearchRange;
@@ -63,6 +64,23 @@ public class MemberServiceImpl implements MemberService {
                 content.getContentTag(),
                 content.getFrontContentSource(),
                 content.getBackContentSource());
+    }
+
+    @Override
+    public MyCalendarResponse searchCalendar(String memberId) {
+        final Member member = getMember(memberId);
+        final List<Content> contents = getContents(member);
+
+        return new MyCalendarResponse(contents.stream()
+                .map(content -> new MyCalendarResponse.CalendarResponse(
+                        content.getId(),
+                        content.getUploadDateTime(),
+                        content.getThumbnailFrontSource()))
+                .toList());
+    }
+
+    private List<Content> getContents(Member member) {
+        return contentRepository.findAllByMemberOrderByUploadDateTimeDesc(member);
     }
 
     @Transactional
