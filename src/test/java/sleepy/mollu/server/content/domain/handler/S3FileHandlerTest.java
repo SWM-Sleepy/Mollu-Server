@@ -32,7 +32,7 @@ class S3FileHandlerTest {
                 "Spring Framework".getBytes());
         final ContentFile contentFile = new ImageContentFile(file, ContentType.CONTENTS);
 
-        assertThatCode(() -> fileHandler.upload(contentFile)).doesNotThrowAnyException();
+        assertThatCode(() -> fileHandler.uploadWithThumbnail(contentFile)).doesNotThrowAnyException();
     }
 
 }
