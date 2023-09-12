@@ -81,7 +81,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private List<Content> getContents(Member member) {
-        return contentRepository.findAllByMemberOrderByUploadDateTimeDesc(member);
+        return contentRepository.findAllByMember(member);
     }
 
     private MyCalendarResponse getMyCalendarResponse(List<Content> contents) {
