@@ -14,6 +14,7 @@ import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
+import sleepy.mollu.server.content.domain.handler.dto.OriginThumbnail;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchContentResponse;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
@@ -133,28 +134,30 @@ public class ContentServiceImpl implements ContentService {
     public String createContent(String memberId, CreateContentRequest request) {
 
         final Member member = getMember(memberId);
-        final String frontContentFileUrl = uploadContent(request.frontContentFile());
-        final String backContentFileUrl = uploadContent(request.backContentFile());
-        final Content content = saveContent(request, frontContentFileUrl, backContentFileUrl, member);
+        final OriginThumbnail frontSource = uploadContent(request.frontContentFile());
+        final OriginThumbnail backSource = uploadContent(request.backContentFile());
+        final Content content = saveContent(request, frontSource, backSource, member);
         saveContentGroup(content);
 
         return content.getId();
     }
 
-    private String uploadContent(MultipartFile file) {
+    private OriginThumbnail uploadContent(MultipartFile file) {
         final ContentFile frontContentFile = new ImageContentFile(file, ContentType.CONTENTS);
 
-        return fileHandler.upload(frontContentFile);
+        return fileHandler.uploadWithThumbnail(frontContentFile);
     }
 
-    private Content saveContent(CreateContentRequest request, String frontContentFileUrl, String backContentFileUrl, Member member) {
+    private Content saveContent(CreateContentRequest request, OriginThumbnail frontSource, OriginThumbnail backSource, Member member) {
         return contentRepository.save(Content.builder()
                 .id(idConstructor.create())
                 .location(request.location())
                 .contentTag(request.tag())
                 .question(request.question())
                 .contentTime(ContentTime.of(request.molluDateTime(), request.uploadDateTime()))
-                .contentSource(ContentSource.of(frontContentFileUrl, backContentFileUrl))
+                .contentSource(ContentSource.of(
+                        frontSource.originSource(), backSource.originSource(),
+                        frontSource.thumbnailSource(), backSource.thumbnailSource()))
                 .member(member)
                 .build());
     }
