@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
+import sleepy.mollu.server.content.controller.dto.SearchContentResponse;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.domain.content.ContentSource;
 import sleepy.mollu.server.content.domain.content.ContentTime;
@@ -188,6 +189,35 @@ public class ContentServiceImpl implements ContentService {
         }
 
         contentRepository.delete(content);
+    }
+
+    @Override
+    public SearchContentResponse searchContent(String memberId, String contentId) {
+        final Member member = getMember(memberId);
+        final Content content = getContent(contentId);
+        validateOwner(memberId, contentId, member, content);
+
+        return getSearchContentResponse(contentId, content);
+    }
+
+    private Content getContent(String contentId) {
+        return contentRepository.findById(contentId)
+                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
+    }
+
+    private void validateOwner(String memberId, String contentId, Member member, Content content) {
+        if (!content.isOwner(member)) {
+            throw new MemberUnAuthorizedException("[" + memberId + "] 는 [" + contentId + "] 의 소유자가 아닙니다.");
+        }
+    }
+
+    private SearchContentResponse getSearchContentResponse(String contentId, Content content) {
+        // TODO: 그룹 이름 가져오는 로직 수정
+        final Group group = getGroup();
+        return new SearchContentResponse(
+                contentId, content.getLocation(), group.getName(),
+                content.getMolluDateTime(), content.getUploadDateTime(),
+                content.getContentTag(), content.getFrontContentSource(), content.getBackContentSource());
     }
 
     private record Cursor(String cursorId, LocalDateTime cursorEndDate) {
