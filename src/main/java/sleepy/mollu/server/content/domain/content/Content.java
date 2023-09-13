@@ -62,7 +62,10 @@ public class Content extends BaseEntity {
     }
 
     public String getQuestion() {
-        return question.getValue();
+        if (this.question == null) {
+            return "";
+        }
+        return this.question.getValue();
     }
 
     public String getFrontContentSource() {
