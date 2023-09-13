@@ -31,7 +31,8 @@ public class MemberServiceImpl implements MemberService {
         return new MyCalendarResponse.CalendarResponse(
                 content.getId(),
                 content.getUploadDateTime(),
-                content.getThumbnailFrontSource());
+                content.getThumbnailFrontSource(),
+                content.getQuestion());
     }
 
     @Override
