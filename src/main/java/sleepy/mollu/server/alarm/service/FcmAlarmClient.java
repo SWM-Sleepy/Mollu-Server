@@ -1,5 +1,6 @@
 package sleepy.mollu.server.alarm.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -18,6 +19,7 @@ import java.util.stream.IntStream;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FcmAlarmClient implements AlarmClient {
 
     private static final RestTemplate REST_TEMPLATE = new RestTemplate();
@@ -25,7 +27,7 @@ public class FcmAlarmClient implements AlarmClient {
     private static final String MOLLU_TIME_TITLE = "It's MOLLU Time!";
 
     @Value("${alarm.fcm.authorization-key}")
-    private String authorizationKey;
+    private final String authorizationKey;
 
     @Override
     public void send(List<String> phoneTokens, String question) {
