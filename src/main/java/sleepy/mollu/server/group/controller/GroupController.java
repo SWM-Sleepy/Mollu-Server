@@ -59,7 +59,7 @@ public class GroupController {
     public ResponseEntity<CreateGroupResponse> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
 
         final CreateGroupResponse response = groupService.createGroup(memberId, request);
-        final URI uri = URI.create("/groups/" + response.id());
+        final URI uri = URI.create("/groups/" + response.getGroupId());
 
         return ResponseEntity.created(uri).build();
     }
