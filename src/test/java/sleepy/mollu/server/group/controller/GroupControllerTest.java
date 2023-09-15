@@ -28,6 +28,7 @@ class GroupControllerTest extends ControllerTest {
         final String groupId = "groupId";
 
         final CreateGroupResponse response = mock(CreateGroupResponse.class);
+        final CreateGroupResponse.GroupResponse groupResponse = mock(CreateGroupResponse.GroupResponse.class);
 
         @Test
         @DisplayName("그룹 이름이 없으면 400을 응답한다.")
@@ -57,7 +58,8 @@ class GroupControllerTest extends ControllerTest {
             params.add("introduction", "groupIntroduction");
 
             given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.groupResponse().id()).willReturn(groupId);
+            given(response.groupResponse()).willReturn(groupResponse);
+            given(groupResponse.id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", files, accessToken, params);
@@ -76,7 +78,8 @@ class GroupControllerTest extends ControllerTest {
             params.add("name", "groupName");
 
             given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.groupResponse().id()).willReturn(groupId);
+            given(response.groupResponse()).willReturn(groupResponse);
+            given(groupResponse.id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
@@ -96,7 +99,8 @@ class GroupControllerTest extends ControllerTest {
             params.add("introduction", "groupIntroduction");
 
             given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.groupResponse().id()).willReturn(groupId);
+            given(response.groupResponse()).willReturn(groupResponse);
+            given(groupResponse.id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
