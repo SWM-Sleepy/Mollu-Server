@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 @SpringBootTest(classes = {S3FileHandler.class, AwsConfig.class})
 @ExtendWith(MockitoExtension.class)
-@Disabled
+//@Disabled
 class S3FileHandlerTest {
 
     @Autowired
