@@ -166,7 +166,6 @@ class GroupServiceTest {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(멤버1));
             given(idConstructor.create()).willReturn(groupId, groupMemberId);
-            given(fileHandler.upload(null)).willReturn("");
             given(groupRepository.save(any(Group.class))).willAnswer(invocation -> invocation.getArgument(0));
             given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
 

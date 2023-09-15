@@ -24,7 +24,6 @@ public class S3FileHandler implements FileHandler {
     private static final String DIRECTORY_SPLIT_REGEX = "-";
     private static final int THUMBNAIL_INDEX = 1;
     private static final String THUMBNAIL_BUCKET = "thumbnail";
-    private static final String DEFAULT_IMAGE_URL = "";
 
     private final AmazonS3 amazonS3;
 
@@ -33,9 +32,6 @@ public class S3FileHandler implements FileHandler {
 
     @Override
     public String upload(ContentFile contentFile) {
-        if (contentFile == null) {
-            return DEFAULT_IMAGE_URL;
-        }
 
         final MultipartFile file = contentFile.getFile();
         final String key = getFileKey(contentFile);

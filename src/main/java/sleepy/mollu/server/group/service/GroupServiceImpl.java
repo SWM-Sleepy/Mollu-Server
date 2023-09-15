@@ -109,25 +109,28 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public CreateGroupResponse createGroup(String memberId, CreateGroupRequest request) {
         final Member member = getMember(memberId);
-        final Group group = saveGroup(request);
+        final Group group = createAndSaveGroup(request);
         final GroupMember groupMember = saveGroupMember(group, member);
 
         return getCreateGroupResponse(group, groupMember);
     }
 
-    private Group saveGroup(CreateGroupRequest request) {
+    private Group createAndSaveGroup(CreateGroupRequest request) {
         return groupRepository.save(Group.builder()
                 .id(idConstructor.create())
                 .name(request.name())
                 .introduction(request.introduction())
                 .code(Code.generate())
-                .groupProfileSource(getGroupProfileSource(request.imageFile()))
+                .groupProfileSource(uploadGroupProfile(request.imageFile()))
                 .build());
     }
 
-    private String getGroupProfileSource(MultipartFile file) {
-        final ContentFile contentFile = getContentFile(file);
-        return fileHandler.upload(contentFile);
+    private String uploadGroupProfile(MultipartFile file) {
+        if (file != null) {
+            final ContentFile contentFile = new ImageContentFile(file, ContentType.GROUPS);
+            return fileHandler.upload(contentFile);
+        }
+        return null;
     }
 
     private GroupMember saveGroupMember(Group group, Member member) {
@@ -137,14 +140,6 @@ public class GroupServiceImpl implements GroupService {
                 .member(member)
                 .role(GroupMemberRole.MEMBER)
                 .build());
-    }
-
-    private ImageContentFile getContentFile(MultipartFile file) {
-        if (file == null) {
-            return null;
-        }
-
-        return new ImageContentFile(file, ContentType.GROUPS);
     }
 
     private CreateGroupResponse getCreateGroupResponse(Group group, GroupMember groupMember) {
