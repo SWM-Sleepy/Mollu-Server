@@ -3,6 +3,8 @@ package sleepy.mollu.server.group.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
+import sleepy.mollu.server.group.controller.dto.GroupResponse;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse.GroupMemberResponse;
@@ -90,5 +92,10 @@ public class GroupServiceImpl implements GroupService {
                 .map(GroupMember::getMember)
                 .map(member -> new GroupMemberResponse(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource()))
                 .toList();
+    }
+
+    @Override
+    public GroupResponse createGroup(String memberId, CreateGroupRequest request) {
+        return null;
     }
 }
