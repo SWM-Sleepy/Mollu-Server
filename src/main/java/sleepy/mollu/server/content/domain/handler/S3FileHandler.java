@@ -32,6 +32,7 @@ public class S3FileHandler implements FileHandler {
 
     @Override
     public String upload(ContentFile contentFile) {
+
         final MultipartFile file = contentFile.getFile();
         final String key = getFileKey(contentFile);
         final ObjectMetadata objectMetadata = getObjectMetadata(file);

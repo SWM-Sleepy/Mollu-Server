@@ -138,20 +138,12 @@ public class ControllerTest {
         return put(path, accessToken, null);
     }
 
-    protected ResultActions put(String path) throws Exception {
-        return put(path, null);
-    }
-
     protected ResultActions delete(String path, String accessToken) throws Exception {
 
         final HttpHeaders headers = getHeaders(accessToken);
 
         return mockMvc.perform(MockMvcRequestBuilders.delete(path)
                 .headers(headers));
-    }
-
-    protected ResultActions delete(String path) throws Exception {
-        return delete(path, null);
     }
 
     protected ResultActions multipart(HttpMethod method, String path, String[] files, String accessToken, MultiValueMap<String, String> params) throws Exception {

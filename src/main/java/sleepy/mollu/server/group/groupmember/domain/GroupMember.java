@@ -35,12 +35,8 @@ public class GroupMember extends BaseEntity {
     public GroupMember(String id, Group group, Member member, GroupMemberRole role) {
         this.id = id;
         this.group = group;
-        setMember(member);
-        this.role = role;
-    }
-
-    private void setMember(Member member) {
         this.member = member;
+        this.role = role;
     }
 
     public boolean isSameMember(Member member) {

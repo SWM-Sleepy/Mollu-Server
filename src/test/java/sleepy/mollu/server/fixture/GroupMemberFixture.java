@@ -8,9 +8,14 @@ import sleepy.mollu.server.member.domain.Member;
 import java.util.List;
 import java.util.UUID;
 
+import static sleepy.mollu.server.fixture.GroupFixture.그룹1;
+import static sleepy.mollu.server.fixture.MemberFixture.멤버1;
+
 public class GroupMemberFixture {
 
     public static final GroupMemberRole DEFAULT_ROLE = GroupMemberRole.MEMBER;
+
+    public static final GroupMember 그룹_멤버1 = create("groupMember1", 그룹1, 멤버1);
 
     public static GroupMember create(String id, Group group, Member member) {
         return GroupMember.builder()

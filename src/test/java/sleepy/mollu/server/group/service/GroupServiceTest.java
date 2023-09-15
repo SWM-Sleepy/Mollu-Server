@@ -1,12 +1,15 @@
 package sleepy.mollu.server.group.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.content.domain.handler.FileHandler;
+import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
@@ -24,13 +27,20 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static sleepy.mollu.server.fixture.AcceptanceFixture.그룹_생성_요청_데이터;
+import static sleepy.mollu.server.fixture.MemberFixture.멤버1;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceTest {
 
-    private GroupService groupService;
+    @InjectMocks
+    private GroupServiceImpl groupService;
 
     @Mock
     private MemberRepository memberRepository;
@@ -41,11 +51,11 @@ class GroupServiceTest {
     @Mock
     private GroupMemberRepository groupMemberRepository;
 
+    @Mock
+    private IdConstructor idConstructor;
 
-    @BeforeEach
-    void setUp() {
-        groupService = new GroupServiceImpl(memberRepository, groupRepository, groupMemberRepository);
-    }
+    @Mock
+    private FileHandler fileHandler;
 
     @Nested
     @DisplayName("[그룹원 조회 서비스 호출시] ")
@@ -138,4 +148,33 @@ class GroupServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("[그룹 생성 서비스 호출시] ")
+    class CreateGroup {
+
+        final String memberId = 멤버1.getId();
+        final String groupId = "groupId";
+        final String groupMemberId = "groupMemberId";
+
+        @Test
+        @DisplayName("그룹을 성공적으로 생성한다.")
+        void CreateGroup0() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(멤버1));
+            given(idConstructor.create()).willReturn(groupId, groupMemberId);
+            given(groupRepository.save(any(Group.class))).willAnswer(invocation -> invocation.getArgument(0));
+            given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+            // when
+            final CreateGroupResponse response = groupService.createGroup(memberId, 그룹_생성_요청_데이터);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.groupResponse().id()).isEqualTo(groupId),
+                    () -> assertThat(response.groupMemberResponse().id()).isEqualTo(groupMemberId),
+                    () -> then(groupRepository).should(times(1)).save(any(Group.class)),
+                    () -> then(groupMemberRepository).should(times(1)).save(any(GroupMember.class))
+            );
+        }
+    }
 }
