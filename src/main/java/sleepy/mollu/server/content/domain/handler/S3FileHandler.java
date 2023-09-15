@@ -28,7 +28,7 @@ public class S3FileHandler implements FileHandler {
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
+    private final String bucketName;
 
     @Override
     public String upload(ContentFile contentFile) {
@@ -82,12 +82,11 @@ public class S3FileHandler implements FileHandler {
     @Override
     public OriginThumbnail uploadWithThumbnail(ContentFile contentFile) {
         final MultipartFile file = contentFile.getFile();
-        final String originKey = getFileKey(contentFile);
-        final String thumbnailKey = getFileKey(contentFile);
+        final String key = getFileKey(contentFile);
         final ObjectMetadata objectMetadata = getObjectMetadata(file);
 
-        final String originSource = uploadFile(file, originKey, objectMetadata);
-        final String thumbnailSource = getUrlString(thumbnailKey, UploadType.THUMBNAIL);
+        final String originSource = uploadFile(file, key, objectMetadata);
+        final String thumbnailSource = getUrlString(key, UploadType.THUMBNAIL);
 
         return new OriginThumbnail(originSource, thumbnailSource);
     }
