@@ -9,7 +9,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
 import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
-import sleepy.mollu.server.group.controller.dto.GroupResponse;
+import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,7 +27,7 @@ class GroupControllerTest extends ControllerTest {
         final String memberId = "memberId";
         final String groupId = "groupId";
 
-        final GroupResponse response = mock(GroupResponse.class);
+        final CreateGroupResponse response = mock(CreateGroupResponse.class);
 
         @Test
         @DisplayName("그룹 이름이 없으면 400을 응답한다.")

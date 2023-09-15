@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
-import sleepy.mollu.server.group.controller.dto.GroupResponse;
+import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.service.GroupService;
@@ -56,9 +56,9 @@ public class GroupController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @PostMapping
-    public ResponseEntity<GroupResponse> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
+    public ResponseEntity<CreateGroupResponse> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
 
-        final GroupResponse response = groupService.createGroup(memberId, request);
+        final CreateGroupResponse response = groupService.createGroup(memberId, request);
         final URI uri = URI.create("/groups/" + response.id());
 
         return ResponseEntity.created(uri).build();
