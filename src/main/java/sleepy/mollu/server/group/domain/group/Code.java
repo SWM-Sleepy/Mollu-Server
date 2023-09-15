@@ -1,5 +1,6 @@
 package sleepy.mollu.server.group.domain.group;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class Code {
     private static final List<Character> ALLOWED_CHARS = getAllowedChars();
     private static final Random RANDOM = new Random();
 
+    @Column(name = "group_code")
     private String value;
 
     private Code(String value) {

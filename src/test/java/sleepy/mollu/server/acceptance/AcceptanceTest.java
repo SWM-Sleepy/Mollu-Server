@@ -35,6 +35,7 @@ public class AcceptanceTest {
     private static final String AUTH_URL = BASE_URL + "/auth";
     private static final String MEMBER_URL = BASE_URL + "/members";
     private static final String MEMBER_PREFERENCE_URL = MEMBER_URL + "/preference";
+    private static final String GROUP_URL = BASE_URL + "/groups";
     private static final String MEMBER_EMOJI_URL = MEMBER_URL + "/emojis";
     private static final String CONTENT_URL = BASE_URL + "/contents";
     @LocalServerPort
@@ -103,6 +104,14 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> MOLLU_타임_조회_요청(String accessToken) {
         return get(CONTENT_URL + "/mollu-time", accessToken);
+    }
+
+    protected ExtractableResponse<Response> 그룹_생성_요청(String accessToken) {
+        return thenExtract(RestAssured.given()
+                .headers(Map.of("Authorization", "Bearer " + accessToken))
+                .multiPart("name", "그룹명")
+                .when()
+                .post(GROUP_URL));
     }
 
     protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime) {
@@ -200,5 +209,9 @@ public class AcceptanceTest {
 
     protected String getCommentId(ExtractableResponse<Response> response) {
         return getLocation(response).split("/")[4];
+    }
+
+    protected String getGroupId(ExtractableResponse<Response> response) {
+        return getLocation(response).split("/")[2];
     }
 }
