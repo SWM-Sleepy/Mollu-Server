@@ -13,37 +13,37 @@ import sleepy.mollu.server.content.domain.handler.dto.OriginThumbnail;
 import sleepy.mollu.server.content.exception.FileHandlerServerException;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class S3FileHandler implements FileHandler {
 
-    private static final String THUMBNAIL_URL = "thumbnail/";
+    private static final String DIRECTORY_SPLIT_REGEX = "-";
+    private static final int THUMBNAIL_INDEX = 1;
+    private static final String THUMBNAIL_BUCKET = "thumbnail";
 
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
+    private final String bucketName;
 
     @Override
     public String upload(ContentFile contentFile) {
         final MultipartFile file = contentFile.getFile();
-        final String key = getFileKey(contentFile, UploadType.ORIGIN);
+        final String key = getFileKey(contentFile);
         final ObjectMetadata objectMetadata = getObjectMetadata(file);
 
         return uploadFile(file, key, objectMetadata);
     }
 
-    private String getFileKey(ContentFile contentFile, UploadType uploadType) {
+    private String getFileKey(ContentFile contentFile) {
         final String directory = contentFile.getContentType().toString().toLowerCase() + "/";
         final String fileName = UUID.randomUUID().toString() + '_' + contentFile.getFile().getOriginalFilename();
 
-        if (uploadType == UploadType.ORIGIN) {
-            return directory + fileName;
-
-        }
-        return directory + THUMBNAIL_URL + fileName;
+        return directory + fileName;
     }
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {
@@ -61,22 +61,32 @@ public class S3FileHandler implements FileHandler {
             throw new FileHandlerServerException("파일 업로드에 실패하였습니다.");
         }
 
-        return getUrlString(key);
+        return getUrlString(key, UploadType.ORIGIN);
     }
 
-    private String getUrlString(String key) {
+    private String getUrlString(String key, UploadType uploadType) {
+        if (uploadType == UploadType.THUMBNAIL) {
+            return amazonS3.getUrl(getThumbnailBucket(bucketName), key).toString();
+        }
+
         return amazonS3.getUrl(bucketName, key).toString();
+    }
+
+    private String getThumbnailBucket(String bucket) {
+        List<String> splitBucket = new ArrayList<>(List.of(bucket.split(DIRECTORY_SPLIT_REGEX)));
+        splitBucket.add(THUMBNAIL_INDEX, THUMBNAIL_BUCKET);
+
+        return String.join("-", splitBucket);
     }
 
     @Override
     public OriginThumbnail uploadWithThumbnail(ContentFile contentFile) {
         final MultipartFile file = contentFile.getFile();
-        final String originKey = getFileKey(contentFile, UploadType.ORIGIN);
-        final String thumbnailKey = getFileKey(contentFile, UploadType.THUMBNAIL);
+        final String key = getFileKey(contentFile);
         final ObjectMetadata objectMetadata = getObjectMetadata(file);
 
-        final String originSource = uploadFile(file, originKey, objectMetadata);
-        final String thumbnailSource = getUrlString(thumbnailKey);
+        final String originSource = uploadFile(file, key, objectMetadata);
+        final String thumbnailSource = getUrlString(key, UploadType.THUMBNAIL);
 
         return new OriginThumbnail(originSource, thumbnailSource);
     }
