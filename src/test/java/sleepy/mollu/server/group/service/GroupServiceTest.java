@@ -8,9 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
-import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
-import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
@@ -36,8 +34,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static sleepy.mollu.server.fixture.AcceptanceFixture.그룹_생성_요청_데이터;
-import static sleepy.mollu.server.fixture.GroupFixture.그룹1;
-import static sleepy.mollu.server.fixture.GroupMemberFixture.그룹_멤버1;
 import static sleepy.mollu.server.fixture.MemberFixture.멤버1;
 
 @ExtendWith(MockitoExtension.class)
