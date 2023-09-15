@@ -33,11 +33,11 @@ public class S3FileHandler implements FileHandler {
 
     @Override
     public String upload(ContentFile contentFile) {
-        final MultipartFile file = contentFile.getFile();
-        if (file == null) {
+        if (contentFile == null) {
             return DEFAULT_IMAGE_URL;
         }
 
+        final MultipartFile file = contentFile.getFile();
         final String key = getFileKey(contentFile);
         final ObjectMetadata objectMetadata = getObjectMetadata(file);
 

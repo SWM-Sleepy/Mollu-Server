@@ -40,6 +40,18 @@ public class Group extends BaseEntity {
     }
 
     public String getName() {
-        return name.getValue();
+        return this.name.getValue();
+    }
+
+    public String getIntroduction() {
+        return this.introduction.getValue();
+    }
+
+    public String getCode() {
+        return this.code.getValue();
+    }
+
+    public String getGroupProfileSource() {
+        return this.groupProfileSource.getValue();
     }
 }
