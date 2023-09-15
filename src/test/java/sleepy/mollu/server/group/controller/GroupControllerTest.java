@@ -30,12 +30,12 @@ class GroupControllerTest extends ControllerTest {
         final GroupResponse response = mock(GroupResponse.class);
 
         @Test
-        @DisplayName("그룹 이름이나 소개글이 없으면 400을 응답한다.")
+        @DisplayName("그룹 이름이 없으면 400을 응답한다.")
         void GroupControllerTest0() throws Exception {
             // given
             final String accessToken = getAccessToken("memberId");
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("name", "groupName");
+            params.add("introduction", "groupIntroduction");
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
@@ -61,6 +61,25 @@ class GroupControllerTest extends ControllerTest {
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", files, accessToken, params);
+
+            // then
+            resultActions.andExpect(status().isCreated())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("그룹 소개를 작성하지 않아도 그룹 생성이 가능하다.")
+        void GroupControllerTest3() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+            final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("name", "groupName");
+
+            given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
+            given(response.id()).willReturn(groupId);
+
+            // when
+            final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
 
             // then
             resultActions.andExpect(status().isCreated())
