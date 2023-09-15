@@ -24,14 +24,18 @@ public class Group extends BaseEntity {
     private Introduction introduction;
 
     @Embedded
+    private Code code;
+
+    @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "group_profile_source"))
     private FileSource groupProfileSource;
 
     @Builder
-    public Group(String id, String name, String introduction, String groupProfileSource) {
+    public Group(String id, String name, String introduction, Code code, String groupProfileSource) {
         this.id = id;
         this.name = new GroupName(name);
         this.introduction = new Introduction(introduction);
+        this.code = code;
         this.groupProfileSource = new FileSource(groupProfileSource);
     }
 
