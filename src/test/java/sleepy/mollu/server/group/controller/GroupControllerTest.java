@@ -57,7 +57,7 @@ class GroupControllerTest extends ControllerTest {
             params.add("introduction", "groupIntroduction");
 
             given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.getGroupId()).willReturn(groupId);
+            given(response.groupResponse().id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", files, accessToken, params);
@@ -76,7 +76,7 @@ class GroupControllerTest extends ControllerTest {
             params.add("name", "groupName");
 
             given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.getGroupId()).willReturn(groupId);
+            given(response.groupResponse().id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
@@ -96,7 +96,7 @@ class GroupControllerTest extends ControllerTest {
             params.add("introduction", "groupIntroduction");
 
             given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.getGroupId()).willReturn(groupId);
+            given(response.groupResponse().id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
