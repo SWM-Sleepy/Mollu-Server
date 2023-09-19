@@ -11,6 +11,7 @@ import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
@@ -218,6 +219,45 @@ class GroupServiceTest {
 
             // then
             assertThat(response.code()).isEqualTo(code);
+        }
+    }
+
+    @Nested
+    @DisplayName("[초대 코드로 그룹 조회 서비스 호출시] ")
+    class SearchGroupByCode {
+
+        final String memberId = "memberId";
+        final String code = "aaaaaaaa";
+        final int memberCount = 10;
+
+        final Member member = mock(Member.class);
+        final Group group = mock(Group.class);
+
+        @Test
+        @DisplayName("해당 초대코드를 가진 그룹이 없으면, NotFound 예외를 던진다.")
+        void SearchGroupByCode0() {
+            // given
+            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(groupRepository.findByCode_Value(code)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> groupService.searchGroupByCode(memberId, code))
+                    .isInstanceOf(GroupNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("그룹을 성공적으로 조회한다.")
+        void SearchGroupByCode1() {
+            // given
+            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(groupRepository.findByCode_Value(code)).willReturn(Optional.of(group));
+            given(groupMemberRepository.countByGroup(group)).willReturn(memberCount);
+
+            // when
+            final SearchGroupResponse response = groupService.searchGroupByCode(memberId, code);
+
+            // then
+            assertThat(response.memberCount()).isEqualTo(memberCount);
         }
     }
 }

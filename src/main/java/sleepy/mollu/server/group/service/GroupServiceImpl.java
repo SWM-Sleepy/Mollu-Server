@@ -171,7 +171,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     private void checkMemberIsGroupMember(Member member, Group group) {
-        if(!groupMemberRepository.existsByMemberAndGroup(member, group)) {
+        if (!groupMemberRepository.existsByMemberAndGroup(member, group)) {
             throw new MemberGroupUnAuthorizedException("[" + member.getId() + "]는 [" + group.getId() + "] 그룹의 멤버가 아닙니다.");
         }
     }
@@ -179,6 +179,30 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public SearchGroupResponse searchGroupByCode(String memberId, String code) {
 
-        return null;
+        validateMember(memberId);
+        final Group group = getGroupBy(code);
+        final int memberCount = getMemberCount(group);
+
+        return getSearchGroupResponse(group, memberCount);
+    }
+
+    private void validateMember(String memberId) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다.");
+        }
+    }
+
+    private Group getGroupBy(String code) {
+        return groupRepository.findByCode_Value(code)
+                .orElseThrow(() -> new GroupNotFoundException("[" + code + "]는 존재하지 않는 그룹 코드입니다."));
+    }
+
+    private int getMemberCount(Group group) {
+        return groupMemberRepository.countByGroup(group);
+    }
+
+    private SearchGroupResponse getSearchGroupResponse(Group group, int memberCount) {
+        return new SearchGroupResponse(
+                group.getId(), group.getName(), group.getIntroduction(), group.getGroupProfileSource(), memberCount);
     }
 }
