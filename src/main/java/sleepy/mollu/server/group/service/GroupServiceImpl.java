@@ -205,6 +205,26 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public JoinGroupResponse joinGroupByCode(String memberId, String code) {
-        return null;
+        final Member member = getMember(memberId);
+        final Group group = getGroupBy(code);
+        final GroupMember groupMember = saveGroupMember(member, group);
+
+        return getJoinGroupResponse(groupMember);
+    }
+
+    private GroupMember saveGroupMember(Member member, Group group) {
+        return groupMemberRepository.save(GroupMember.builder()
+                .id(idConstructor.create())
+                .member(member)
+                .group(group)
+                .role(GroupMemberRole.MEMBER)
+                .build());
+    }
+
+    private JoinGroupResponse getJoinGroupResponse(GroupMember groupMember) {
+        return new JoinGroupResponse(
+                groupMember.getId(),
+                groupMember.getGroupId(),
+                groupMember.getMemberId());
     }
 }

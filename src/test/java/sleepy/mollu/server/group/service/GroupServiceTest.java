@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
+import sleepy.mollu.server.group.controller.dto.JoinGroupResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.domain.group.Group;
@@ -257,6 +258,50 @@ class GroupServiceTest {
 
             // then
             assertThat(response.memberCount()).isEqualTo(memberCount);
+        }
+    }
+
+    @Nested
+    @DisplayName("[초대 코드로 그룹 참여 서비스 호출시] ")
+    class JoinGroupByCode {
+
+        final String memberId = "memberId";
+        final String code = "aaaaaaaa".toUpperCase();
+        final String groupMemberId = "groupMemberId";
+
+        final Member member = mock(Member.class);
+        final Group group = mock(Group.class);
+
+        @Test
+        @DisplayName("해당 초대 코드를 가진 그룹이 없으면, NotFound 예외를 던진다.")
+        void JoinGroupByCode0() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(groupRepository.findByCode_Value(code)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> groupService.joinGroupByCode(memberId, code))
+                    .isInstanceOf(GroupNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("그룹에 성공적으로 참여한다.")
+        void JoinGroupByCode1() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(groupRepository.findByCode_Value(code)).willReturn(Optional.of(group));
+            given(idConstructor.create()).willReturn(groupMemberId);
+            given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+            // when
+            final JoinGroupResponse response = groupService.joinGroupByCode(memberId, code);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.id()).isEqualTo(groupMemberId),
+                    () -> then(groupMemberRepository).should(times(1)).save(any(GroupMember.class))
+            );
+
         }
     }
 }
