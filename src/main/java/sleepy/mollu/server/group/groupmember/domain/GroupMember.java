@@ -39,6 +39,14 @@ public class GroupMember extends BaseEntity {
         this.role = role;
     }
 
+    public String getGroupId() {
+        return this.group.getId();
+    }
+
+    public String getMemberId() {
+        return this.member.getId();
+    }
+
     public boolean isSameMember(Member member) {
         return this.member.equals(member);
     }

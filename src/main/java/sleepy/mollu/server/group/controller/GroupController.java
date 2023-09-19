@@ -4,12 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
-import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
-import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
-import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
+import sleepy.mollu.server.group.controller.dto.*;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.service.GroupService;
@@ -88,5 +86,18 @@ public class GroupController {
     public ResponseEntity<SearchGroupResponse> searchGroupByCode(@Login String memberId, @RequestParam String code) {
 
         return ResponseEntity.ok(groupService.searchGroupByCode(memberId, code));
+    }
+
+    @Operation(summary = "초대 코드로 그룹 참여")
+    @CreatedResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @PostMapping("/code")
+    public ResponseEntity<JoinGroupResponse> joinGroupByCode(@Login String memberId,
+                                                             @RequestBody @Valid JoinGroupByCodeRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(groupService.joinGroupByCode(memberId, request.code()));
     }
 }

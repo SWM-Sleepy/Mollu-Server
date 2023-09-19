@@ -9,11 +9,8 @@ import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
-import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
-import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
+import sleepy.mollu.server.group.controller.dto.*;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse.GroupResponse;
-import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
-import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.domain.group.Code;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
@@ -204,5 +201,30 @@ public class GroupServiceImpl implements GroupService {
     private SearchGroupResponse getSearchGroupResponse(Group group, int memberCount) {
         return new SearchGroupResponse(
                 group.getId(), group.getName(), group.getIntroduction(), group.getGroupProfileSource(), memberCount);
+    }
+
+    @Override
+    public JoinGroupResponse joinGroupByCode(String memberId, String code) {
+        final Member member = getMember(memberId);
+        final Group group = getGroupBy(code);
+        final GroupMember groupMember = saveGroupMember(member, group);
+
+        return getJoinGroupResponse(groupMember);
+    }
+
+    private GroupMember saveGroupMember(Member member, Group group) {
+        return groupMemberRepository.save(GroupMember.builder()
+                .id(idConstructor.create())
+                .member(member)
+                .group(group)
+                .role(GroupMemberRole.MEMBER)
+                .build());
+    }
+
+    private JoinGroupResponse getJoinGroupResponse(GroupMember groupMember) {
+        return new JoinGroupResponse(
+                groupMember.getId(),
+                groupMember.getGroupId(),
+                groupMember.getMemberId());
     }
 }
