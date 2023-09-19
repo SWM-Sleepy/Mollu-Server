@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 import sleepy.mollu.server.config.TestConfig;
+import sleepy.mollu.server.group.controller.dto.JoinGroupByCodeRequest;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
@@ -120,6 +121,10 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> 초대_코드로_그룹_조회_요청(String accessToken, String code) {
         return get(GROUP_URL + "/code?code=" + code, accessToken);
+    }
+
+    protected ExtractableResponse<Response> 초대_코드로_그룹_참여_요청(String accessToken, String code) {
+        return post(GROUP_URL + "/code", accessToken, new JoinGroupByCodeRequest(code));
     }
 
     protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime) {
