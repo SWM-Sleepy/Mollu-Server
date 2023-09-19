@@ -118,6 +118,10 @@ public class AcceptanceTest {
         return get(GROUP_URL + "/" + groupId + "/code", accessToken);
     }
 
+    protected ExtractableResponse<Response> 초대_코드로_그룹_조회_요청(String accessToken, String code) {
+        return get(GROUP_URL + "/code?code=" + code, accessToken);
+    }
+
     protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))

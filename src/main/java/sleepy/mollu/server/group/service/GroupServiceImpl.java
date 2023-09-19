@@ -193,7 +193,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     private Group getGroupBy(String code) {
-        return groupRepository.findByCode_Value(code)
+        return groupRepository.findByCode_Value(code.toUpperCase())
                 .orElseThrow(() -> new GroupNotFoundException("[" + code + "]는 존재하지 않는 그룹 코드입니다."));
     }
 
