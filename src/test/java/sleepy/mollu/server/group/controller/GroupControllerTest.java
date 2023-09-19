@@ -17,6 +17,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static sleepy.mollu.server.fixture.AcceptanceFixture.초대_코드로_그룹_참여_요청_데이터;
 
 class GroupControllerTest extends ControllerTest {
 
@@ -109,7 +110,38 @@ class GroupControllerTest extends ControllerTest {
             resultActions.andExpect(status().isCreated())
                     .andDo(print());
         }
+    }
 
+    @Nested
+    @DisplayName("[초대 코드로 그룹 참여 API 호출시] ")
+    class JoinGroupByCode {
 
+        @Test
+        @DisplayName("요청 바디에 초대 코드가 없으면, 400을 응답한다.")
+        void JoinGroupByCode0() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+
+            // when
+            final ResultActions resultActions = post("/groups/code", accessToken);
+
+            // then
+            resultActions.andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("요청이 유효하다면, 201을 응답한다.")
+        void JoinGroupByCode1() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+
+            // when
+            final ResultActions resultActions = post("/groups/code", accessToken, 초대_코드로_그룹_참여_요청_데이터);
+
+            // then
+            resultActions.andExpect(status().isCreated())
+                    .andDo(print());
+        }
     }
 }
