@@ -10,10 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
+import sleepy.mollu.server.group.exception.MemberGroupUnAuthorizedException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
@@ -175,6 +177,47 @@ class GroupServiceTest {
                     () -> then(groupRepository).should(times(1)).save(any(Group.class)),
                     () -> then(groupMemberRepository).should(times(1)).save(any(GroupMember.class))
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("[그룹 코드 조회 서비스 호출시] ")
+    class SearchGroupCode {
+
+        final String memberId = "memberId";
+        final String groupId = "groupId";
+        final String code = "code";
+
+        final Member member = mock(Member.class);
+        final Group group = mock(Group.class);
+
+        @Test
+        @DisplayName("멤버가 그룹에 소속되어 있지 않으면, UnAuthorized 예외를 던진다.")
+        void SearchGroupCode0() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
+            given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> groupService.searchGroupCode(memberId, groupId))
+                    .isInstanceOf(MemberGroupUnAuthorizedException.class);
+        }
+
+        @Test
+        @DisplayName("그룹 코드를 성공적으로 조회한다.")
+        void SearchGroupCode1() {
+            // given
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
+            given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(true);
+            given(group.getCode()).willReturn(code);
+
+            // when
+            final SearchGroupCodeResponse response = groupService.searchGroupCode(memberId, groupId);
+
+            // then
+            assertThat(response.code()).isEqualTo(code);
         }
     }
 }

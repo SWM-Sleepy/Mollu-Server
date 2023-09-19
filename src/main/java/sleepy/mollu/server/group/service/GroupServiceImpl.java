@@ -18,6 +18,7 @@ import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
+import sleepy.mollu.server.group.exception.MemberGroupUnAuthorizedException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.domain.GroupMemberRole;
 import sleepy.mollu.server.group.groupmember.domain.GroupMembers;
@@ -109,16 +110,12 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     @Override
     public CreateGroupResponse createGroup(String memberId, CreateGroupRequest request) {
+
         final Member member = getMember(memberId);
         final Group group = createAndSaveGroup(request);
         final GroupMember groupMember = saveGroupMember(group, member);
 
         return getCreateGroupResponse(group, groupMember);
-    }
-
-    @Override
-    public SearchGroupCodeResponse searchGroupCode(String memberId, String groupId) {
-        return null;
     }
 
     private Group createAndSaveGroup(CreateGroupRequest request) {
@@ -160,5 +157,21 @@ public class GroupServiceImpl implements GroupService {
     private CreateGroupResponse.GroupMemberResponse getGroupMemberResponse(GroupMember groupMember) {
         return new CreateGroupResponse.GroupMemberResponse(
                 groupMember.getId(), groupMember.getGroup().getId(), groupMember.getMember().getId());
+    }
+
+    @Override
+    public SearchGroupCodeResponse searchGroupCode(String memberId, String groupId) {
+
+        final Member member = getMember(memberId);
+        final Group group = getGroup(groupId);
+        checkMemberIsGroupMember(member, group);
+
+        return new SearchGroupCodeResponse(group.getCode());
+    }
+
+    private void checkMemberIsGroupMember(Member member, Group group) {
+        if(!groupMemberRepository.existsByMemberAndGroup(member, group)) {
+            throw new MemberGroupUnAuthorizedException("[" + member.getId() + "]는 [" + group.getId() + "] 그룹의 멤버가 아닙니다.");
+        }
     }
 }
