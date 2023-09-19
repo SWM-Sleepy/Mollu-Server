@@ -7,6 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
+import sleepy.mollu.server.group.domain.group.Code;
+import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.member.repository.MemberRepository;
@@ -21,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class OAuth2ServiceIntegrationTest {
 
     @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
     private OAuth2Service oAuth2Service;
 
     @Autowired
@@ -33,6 +39,14 @@ class OAuth2ServiceIntegrationTest {
         final String EMPTY_SOURCE = "";
         final SignupRequest request = new SignupRequest("name", LocalDate.now(), "mollu");
 
+        groupRepository.save(Group.builder()
+                .id("groupId")
+                .name("디폴트 그룹")
+                .introduction("디폴트 그룹입니다.")
+                .code(Code.generate())
+                .groupProfileSource("")
+                .build());
+
         // when
         oAuth2Service.signup("test", "socialToken", request);
 
@@ -44,7 +58,6 @@ class OAuth2ServiceIntegrationTest {
                 () -> assertThat(member.getPreference()).isNotNull(),
                 () -> assertThat(member.getProfileSource()).isEqualTo(EMPTY_SOURCE)
         );
-
     }
 
 
