@@ -12,6 +12,7 @@ import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse.GroupResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
 import sleepy.mollu.server.group.domain.group.Code;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
@@ -113,6 +114,11 @@ public class GroupServiceImpl implements GroupService {
         final GroupMember groupMember = saveGroupMember(group, member);
 
         return getCreateGroupResponse(group, groupMember);
+    }
+
+    @Override
+    public SearchGroupCodeResponse searchGroupCode(String memberId, String groupId) {
+        return null;
     }
 
     private Group createAndSaveGroup(CreateGroupRequest request) {
