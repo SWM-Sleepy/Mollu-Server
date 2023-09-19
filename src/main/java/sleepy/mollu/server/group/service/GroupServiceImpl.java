@@ -13,6 +13,7 @@ import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse.GroupResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.domain.group.Code;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
@@ -170,8 +171,38 @@ public class GroupServiceImpl implements GroupService {
     }
 
     private void checkMemberIsGroupMember(Member member, Group group) {
-        if(!groupMemberRepository.existsByMemberAndGroup(member, group)) {
+        if (!groupMemberRepository.existsByMemberAndGroup(member, group)) {
             throw new MemberGroupUnAuthorizedException("[" + member.getId() + "]는 [" + group.getId() + "] 그룹의 멤버가 아닙니다.");
         }
+    }
+
+    @Override
+    public SearchGroupResponse searchGroupByCode(String memberId, String code) {
+
+        validateMember(memberId);
+        final Group group = getGroupBy(code);
+        final int memberCount = getMemberCount(group);
+
+        return getSearchGroupResponse(group, memberCount);
+    }
+
+    private void validateMember(String memberId) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다.");
+        }
+    }
+
+    private Group getGroupBy(String code) {
+        return groupRepository.findByCode_Value(code.toUpperCase())
+                .orElseThrow(() -> new GroupNotFoundException("[" + code + "]는 존재하지 않는 그룹 코드입니다."));
+    }
+
+    private int getMemberCount(Group group) {
+        return groupMemberRepository.countByGroup(group);
+    }
+
+    private SearchGroupResponse getSearchGroupResponse(Group group, int memberCount) {
+        return new SearchGroupResponse(
+                group.getId(), group.getName(), group.getIntroduction(), group.getGroupProfileSource(), memberCount);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
 import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
@@ -75,5 +76,17 @@ public class GroupController {
     public ResponseEntity<SearchGroupCodeResponse> searchGroupCode(@Login String memberId, @PathVariable String groupId) {
 
         return ResponseEntity.ok(groupService.searchGroupCode(memberId, groupId));
+    }
+
+    @Operation(summary = "초대 코드로 그룹 조회")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping("/code")
+    public ResponseEntity<SearchGroupResponse> searchGroupByCode(@Login String memberId, @RequestParam String code) {
+
+        return ResponseEntity.ok(groupService.searchGroupByCode(memberId, code));
     }
 }

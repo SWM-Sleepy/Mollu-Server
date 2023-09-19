@@ -10,4 +10,6 @@ public interface GroupRepository extends JpaRepository<Group, String> {
 
     @Query("select g from Group g")
     Optional<Group> findDefaultGroup();
+
+    Optional<Group> findByCode_Value(String code);
 }
