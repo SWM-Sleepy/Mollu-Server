@@ -227,10 +227,9 @@ class GroupServiceTest {
     class SearchGroupByCode {
 
         final String memberId = "memberId";
-        final String code = "aaaaaaaa";
+        final String code = "aaaaaaaa".toUpperCase();
         final int memberCount = 10;
 
-        final Member member = mock(Member.class);
         final Group group = mock(Group.class);
 
         @Test
