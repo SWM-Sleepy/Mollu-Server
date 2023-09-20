@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Platform;
 import sleepy.mollu.server.member.domain.Preference;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.dto.PreferenceResponse;
 import sleepy.mollu.server.member.preference.exception.PreferenceNotFoundException;

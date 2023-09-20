@@ -8,7 +8,6 @@ import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.profile.dto.ProfileRequest;
 import sleepy.mollu.server.member.profile.dto.ProfileResponse;
 import sleepy.mollu.server.member.repository.MemberRepository;

@@ -12,7 +12,6 @@ import sleepy.mollu.server.member.controller.dto.MyCalendarResponse;
 import sleepy.mollu.server.member.controller.dto.MyContentsResponse;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.content.SearchRange;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.time.LocalDate;

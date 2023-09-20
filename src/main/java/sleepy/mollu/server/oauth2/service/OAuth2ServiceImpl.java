@@ -15,7 +15,6 @@ import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.dto.MemberBadRequestException;
 import sleepy.mollu.server.member.dto.SignupRequest;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;

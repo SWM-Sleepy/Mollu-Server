@@ -10,7 +10,6 @@ import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.mollutime.controller.dto.SearchMolluTimeResponse;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.time.LocalDateTime;
