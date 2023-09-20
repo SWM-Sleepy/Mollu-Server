@@ -19,12 +19,10 @@ import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.exception.MemberGroupUnAuthorizedException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.domain.GroupMemberRole;
-import sleepy.mollu.server.group.groupmember.domain.GroupMembers;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberNotFoundException;
-import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
@@ -45,13 +43,25 @@ public class GroupServiceImpl implements GroupService {
 
         final Member member = getMember(memberId);
         final Group group = getGroup(groupId);
+        checkMemberIsGroupMember(member, group);
 
-        return getGroupMemberSearchResponse(group, member);
+        return getGroupMemberSearchResponse(group);
     }
 
     private Member getMember(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다."));
+    }
+
+    private Group getGroup(String groupId) {
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> new GroupNotFoundException("[" + groupId + "]는 존재하지 않는 그룹입니다."));
+    }
+
+    private void checkMemberIsGroupMember(Member member, Group group) {
+        if (!groupMemberRepository.existsByMemberAndGroup(member, group)) {
+            throw new MemberGroupUnAuthorizedException("[" + member.getId() + "]는 [" + group.getId() + "] 그룹의 멤버가 아닙니다.");
+        }
     }
 
     @Override
@@ -80,25 +90,13 @@ public class GroupServiceImpl implements GroupService {
         return allByGroup.size();
     }
 
-    private Group getGroup(String groupId) {
-        return groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupNotFoundException("[" + groupId + "]는 존재하지 않는 그룹입니다."));
-    }
-
-    private GroupMemberSearchResponse getGroupMemberSearchResponse(Group group, Member member) {
-        final GroupMembers groupMembers = new GroupMembers(groupMemberRepository.findAllWithMemberByGroup(group));
-        validateGroupMember(groupMembers, member, group.getId());
+    private GroupMemberSearchResponse getGroupMemberSearchResponse(Group group) {
+        final List<GroupMember> groupMembers = groupMemberRepository.findAllWithMemberByGroup(group);
         return new GroupMemberSearchResponse(getGroupMembers(groupMembers));
     }
 
-    private void validateGroupMember(GroupMembers groupMembers, Member member, String groupId) {
-        if (!groupMembers.hasMember(member)) {
-            throw new MemberUnAuthorizedException("[" + member.getId() + "]는 [" + groupId + "] 그룹의 멤버가 아닙니다.");
-        }
-    }
-
-    private List<GroupMemberSearchResponse.GroupMemberResponse> getGroupMembers(GroupMembers groupMembers) {
-        return groupMembers.groupMembers().stream()
+    private List<GroupMemberSearchResponse.GroupMemberResponse> getGroupMembers(List<GroupMember> groupMembers) {
+        return groupMembers.stream()
                 .map(GroupMember::getMember)
                 .map(member -> new GroupMemberSearchResponse.GroupMemberResponse(
                         member.getId(), member.getMolluId(), member.getName(), member.getProfileSource()))
@@ -165,12 +163,6 @@ public class GroupServiceImpl implements GroupService {
         checkMemberIsGroupMember(member, group);
 
         return new SearchGroupCodeResponse(group.getCode());
-    }
-
-    private void checkMemberIsGroupMember(Member member, Group group) {
-        if (!groupMemberRepository.existsByMemberAndGroup(member, group)) {
-            throw new MemberGroupUnAuthorizedException("[" + member.getId() + "]는 [" + group.getId() + "] 그룹의 멤버가 아닙니다.");
-        }
     }
 
     @Override
