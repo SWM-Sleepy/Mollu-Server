@@ -100,12 +100,11 @@ class GroupServiceTest {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
-            given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
-            given(groupMember.isSameMember(member)).willReturn(false);
+            given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(false);
 
             // when & then
             assertThatThrownBy(() -> groupService.searchGroupMembers(memberId, groupId))
-                    .isInstanceOf(MemberUnAuthorizedException.class);
+                    .isInstanceOf(MemberGroupUnAuthorizedException.class);
 
         }
 
@@ -115,8 +114,8 @@ class GroupServiceTest {
             // given
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
+            given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(true);
             given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
-            given(groupMember.isSameMember(member)).willReturn(true);
             given(groupMember.getMember()).willReturn(member);
 
             // when

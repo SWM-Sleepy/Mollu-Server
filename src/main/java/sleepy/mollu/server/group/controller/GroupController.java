@@ -100,4 +100,17 @@ public class GroupController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(groupService.joinGroupByCode(memberId, request.code()));
     }
+
+    @Operation(summary = "그룹 탈퇴")
+    @NoContentResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @DeleteMapping("/{groupId}/members")
+    public ResponseEntity<Void> leaveGroup(@Login String memberId, @PathVariable String groupId) {
+
+        groupService.leaveGroup(memberId, groupId);
+        return ResponseEntity.noContent().build();
+    }
 }
