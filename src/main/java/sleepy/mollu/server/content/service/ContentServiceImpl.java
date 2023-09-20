@@ -57,18 +57,13 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public GroupSearchFeedResponse searchGroupFeed(String memberId, String cursorId, LocalDateTime cursorEndDate) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final List<Group> groups = getGroups(member);
         final List<ContentGroup> contentGroups = getContentGroups(groups, cursorId, cursorEndDate);
         final List<Content> contents = getContents(contentGroups, member);
         final Cursor cursor = getCursor(contentGroups);
 
         return getGroupSearchFeedResponse(cursor, contents);
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "] 는 존재하지 않는 회원입니다."));
     }
 
     private List<Group> getGroups(Member member) {
@@ -134,7 +129,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public String createContent(String memberId, CreateContentRequest request) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final OriginThumbnail frontSource = uploadContent(request.frontContentFile());
         final OriginThumbnail backSource = uploadContent(request.backContentFile());
         final Content content = saveContent(request, frontSource, backSource, member);
@@ -193,7 +188,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public SearchContentResponse searchContent(String memberId, String contentId) {
-        final Member member = getMember(memberId);
+        final Member member =memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         validateOwner(memberId, contentId, member, content);
 

@@ -44,7 +44,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     @Transactional
     @Override
     public String createReaction(String memberId, String contentId, String type) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         final EmojiType emojiType = EmojiType.from(type);
 
@@ -95,11 +95,6 @@ public class ContentReactionServiceImpl implements ContentReactionService {
                 .build());
     }
 
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
-    }
-
     private Content getContent(String contentId) {
         return contentRepository.findById(contentId)
                 .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
@@ -107,7 +102,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     @Override
     public SearchReactionResponse searchReaction(String memberId, String contentId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         authorizeMemberForContent(member, content);
 
@@ -137,7 +132,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     @Transactional
     @Override
     public void deleteReaction(String memberId, String contentId, String reactionId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         final Reaction reaction = getReaction(reactionId);
 
@@ -160,7 +155,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     @Override
     public SearchReactionExistsResponse searchReactionExists(String memberId, String contentId) {
-        final Member member = getMember(memberId);
+        final Member member =memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
 
         authorizeMemberForContent(member, content);

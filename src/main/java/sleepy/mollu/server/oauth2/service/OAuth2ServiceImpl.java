@@ -61,7 +61,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         final JwtToken token = jwtGenerator.generate(memberId);
         member.updateRefreshToken(token.refreshToken());
@@ -140,7 +140,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Override
     public TokenResponse refresh(String refreshToken) {
         final String memberId = getMemberIdFrom(refreshToken);
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         checkRefreshTokenValid(refreshToken, member);
 
@@ -152,11 +152,6 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return payload.id();
     }
 
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
-    }
-
     private String getNewAccessToken(String refreshToken) {
         return jwtRefresher.refresh(refreshToken);
     }
@@ -164,7 +159,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Transactional
     @Override
     public void logout(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         member.updatePhoneToken(null, null);
         member.updateRefreshToken(null);

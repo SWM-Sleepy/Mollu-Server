@@ -77,7 +77,7 @@ class OAuth2ServiceTest {
             given(oAuth2ClientMap.get(anyString())).willReturn(oAuth2Client);
 
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
-            given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+            given(memberRepository.findByIdOrElseThrow(memberId)).willThrow(MemberNotFoundException.class);
 
             // when & then
             assertThatThrownBy(() -> oAuth2Service.login(type, socialToken))
@@ -95,7 +95,7 @@ class OAuth2ServiceTest {
             final String refreshToken = "refreshToken";
 
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(jwtGenerator.generate(anyString())).willReturn(JwtToken.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)

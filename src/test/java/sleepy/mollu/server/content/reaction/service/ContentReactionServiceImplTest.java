@@ -76,21 +76,10 @@ class ContentReactionServiceImplTest {
         final Reaction reaction = mock(Reaction.class);
 
         @Test
-        @DisplayName("멤버가 없으면, NotFound 예외를 던진다.")
-        void ContentReactionServiceImplTest0() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> contentReactionService.createReaction(memberId, contentId, type))
-                    .isInstanceOf(MemberNotFoundException.class);
-        }
-
-        @Test
         @DisplayName("컨텐츠가 없으면, NotFound 예외를 던진다.")
         void ContentReactionServiceImplTest1() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.empty());
 
             // when & then
@@ -102,7 +91,7 @@ class ContentReactionServiceImplTest {
         @DisplayName("멤버가 컨텐츠에 반응할 권한이 없다면, UnAuthorized 예외를 던진다.")
         void ContentReactionServiceImplTest2() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
@@ -117,7 +106,7 @@ class ContentReactionServiceImplTest {
         @DisplayName("멤버가 이미 컨텐츠에 반응했다면, Conflict 예외를 던진다.")
         void ContentReactionServiceImplTest3() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
@@ -133,7 +122,7 @@ class ContentReactionServiceImplTest {
         @DisplayName("해당 타입의 이모티콘을 등록하지 않았으면, NotFound 예외를 던진다")
         void ContentReactionServiceImplTest4() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
@@ -150,7 +139,7 @@ class ContentReactionServiceImplTest {
         @DisplayName("성공적으로 컨텐츠에 반응을 추가한다.")
         void ContentReactionServiceImplTest5() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
@@ -186,7 +175,7 @@ class ContentReactionServiceImplTest {
         @DisplayName("내가 반응을 하지 않았다면, 다른 사람들의 반응만 응답한다.")
         void ContentReactionServiceImplTest0() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
@@ -207,7 +196,7 @@ class ContentReactionServiceImplTest {
         @DisplayName("내가 반응을 했다면, 내 반응은 첫 번째로 응답한다.")
         void ContentReactionServiceImplTest1() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));

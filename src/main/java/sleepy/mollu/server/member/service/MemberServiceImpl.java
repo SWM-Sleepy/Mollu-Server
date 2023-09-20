@@ -37,16 +37,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MyContentsResponse searchMyContents(String memberId, LocalDate date) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final SearchRange range = SearchRange.from(date);
         final List<Content> contents = contentRepository.findAllByMemberAndDate(member, range.getFrom(), range.getTo());
 
         return getMyContentsResponse(contents);
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "] 에 해당하는 멤버가 없습니다."));
     }
 
     private Group getGroup() {
@@ -75,7 +70,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MyCalendarResponse searchCalendar(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final List<Content> contents = getContents(member);
 
         return getMyCalendarResponse(contents);
@@ -94,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public void deleteMember(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         memberRepository.delete(member);
     }

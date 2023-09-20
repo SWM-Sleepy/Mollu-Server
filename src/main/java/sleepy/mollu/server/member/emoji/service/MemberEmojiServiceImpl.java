@@ -29,16 +29,11 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
     @Override
     public void createMyEmoji(String memberId, String emojiType, MultipartFile emojiFile) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         createEmojiIfNotExists(member);
         final String emojiSource = uploadEmoji(emojiFile);
 
         member.updateEmoji(EmojiType.from(emojiType), emojiSource);
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다."));
     }
 
     private void createEmojiIfNotExists(Member member) {
@@ -54,7 +49,7 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
 
     @Override
     public SearchMyEmojiResponse searchMyEmoji(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Emoji emoji = member.getEmoji();
 
         return getMyEmojiResponse(emoji);
@@ -72,7 +67,7 @@ public class MemberEmojiServiceImpl implements MemberEmojiService {
     @Transactional
     @Override
     public void deleteMyEmoji(String memberId, String emojiType) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         member.deleteEmoji(EmojiType.from(emojiType));
     }
 }

@@ -43,18 +43,13 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Transactional
     @Override
     public String createComment(String memberId, String contentId, String comment) {
-        final Member member = getMember(memberId);
+        final Member member =memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         authorizeMemberForContent(member, content);
 
         return saveComment(comment, member, content);
 
         // TODO: 알림 전송 로직 작성
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "] 는 존재하지 않는 회원입니다."));
     }
 
     private Content getContent(String contentId) {
@@ -92,7 +87,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     @Override
     public SearchCommentResponse searchComment(String memberId, String contentId) {
-        final Member member = getMember(memberId);
+        final Member member =memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         authorizeMemberForContent(member, content);
         final List<Comment> filteredComments = getFilteredComments(member, content);
@@ -134,7 +129,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Transactional
     @Override
     public void deleteComment(String memberId, String contentId, String commentId) {
-        final Member member = getMember(memberId);
+        final Member member =memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         final Comment comment = getComment(commentId);
 

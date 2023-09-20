@@ -42,17 +42,12 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Long reportContent(String memberId, String contentId, String reason) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         validateOwner(member, content);
         authorizeMemberForContent(member, content);
 
         return saveContentReport(reason, member, content);
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
     }
 
     private Content getContent(String contentId) {
@@ -78,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public CommentReportResponse reportComment(String memberId, String contentId, String commentId, String reason) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = getContent(contentId);
         final Comment comment = getComment(commentId);
 

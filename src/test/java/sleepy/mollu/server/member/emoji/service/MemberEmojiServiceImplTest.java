@@ -51,21 +51,10 @@ class MemberEmojiServiceImplTest {
         final Emoji emoji = mock(Emoji.class);
 
         @Test
-        @DisplayName("멤버가 존재하지 않으면, NotFound 예외를 던진다")
-        void CreateMyEmoji0() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> memberEmojiService.createMyEmoji(memberId, emojiType, mockFile))
-                    .isInstanceOf(MemberNotFoundException.class);
-        }
-
-        @Test
         @DisplayName("이모티콘이 존재하지 않으면, 새로운 이모티콘을 생성한다")
         void CreateMyEmoji1() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(member.hasEmoji()).willReturn(false);
             given(member.getEmoji()).willReturn(emoji);
 
@@ -80,7 +69,7 @@ class MemberEmojiServiceImplTest {
         @DisplayName("이모티콘이 존재하면, 새로운 이모티콘을 생성하지 않는다")
         void CreateMyEmoji2() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(member.hasEmoji()).willReturn(true);
             given(member.getEmoji()).willReturn(emoji);
 
@@ -95,7 +84,7 @@ class MemberEmojiServiceImplTest {
         @DisplayName("이모티콘 이미지를 외부 저장소에 저장하고, 이모티콘 소스 정보를 업데이트한다")
         void CreateMyEmoji3() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(member.getEmoji()).willReturn(emoji);
             given(fileHandler.upload(any(ContentFile.class))).willReturn(emojiSource);
 

@@ -46,13 +46,8 @@ public class MolluTimeServiceImpl implements MolluTimeService {
     }
 
     private Optional<Content> getLatestContent(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         return contentRepository.findTopByMemberOrderByCreatedAtDesc(member);
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 회원입니다."));
     }
 
     private boolean shouldUploadContent(Content content, MolluAlarm molluAlarm) {

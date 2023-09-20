@@ -53,7 +53,7 @@ class MolluTimeServiceImplTest {
         @DisplayName("업로드한 컨텐츠가 없는 경우 MOLLU 타임을 조회할 수 없다.")
         void searchMolluTime0() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.empty());
 
             // when
@@ -67,7 +67,7 @@ class MolluTimeServiceImplTest {
         @DisplayName("현재의 몰루 타임이 없으면, NotFound 예외를 던진다.")
         void searchMolluTime1() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
             given(molluAlarmRepository.findSecondTop()).willReturn(Optional.empty());
 
@@ -80,7 +80,7 @@ class MolluTimeServiceImplTest {
         @DisplayName("가장 최근에 업로드한 컨텐츠가 현재의 MOLLU 타임 이전이면, 현재의 MOLLU 타임을 조회할 수 있다.")
         void searchMolluTime2() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
             given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(currentMolluAlarm));
             given(currentMolluAlarm.getMolluTime()).willReturn(now.minusSeconds(1));
@@ -97,7 +97,7 @@ class MolluTimeServiceImplTest {
         @DisplayName("가장 최근에 업로드한 컨텐츠가 현재의 MOLLU 타임 이후면, 현재의 MOLLU 타임을 조회할 수 없다.")
         void searchMolluTime3() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findTopByMemberOrderByCreatedAtDesc(member)).willReturn(Optional.of(content));
             given(molluAlarmRepository.findSecondTop()).willReturn(Optional.of(currentMolluAlarm));
             given(currentMolluAlarm.getMolluTime()).willReturn(now.plusSeconds(1));

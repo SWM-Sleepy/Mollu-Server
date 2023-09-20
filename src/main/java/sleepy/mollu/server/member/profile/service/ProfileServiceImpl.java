@@ -24,23 +24,17 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileResponse searchProfile(String memberId) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         return new ProfileResponse(memberId, member.getMolluId(), member.getName(), member.getBirthday(),
                 member.getProfileSource());
     }
 
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
-    }
-
-
     @Transactional
     @Override
     public void updateProfile(String memberId, ProfileRequest request) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         final String profileSource = getProfileSource(request.profileFile());
         member.updateProfile(request.molluId(), request.name(), request.birthday(), profileSource);

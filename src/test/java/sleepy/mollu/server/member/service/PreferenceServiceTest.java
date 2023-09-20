@@ -44,22 +44,11 @@ class PreferenceServiceTest {
         final String memberId = "memberId";
 
         @Test
-        @DisplayName("멤버가 없으면 NotFound 예외를 던진다")
-        void UpdatePreferenceTest() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> preferenceService.updatePreference(memberId, request))
-                    .isInstanceOf(MemberNotFoundException.class);
-        }
-
-        @Test
         @DisplayName("알림 설정이 없으면 NotFound 예외를 던진다")
         void UpdatePreferenceTest2() {
             // given
             final Member member = mock(Member.class);
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(member.getPreference()).willReturn(null);
 
             // when & then
@@ -73,7 +62,7 @@ class PreferenceServiceTest {
             // given
             final Member member = mock(Member.class);
             final Preference preference = mock(Preference.class);
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(member.getPreference()).willReturn(preference);
 
             // when
