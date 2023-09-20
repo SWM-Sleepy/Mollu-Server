@@ -19,7 +19,6 @@ import sleepy.mollu.server.content.domain.handler.dto.OriginThumbnail;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchContentResponse;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
-import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;

@@ -14,12 +14,8 @@ import sleepy.mollu.server.content.domain.handler.FileHandler;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.Emoji;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;

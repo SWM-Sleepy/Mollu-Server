@@ -9,18 +9,14 @@ import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.exception.CommentNotFoundException;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
-import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.group.domain.group.Group;
-import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberCommentUnAuthorizedException;
-import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.member.service.AuthorizationService;
 
@@ -44,7 +40,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Transactional
     @Override
     public String createComment(String memberId, String contentId, String comment) {
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         authorizationService.authorizeMemberForContent(member, content);
 
@@ -65,7 +61,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     @Override
     public SearchCommentResponse searchComment(String memberId, String contentId) {
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         authorizationService.authorizeMemberForContent(member, content);
         final List<Comment> filteredComments = getFilteredComments(member, content);
@@ -107,7 +103,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Transactional
     @Override
     public void deleteComment(String memberId, String contentId, String commentId) {
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final Comment comment = getComment(commentId);
 

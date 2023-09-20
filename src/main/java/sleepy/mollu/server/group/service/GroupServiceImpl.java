@@ -22,7 +22,6 @@ import sleepy.mollu.server.group.groupmember.domain.GroupMemberRole;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
@@ -153,7 +152,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public SearchGroupCodeResponse searchGroupCode(String memberId, String groupId) {
 
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroup(groupId);
         checkMemberIsGroupMember(member, group);
 
@@ -187,7 +186,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     @Override
     public JoinGroupResponse joinGroupByCode(String memberId, String code) {
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroupBy(code);
         final GroupMember groupMember = saveGroupMember(member, group);
 
@@ -214,7 +213,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void leaveGroup(String memberId, String groupId) {
 
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroup(groupId);
         final GroupMember groupMember = getGroupMember(member, group);
 

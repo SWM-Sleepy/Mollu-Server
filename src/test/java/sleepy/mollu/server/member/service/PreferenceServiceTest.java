@@ -9,14 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Preference;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.preference.dto.PreferenceRequest;
 import sleepy.mollu.server.member.preference.exception.PreferenceNotFoundException;
 import sleepy.mollu.server.member.preference.service.PreferenceService;
 import sleepy.mollu.server.member.preference.service.PreferenceServiceImpl;
 import sleepy.mollu.server.member.repository.MemberRepository;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;

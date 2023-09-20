@@ -22,8 +22,6 @@ import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
-import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;

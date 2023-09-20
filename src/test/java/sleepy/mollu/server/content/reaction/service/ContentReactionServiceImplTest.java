@@ -12,7 +12,6 @@ import sleepy.mollu.server.common.exception.ConflictException;
 import sleepy.mollu.server.common.exception.UnAuthorizedException;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
@@ -22,7 +21,6 @@ import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
