@@ -76,23 +76,11 @@ class ContentReactionServiceImplTest {
         final Reaction reaction = mock(Reaction.class);
 
         @Test
-        @DisplayName("컨텐츠가 없으면, NotFound 예외를 던진다.")
-        void ContentReactionServiceImplTest1() {
-            // given
-            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> contentReactionService.createReaction(memberId, contentId, type))
-                    .isInstanceOf(ContentNotFoundException.class);
-        }
-
-        @Test
         @DisplayName("멤버가 컨텐츠에 반응할 권한이 없다면, UnAuthorized 예외를 던진다.")
         void ContentReactionServiceImplTest2() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member2);
@@ -107,7 +95,7 @@ class ContentReactionServiceImplTest {
         void ContentReactionServiceImplTest3() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);
@@ -123,7 +111,7 @@ class ContentReactionServiceImplTest {
         void ContentReactionServiceImplTest4() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);
@@ -140,7 +128,7 @@ class ContentReactionServiceImplTest {
         void ContentReactionServiceImplTest5() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);
@@ -176,7 +164,7 @@ class ContentReactionServiceImplTest {
         void ContentReactionServiceImplTest0() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);
@@ -197,7 +185,7 @@ class ContentReactionServiceImplTest {
         void ContentReactionServiceImplTest1() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);

@@ -71,23 +71,11 @@ class ContentCommentServiceImplTest {
         final Comment comment = mock(Comment.class);
 
         @Test
-        @DisplayName("컨텐츠가 없으면, NotFound 예외를 던진다.")
-        void ContentCommentServiceImplTest1() {
-            // given
-            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> contentCommentService.createComment(memberId, contentId, message))
-                    .isInstanceOf(ContentNotFoundException.class);
-        }
-
-        @Test
         @DisplayName("멤버가 컨텐츠에 댓글을 남길 권한이 없다면, UnAuthorized 예외를 던진다.")
         void ContentCommentServiceImplTest2() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member2);
@@ -102,7 +90,7 @@ class ContentCommentServiceImplTest {
         void ContentCommentServiceImplTest3() {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
             given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);

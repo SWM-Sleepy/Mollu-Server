@@ -7,7 +7,6 @@ import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
 import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionExistsResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse.ReactionResponse;
@@ -21,7 +20,6 @@ import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
@@ -45,7 +43,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     @Override
     public String createReaction(String memberId, String contentId, String type) {
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final EmojiType emojiType = EmojiType.from(type);
 
         authorizeMemberForContent(member, content);
@@ -95,15 +93,10 @@ public class ContentReactionServiceImpl implements ContentReactionService {
                 .build());
     }
 
-    private Content getContent(String contentId) {
-        return contentRepository.findById(contentId)
-                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
-    }
-
     @Override
     public SearchReactionResponse searchReaction(String memberId, String contentId) {
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         authorizeMemberForContent(member, content);
 
         final Optional<Reaction> myReaction = getMyReaction(member, content);
@@ -133,7 +126,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     @Override
     public void deleteReaction(String memberId, String contentId, String reactionId) {
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final Reaction reaction = getReaction(reactionId);
 
         authorizeMemberForContent(member, content);
@@ -155,8 +148,8 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     @Override
     public SearchReactionExistsResponse searchReactionExists(String memberId, String contentId) {
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
 
         authorizeMemberForContent(member, content);
 

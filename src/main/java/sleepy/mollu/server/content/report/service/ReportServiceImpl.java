@@ -43,16 +43,11 @@ public class ReportServiceImpl implements ReportService {
     public Long reportContent(String memberId, String contentId, String reason) {
 
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         validateOwner(member, content);
         authorizeMemberForContent(member, content);
 
         return saveContentReport(reason, member, content);
-    }
-
-    private Content getContent(String contentId) {
-        return contentRepository.findById(contentId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
     }
 
     private void validateOwner(Member member, Content content) {
@@ -74,7 +69,7 @@ public class ReportServiceImpl implements ReportService {
     public CommentReportResponse reportComment(String memberId, String contentId, String commentId, String reason) {
 
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final Comment comment = getComment(commentId);
 
         validateOwner(member, comment);

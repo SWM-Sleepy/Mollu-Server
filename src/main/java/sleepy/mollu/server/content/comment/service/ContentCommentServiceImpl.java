@@ -44,17 +44,12 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Override
     public String createComment(String memberId, String contentId, String comment) {
         final Member member =memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         authorizeMemberForContent(member, content);
 
         return saveComment(comment, member, content);
 
         // TODO: 알림 전송 로직 작성
-    }
-
-    private Content getContent(String contentId) {
-        return contentRepository.findById(contentId)
-                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
     }
 
     private List<Member> getGroupMembersByContent(Content content) {
@@ -88,7 +83,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Override
     public SearchCommentResponse searchComment(String memberId, String contentId) {
         final Member member =memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         authorizeMemberForContent(member, content);
         final List<Comment> filteredComments = getFilteredComments(member, content);
 
@@ -130,7 +125,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Override
     public void deleteComment(String memberId, String contentId, String commentId) {
         final Member member =memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final Comment comment = getComment(commentId);
 
         authorizeMemberForContent(member, content);

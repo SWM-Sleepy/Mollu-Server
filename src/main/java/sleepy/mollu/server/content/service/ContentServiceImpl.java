@@ -29,7 +29,6 @@ import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
@@ -188,16 +187,11 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public SearchContentResponse searchContent(String memberId, String contentId) {
-        final Member member =memberRepository.findByIdOrElseThrow(memberId);
-        final Content content = getContent(contentId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         validateOwner(memberId, contentId, member, content);
 
         return getSearchContentResponse(contentId, content);
-    }
-
-    private Content getContent(String contentId) {
-        return contentRepository.findById(contentId)
-                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
     }
 
     private void validateOwner(String memberId, String contentId, Member member, Content content) {
