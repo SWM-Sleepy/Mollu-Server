@@ -20,6 +20,7 @@ import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
+import sleepy.mollu.server.member.exception.MemberReactionUnAuthorizedException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.member.service.AuthorizationService;
@@ -125,7 +126,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
 
     private void authorizeMemberForReaction(Member member, Reaction reaction) {
         if (!reaction.isOwner(member)) {
-            throw new MemberUnAuthorizedException("해당 반응에 대한 삭제 권한이 없습니다.");
+            throw new MemberReactionUnAuthorizedException("해당 반응에 대한 삭제 권한이 없습니다.");
         }
     }
 

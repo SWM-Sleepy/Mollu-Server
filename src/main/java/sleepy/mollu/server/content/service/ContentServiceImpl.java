@@ -175,8 +175,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void deleteContent(String memberId, String contentId) {
 
-        final Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new ContentNotFoundException("[" + contentId + "] 는 존재하지 않는 컨텐츠입니다."));
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
 
         if (!content.isOwner(memberId)) {
             throw new MemberUnAuthorizedException("[" + memberId + "] 는 [" + contentId + "] 의 소유자가 아닙니다.");

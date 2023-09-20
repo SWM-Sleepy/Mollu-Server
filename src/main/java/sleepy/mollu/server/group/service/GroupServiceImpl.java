@@ -163,17 +163,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public SearchGroupResponse searchGroupByCode(String memberId, String code) {
 
-        validateMember(memberId);
+        memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroupBy(code);
         final int memberCount = getMemberCount(group);
 
         return getSearchGroupResponse(group, memberCount);
-    }
-
-    private void validateMember(String memberId) {
-        if (!memberRepository.existsById(memberId)) {
-            throw new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다.");
-        }
     }
 
     private Group getGroupBy(String code) {

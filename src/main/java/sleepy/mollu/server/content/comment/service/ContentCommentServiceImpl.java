@@ -19,6 +19,7 @@ import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.exception.MemberCommentUnAuthorizedException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.member.service.AuthorizationService;
@@ -123,7 +124,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     private void authorizeMemberForComment(Member member, Comment comment) {
         if (!comment.isOwner(member)) {
-            throw new MemberUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
+            throw new MemberCommentUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
         }
     }
 }
