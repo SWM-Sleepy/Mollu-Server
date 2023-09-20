@@ -8,6 +8,7 @@ import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.member.domain.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, String> {
 
@@ -24,4 +25,6 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, String
     boolean existsByMemberAndGroup(Member member, Group group);
 
     int countByGroup(Group group);
+
+    Optional<GroupMember> findByMemberAndGroup(Member member, Group group);
 }

@@ -231,6 +231,19 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void leaveGroup(String memberId, String groupId) {
 
+        final Member member = getMember(memberId);
+        final Group group = getGroup(groupId);
+        final GroupMember groupMember = getGroupMember(member, group);
 
+        deleteGroupMember(groupMember);
+    }
+
+    private GroupMember getGroupMember(Member member, Group group) {
+        return groupMemberRepository.findByMemberAndGroup(member, group)
+                .orElseThrow(() -> new MemberGroupUnAuthorizedException("[" + member.getId() + "]는 [" + group.getId() + "] 그룹의 멤버가 아닙니다."));
+    }
+
+    private void deleteGroupMember(GroupMember groupMember) {
+        groupMemberRepository.delete(groupMember);
     }
 }
