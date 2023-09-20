@@ -227,4 +227,10 @@ public class GroupServiceImpl implements GroupService {
                 groupMember.getGroupId(),
                 groupMember.getMemberId());
     }
+
+    @Override
+    public void leaveGroup(String memberId, String groupId) {
+
+
+    }
 }

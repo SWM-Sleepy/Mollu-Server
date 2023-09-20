@@ -17,4 +17,6 @@ public interface GroupService {
     SearchGroupResponse searchGroupByCode(String memberId, String code);
 
     JoinGroupResponse joinGroupByCode(String memberId, String code);
+
+    void leaveGroup(String memberId, String groupId);
 }
