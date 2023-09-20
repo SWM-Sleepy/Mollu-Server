@@ -22,6 +22,7 @@ import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
+import sleepy.mollu.server.member.service.AuthorizationService;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +36,9 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
     private final ReactionRepository reactionRepository;
-    private final ContentGroupRepository contentGroupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final IdConstructor idConstructor;
+
+    private final AuthorizationService authorizationService;
 
     @Transactional
     @Override
@@ -46,29 +47,11 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final EmojiType emojiType = EmojiType.from(type);
 
-        authorizeMemberForContent(member, content);
+        authorizationService.authorizeMemberForContent(member, content);
         checkReactionExists(member, content);
         checkEmojiExists(member, emojiType);
 
         return saveReaction(member, content, emojiType).getId();
-    }
-
-    private List<Member> getGroupMembersByContent(Content content) {
-        final List<Group> groupsByContent = contentGroupRepository.findAllByContent(content)
-                .stream()
-                .map(ContentGroup::getGroup)
-                .toList();
-        return groupMemberRepository.findAllByGroupIn(groupsByContent)
-                .stream()
-                .map(GroupMember::getMember)
-                .toList();
-    }
-
-    private void authorizeMemberForContent(Member member, Content content) {
-        final List<Member> membersByGroups = getGroupMembersByContent(content);
-        if (!membersByGroups.contains(member)) {
-            throw new MemberUnAuthorizedException("해당 컨텐츠에 대한 접근 권한이 없습니다.");
-        }
     }
 
     private void checkReactionExists(Member member, Content content) {
@@ -97,7 +80,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
     public SearchReactionResponse searchReaction(String memberId, String contentId) {
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
-        authorizeMemberForContent(member, content);
+        authorizationService.authorizeMemberForContent(member, content);
 
         final Optional<Reaction> myReaction = getMyReaction(member, content);
         final List<Reaction> otherReactions = getOtherReactions(member, content);
@@ -129,7 +112,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final Reaction reaction = getReaction(reactionId);
 
-        authorizeMemberForContent(member, content);
+        authorizationService.authorizeMemberForContent(member, content);
         authorizeMemberForReaction(member, reaction);
 
         reactionRepository.delete(reaction);
@@ -151,7 +134,7 @@ public class ContentReactionServiceImpl implements ContentReactionService {
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
 
-        authorizeMemberForContent(member, content);
+        authorizationService.authorizeMemberForContent(member, content);
 
         return new SearchReactionExistsResponse(getContentReactionStatus(member, content));
     }
