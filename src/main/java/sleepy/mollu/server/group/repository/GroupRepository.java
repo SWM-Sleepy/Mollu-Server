@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, String> {
 
-    @Query("select g from Group g")
+    @Query("select g from Group g order by g.createdAt asc limit 1")
     Optional<Group> findDefaultGroup();
 
     Optional<Group> findByCode_Value(String code);
