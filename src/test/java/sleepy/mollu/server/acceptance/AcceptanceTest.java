@@ -127,6 +127,10 @@ public class AcceptanceTest {
         return post(GROUP_URL + "/code", accessToken, new JoinGroupByCodeRequest(code));
     }
 
+    protected ExtractableResponse<Response> 그룹_탈퇴_요청(String accessToken, String groupId) {
+        return delete(GROUP_URL + "/" + groupId + "/members", accessToken);
+    }
+
     protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))
