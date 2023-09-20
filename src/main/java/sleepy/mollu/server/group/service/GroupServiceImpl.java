@@ -203,6 +203,7 @@ public class GroupServiceImpl implements GroupService {
                 group.getId(), group.getName(), group.getIntroduction(), group.getGroupProfileSource(), memberCount);
     }
 
+    @Transactional
     @Override
     public JoinGroupResponse joinGroupByCode(String memberId, String code) {
         final Member member = getMember(memberId);
@@ -228,6 +229,7 @@ public class GroupServiceImpl implements GroupService {
                 groupMember.getMemberId());
     }
 
+    @Transactional
     @Override
     public void leaveGroup(String memberId, String groupId) {
 
