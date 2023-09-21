@@ -217,13 +217,14 @@ class GroupServiceTest {
         final String code = "aaaaaaaa".toUpperCase();
         final int memberCount = 10;
 
+        final Member member = mock(Member.class);
         final Group group = mock(Group.class);
 
         @Test
         @DisplayName("해당 초대코드를 가진 그룹이 없으면, NotFound 예외를 던진다.")
         void SearchGroupByCode0() {
             // given
-            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findByCode_Value(code)).willReturn(Optional.empty());
 
             // when & then
@@ -235,7 +236,7 @@ class GroupServiceTest {
         @DisplayName("그룹을 성공적으로 조회한다.")
         void SearchGroupByCode1() {
             // given
-            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findByCode_Value(code)).willReturn(Optional.of(group));
             given(groupMemberRepository.countByGroup(group)).willReturn(memberCount);
 

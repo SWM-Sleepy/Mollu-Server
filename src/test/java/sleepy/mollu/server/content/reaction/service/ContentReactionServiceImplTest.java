@@ -10,18 +10,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.common.exception.ConflictException;
 import sleepy.mollu.server.common.exception.UnAuthorizedException;
-import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionResponse;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
-import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
+import sleepy.mollu.server.member.exception.MemberContentUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
+import sleepy.mollu.server.member.service.AuthorizationService;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
@@ -51,13 +49,10 @@ class ContentReactionServiceImplTest {
     private ReactionRepository reactionRepository;
 
     @Mock
-    private ContentGroupRepository contentGroupRepository;
-
-    @Mock
-    private GroupMemberRepository groupMemberRepository;
-
-    @Mock
     private IdConstructor idConstructor;
+
+    @Mock
+    private AuthorizationService authorizationService;
 
     @Nested
     @DisplayName("[컨텐츠 반응 추가 서비스 호출시] ")
@@ -70,7 +65,6 @@ class ContentReactionServiceImplTest {
         final Member member = mock(Member.class);
         final Member member2 = mock(Member.class);
         final Content content = mock(Content.class);
-        final GroupMember groupMember = mock(GroupMember.class);
         final Reaction reaction = mock(Reaction.class);
 
         @Test
@@ -79,9 +73,7 @@ class ContentReactionServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
-            given(groupMember.getMember()).willReturn(member2);
+            willThrow(MemberContentUnAuthorizedException.class).given(authorizationService).authorizeMemberForContent(member, content);
 
             // when & then
             assertThatThrownBy(() -> contentReactionService.createReaction(memberId, contentId, type))
@@ -94,9 +86,6 @@ class ContentReactionServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
-            given(groupMember.getMember()).willReturn(member);
             given(reactionRepository.existsByMemberAndContent(member, content)).willReturn(true);
 
             // when & then
@@ -110,9 +99,6 @@ class ContentReactionServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
-            given(groupMember.getMember()).willReturn(member);
             given(reactionRepository.existsByMemberAndContent(member, content)).willReturn(false);
             given(member.hasEmojiFrom(EmojiType.from(type))).willReturn(false);
 
@@ -127,9 +113,6 @@ class ContentReactionServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
-            given(groupMember.getMember()).willReturn(member);
             given(reactionRepository.existsByMemberAndContent(member, content)).willReturn(false);
             given(member.hasEmojiFrom(EmojiType.from(type))).willReturn(true);
             given(idConstructor.create()).willReturn("reactionId");
@@ -153,7 +136,6 @@ class ContentReactionServiceImplTest {
 
         final Member member = mock(Member.class);
         final Content content = mock(Content.class);
-        final GroupMember groupMember = mock(GroupMember.class);
         final Reaction reaction1 = mock(Reaction.class);
         final Reaction reaction2 = mock(Reaction.class);
 
@@ -163,9 +145,6 @@ class ContentReactionServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
-            given(groupMember.getMember()).willReturn(member);
             given(reactionRepository.findByMemberAndContent(member, content)).willReturn(Optional.empty());
             given(reactionRepository.findAllByContentExcludesMember(content, member)).willReturn(List.of(reaction1, reaction2));
             given(reaction1.getId()).willReturn("reaction1");
@@ -184,9 +163,6 @@ class ContentReactionServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
-            given(groupMember.getMember()).willReturn(member);
             given(reactionRepository.findByMemberAndContent(member, content)).willReturn(Optional.of(reaction1));
             given(reactionRepository.findAllByContentExcludesMember(content, member)).willReturn(List.of(reaction2));
             given(reaction1.getId()).willReturn("reaction1");

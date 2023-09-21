@@ -9,12 +9,10 @@ import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.exception.CommentNotFoundException;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
-import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.exception.MemberCommentUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
@@ -29,8 +27,6 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
-    private final ContentGroupRepository contentGroupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final CommentRepository commentRepository;
     private final CommentReportRepository commentReportRepository;
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,8 +17,10 @@ import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.exception.MemberContentUnAuthorizedException;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
+import sleepy.mollu.server.member.service.AuthorizationService;
 
 import java.util.List;
 
@@ -26,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,16 +45,13 @@ class ContentCommentServiceImplTest {
     private ContentRepository contentRepository;
 
     @Mock
-    private ContentGroupRepository contentGroupRepository;
-
-    @Mock
-    private GroupMemberRepository groupMemberRepository;
-
-    @Mock
     private CommentRepository commentRepository;
 
     @Mock
     private IdConstructor idConstructor;
+
+    @Mock
+    private AuthorizationService authorizationService;
 
     @Nested
     @DisplayName("[댓글 등록 서비스 호출시] ")
@@ -73,13 +74,12 @@ class ContentCommentServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
+            willThrow(MemberContentUnAuthorizedException.class).given(authorizationService).authorizeMemberForContent(member, content);
             given(groupMember.getMember()).willReturn(member2);
 
             // when & then
             assertThatThrownBy(() -> contentCommentService.createComment(memberId, contentId, message))
-                    .isInstanceOf(MemberUnAuthorizedException.class);
+                    .isInstanceOf(MemberContentUnAuthorizedException.class);
         }
 
         @Test
@@ -88,8 +88,6 @@ class ContentCommentServiceImplTest {
             // given
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
-            given(contentGroupRepository.findAllByContent(content)).willReturn(List.of());
-            given(groupMemberRepository.findAllByGroupIn(anyList())).willReturn(List.of(groupMember));
             given(groupMember.getMember()).willReturn(member);
             given(idConstructor.create()).willReturn(savedCommentId);
             given(commentRepository.save(any(Comment.class))).willReturn(comment);

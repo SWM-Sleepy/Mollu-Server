@@ -5,6 +5,5 @@ import sleepy.mollu.server.member.domain.Member;
 
 public interface AuthorizationService {
 
-
     void authorizeMemberForContent(Member member, Content content);
 }
