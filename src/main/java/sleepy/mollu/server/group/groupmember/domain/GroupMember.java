@@ -46,8 +46,4 @@ public class GroupMember extends BaseEntity {
     public String getMemberId() {
         return this.member.getId();
     }
-
-    public boolean isSameMember(Member member) {
-        return this.member.equals(member);
-    }
 }

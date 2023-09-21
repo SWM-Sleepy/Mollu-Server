@@ -22,7 +22,6 @@ import sleepy.mollu.server.group.groupmember.domain.GroupMemberRole;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
@@ -41,16 +40,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public GroupMemberSearchResponse searchGroupMembers(String memberId, String groupId) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroup(groupId);
         checkMemberIsGroupMember(member, group);
 
         return getGroupMemberSearchResponse(group);
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다."));
     }
 
     private Group getGroup(String groupId) {
@@ -66,7 +60,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public MyGroupResponse searchMyGroups(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final List<Group> groups = getGroups(member);
 
         return getMyGroupResponse(groups);
@@ -107,7 +101,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public CreateGroupResponse createGroup(String memberId, CreateGroupRequest request) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = createAndSaveGroup(request);
         final GroupMember groupMember = saveGroupMember(group, member);
 
@@ -158,7 +152,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public SearchGroupCodeResponse searchGroupCode(String memberId, String groupId) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroup(groupId);
         checkMemberIsGroupMember(member, group);
 
@@ -168,17 +162,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public SearchGroupResponse searchGroupByCode(String memberId, String code) {
 
-        validateMember(memberId);
+        memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroupBy(code);
         final int memberCount = getMemberCount(group);
 
         return getSearchGroupResponse(group, memberCount);
-    }
-
-    private void validateMember(String memberId) {
-        if (!memberRepository.existsById(memberId)) {
-            throw new MemberNotFoundException("[" + memberId + "]는 존재하지 않는 멤버입니다.");
-        }
     }
 
     private Group getGroupBy(String code) {
@@ -198,7 +186,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     @Override
     public JoinGroupResponse joinGroupByCode(String memberId, String code) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroupBy(code);
         final GroupMember groupMember = saveGroupMember(member, group);
 
@@ -225,7 +213,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void leaveGroup(String memberId, String groupId) {
 
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroup(groupId);
         final GroupMember groupMember = getGroupMember(member, group);
 

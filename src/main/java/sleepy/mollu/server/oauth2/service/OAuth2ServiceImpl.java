@@ -15,7 +15,6 @@ import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.dto.MemberBadRequestException;
 import sleepy.mollu.server.member.dto.SignupRequest;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
@@ -61,7 +60,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         final JwtToken token = jwtGenerator.generate(memberId);
         member.updateRefreshToken(token.refreshToken());
@@ -140,7 +139,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Override
     public TokenResponse refresh(String refreshToken) {
         final String memberId = getMemberIdFrom(refreshToken);
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         checkRefreshTokenValid(refreshToken, member);
 
@@ -152,11 +151,6 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return payload.id();
     }
 
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
-    }
-
     private String getNewAccessToken(String refreshToken) {
         return jwtRefresher.refresh(refreshToken);
     }
@@ -164,7 +158,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Transactional
     @Override
     public void logout(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         member.updatePhoneToken(null, null);
         member.updateRefreshToken(null);

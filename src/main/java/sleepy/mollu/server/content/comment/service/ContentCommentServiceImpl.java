@@ -9,20 +9,14 @@ import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.exception.CommentNotFoundException;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
-import sleepy.mollu.server.content.contentgroup.domain.ContentGroup;
-import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepository;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.group.domain.group.Group;
-import sleepy.mollu.server.group.groupmember.domain.GroupMember;
-import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
-import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
+import sleepy.mollu.server.member.exception.MemberCommentUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
+import sleepy.mollu.server.member.service.AuthorizationService;
 
 import java.util.List;
 
@@ -33,51 +27,22 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
-    private final ContentGroupRepository contentGroupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final CommentRepository commentRepository;
     private final CommentReportRepository commentReportRepository;
 
     private final IdConstructor idConstructor;
+    private final AuthorizationService authorizationService;
 
     @Transactional
     @Override
     public String createComment(String memberId, String contentId, String comment) {
-        final Member member = getMember(memberId);
-        final Content content = getContent(contentId);
-        authorizeMemberForContent(member, content);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
+        authorizationService.authorizeMemberForContent(member, content);
 
         return saveComment(comment, member, content);
 
         // TODO: 알림 전송 로직 작성
-    }
-
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("[" + memberId + "] 는 존재하지 않는 회원입니다."));
-    }
-
-    private Content getContent(String contentId) {
-        return contentRepository.findById(contentId)
-                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
-    }
-
-    private List<Member> getGroupMembersByContent(Content content) {
-        final List<Group> groupsByContent = contentGroupRepository.findAllByContent(content)
-                .stream()
-                .map(ContentGroup::getGroup)
-                .toList();
-        return groupMemberRepository.findAllByGroupIn(groupsByContent)
-                .stream()
-                .map(GroupMember::getMember)
-                .toList();
-    }
-
-    private void authorizeMemberForContent(Member member, Content content) {
-        final List<Member> membersByGroups = getGroupMembersByContent(content);
-        if (!membersByGroups.contains(member)) {
-            throw new MemberUnAuthorizedException("해당 컨텐츠에 대한 접근 권한이 없습니다.");
-        }
     }
 
     private String saveComment(String comment, Member member, Content content) {
@@ -92,9 +57,9 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     @Override
     public SearchCommentResponse searchComment(String memberId, String contentId) {
-        final Member member = getMember(memberId);
-        final Content content = getContent(contentId);
-        authorizeMemberForContent(member, content);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
+        authorizationService.authorizeMemberForContent(member, content);
         final List<Comment> filteredComments = getFilteredComments(member, content);
 
         return getSearchCommentResponse(filteredComments);
@@ -134,11 +99,11 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     @Transactional
     @Override
     public void deleteComment(String memberId, String contentId, String commentId) {
-        final Member member = getMember(memberId);
-        final Content content = getContent(contentId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
         final Comment comment = getComment(commentId);
 
-        authorizeMemberForContent(member, content);
+        authorizationService.authorizeMemberForContent(member, content);
         authorizeMemberForComment(member, comment);
 
         commentRepository.delete(comment);
@@ -151,7 +116,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     private void authorizeMemberForComment(Member member, Comment comment) {
         if (!comment.isOwner(member)) {
-            throw new MemberUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
+            throw new MemberCommentUnAuthorizedException("해당 댓글에 대한 삭제 권한이 없습니다.");
         }
     }
 }

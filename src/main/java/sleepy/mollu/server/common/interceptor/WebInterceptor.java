@@ -27,7 +27,7 @@ public class WebInterceptor implements HandlerInterceptor {
     private final ObjectMapper objectMapper;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         MDC.put("uuid", UUID.randomUUID().toString());
 
         final long start = System.currentTimeMillis();

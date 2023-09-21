@@ -22,8 +22,6 @@ import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
-import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
 import java.util.List;
@@ -72,21 +70,10 @@ class GroupServiceTest {
         final GroupMember groupMember = mock(GroupMember.class);
 
         @Test
-        @DisplayName("멤버가 없으면 NotFound 예외를 던진다.")
-        void GroupMemberSearchTest() {
-            // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> groupService.searchGroupMembers(memberId, groupId))
-                    .isInstanceOf(MemberNotFoundException.class);
-        }
-
-        @Test
         @DisplayName("그룹이 없으면 NotFound 예외를 던진다.")
         void GroupMemberSearchTest2() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findById(groupId)).willReturn(Optional.empty());
 
             // when & then
@@ -98,7 +85,7 @@ class GroupServiceTest {
         @DisplayName("권한이 없으면 UnAuthorized 예외를 던진다.")
         void GroupMemberSearchTest3() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
             given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(false);
 
@@ -112,7 +99,7 @@ class GroupServiceTest {
         @DisplayName("그룹원을 성공적으로 조회한다.")
         void GroupMemberSearchTest4() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
             given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(true);
             given(groupMemberRepository.findAllWithMemberByGroup(group)).willReturn(List.of(groupMember));
@@ -139,7 +126,7 @@ class GroupServiceTest {
         @DisplayName("성공적으로 소속 그룹을 조회한다.")
         void SearchMyGroups() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupMemberRepository.findAllWithGroupByMember(member)).willReturn(List.of(groupMember));
             given(groupMember.getGroup()).willReturn(group);
 
@@ -163,7 +150,7 @@ class GroupServiceTest {
         @DisplayName("그룹을 성공적으로 생성한다.")
         void CreateGroup0() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(멤버1));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(멤버1);
             given(idConstructor.create()).willReturn(groupId, groupMemberId);
             given(groupRepository.save(any(Group.class))).willAnswer(invocation -> invocation.getArgument(0));
             given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
@@ -196,7 +183,7 @@ class GroupServiceTest {
         @DisplayName("멤버가 그룹에 소속되어 있지 않으면, UnAuthorized 예외를 던진다.")
         void SearchGroupCode0() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
             given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(false);
 
@@ -209,7 +196,7 @@ class GroupServiceTest {
         @DisplayName("그룹 코드를 성공적으로 조회한다.")
         void SearchGroupCode1() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findById(groupId)).willReturn(Optional.of(group));
             given(groupMemberRepository.existsByMemberAndGroup(any(Member.class), any(Group.class))).willReturn(true);
             given(group.getCode()).willReturn(code);
@@ -230,13 +217,14 @@ class GroupServiceTest {
         final String code = "aaaaaaaa".toUpperCase();
         final int memberCount = 10;
 
+        final Member member = mock(Member.class);
         final Group group = mock(Group.class);
 
         @Test
         @DisplayName("해당 초대코드를 가진 그룹이 없으면, NotFound 예외를 던진다.")
         void SearchGroupByCode0() {
             // given
-            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findByCode_Value(code)).willReturn(Optional.empty());
 
             // when & then
@@ -248,7 +236,7 @@ class GroupServiceTest {
         @DisplayName("그룹을 성공적으로 조회한다.")
         void SearchGroupByCode1() {
             // given
-            given(memberRepository.existsById(memberId)).willReturn(true);
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findByCode_Value(code)).willReturn(Optional.of(group));
             given(groupMemberRepository.countByGroup(group)).willReturn(memberCount);
 
@@ -275,7 +263,7 @@ class GroupServiceTest {
         @DisplayName("해당 초대 코드를 가진 그룹이 없으면, NotFound 예외를 던진다.")
         void JoinGroupByCode0() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findByCode_Value(code)).willReturn(Optional.empty());
 
             // when & then
@@ -287,7 +275,7 @@ class GroupServiceTest {
         @DisplayName("그룹에 성공적으로 참여한다.")
         void JoinGroupByCode1() {
             // given
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(groupRepository.findByCode_Value(code)).willReturn(Optional.of(group));
             given(idConstructor.create()).willReturn(groupMemberId);
             given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
