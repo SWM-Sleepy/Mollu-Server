@@ -9,8 +9,9 @@ import sleepy.mollu.server.content.domain.file.ContentFile;
 import sleepy.mollu.server.content.domain.file.ContentType;
 import sleepy.mollu.server.content.domain.file.ImageContentFile;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
-import sleepy.mollu.server.group.controller.dto.*;
-import sleepy.mollu.server.group.controller.dto.CreateGroupResponse.GroupResponse;
+import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
+import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.domain.group.Code;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
@@ -99,13 +100,13 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional
     @Override
-    public CreateGroupResponse createGroup(String memberId, CreateGroupRequest request) {
+    public String createGroup(String memberId, CreateGroupRequest request) {
 
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = createAndSaveGroup(request);
-        final GroupMember groupMember = saveGroupMember(group, member);
+        saveGroupMember(group, member);
 
-        return getCreateGroupResponse(group, groupMember);
+        return group.getId();
     }
 
     private Group createAndSaveGroup(CreateGroupRequest request) {
@@ -126,27 +127,13 @@ public class GroupServiceImpl implements GroupService {
         return null;
     }
 
-    private GroupMember saveGroupMember(Group group, Member member) {
-        return groupMemberRepository.save(GroupMember.builder()
+    private void saveGroupMember(Group group, Member member) {
+        groupMemberRepository.save(GroupMember.builder()
                 .id(idConstructor.create())
                 .group(group)
                 .member(member)
                 .role(GroupMemberRole.MEMBER)
                 .build());
-    }
-
-    private CreateGroupResponse getCreateGroupResponse(Group group, GroupMember groupMember) {
-        return new CreateGroupResponse(getGroupResponse(group), getGroupMemberResponse(groupMember));
-    }
-
-    private GroupResponse getGroupResponse(Group group) {
-        return new GroupResponse(
-                group.getId(), group.getName(), group.getIntroduction(), group.getCode(), group.getGroupProfileSource());
-    }
-
-    private CreateGroupResponse.GroupMemberResponse getGroupMemberResponse(GroupMember groupMember) {
-        return new CreateGroupResponse.GroupMemberResponse(
-                groupMember.getId(), groupMember.getGroup().getId(), groupMember.getMember().getId());
     }
 
     @Override
@@ -185,28 +172,20 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional
     @Override
-    public JoinGroupResponse joinGroupByCode(String memberId, String code) {
+    public void joinGroupByCode(String memberId, String code) {
+
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Group group = getGroupBy(code);
-        final GroupMember groupMember = saveGroupMember(member, group);
-
-        return getJoinGroupResponse(groupMember);
+        saveGroupMember(member, group);
     }
 
-    private GroupMember saveGroupMember(Member member, Group group) {
-        return groupMemberRepository.save(GroupMember.builder()
+    private void saveGroupMember(Member member, Group group) {
+        groupMemberRepository.save(GroupMember.builder()
                 .id(idConstructor.create())
                 .member(member)
                 .group(group)
                 .role(GroupMemberRole.MEMBER)
                 .build());
-    }
-
-    private JoinGroupResponse getJoinGroupResponse(GroupMember groupMember) {
-        return new JoinGroupResponse(
-                groupMember.getId(),
-                groupMember.getGroupId(),
-                groupMember.getMemberId());
     }
 
     @Transactional

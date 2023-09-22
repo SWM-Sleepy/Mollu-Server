@@ -10,13 +10,13 @@ public interface GroupService {
 
     MyGroupResponse searchMyGroups(String memberId);
 
-    CreateGroupResponse createGroup(String memberId, CreateGroupRequest request);
+    String createGroup(String memberId, CreateGroupRequest request);
 
     SearchGroupCodeResponse searchGroupCode(String memberId, String groupId);
 
     SearchGroupResponse searchGroupByCode(String memberId, String code);
 
-    JoinGroupResponse joinGroupByCode(String memberId, String code);
+    void joinGroupByCode(String memberId, String code);
 
     void leaveGroup(String memberId, String groupId);
 }

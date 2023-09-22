@@ -8,13 +8,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import sleepy.mollu.server.ControllerTest;
-import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
-import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static sleepy.mollu.server.fixture.AcceptanceFixture.초대_코드로_그룹_참여_요청_데이터;
@@ -24,12 +18,6 @@ class GroupControllerTest extends ControllerTest {
     @Nested
     @DisplayName("[그룹 생성 API 호출시] ")
     class GroupControllerTest0 {
-
-        final String memberId = "memberId";
-        final String groupId = "groupId";
-
-        final CreateGroupResponse response = mock(CreateGroupResponse.class);
-        final CreateGroupResponse.GroupResponse groupResponse = mock(CreateGroupResponse.GroupResponse.class);
 
         @Test
         @DisplayName("그룹 이름이 없으면 400을 응답한다.")
@@ -58,10 +46,6 @@ class GroupControllerTest extends ControllerTest {
             params.add("name", "groupName");
             params.add("introduction", "groupIntroduction");
 
-            given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.groupResponse()).willReturn(groupResponse);
-            given(groupResponse.id()).willReturn(groupId);
-
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", files, accessToken, params);
 
@@ -77,10 +61,6 @@ class GroupControllerTest extends ControllerTest {
             final String accessToken = getAccessToken("memberId");
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("name", "groupName");
-
-            given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.groupResponse()).willReturn(groupResponse);
-            given(groupResponse.id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);
@@ -98,10 +78,6 @@ class GroupControllerTest extends ControllerTest {
             final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("name", "groupName");
             params.add("introduction", "groupIntroduction");
-
-            given(groupService.createGroup(eq(memberId), any(CreateGroupRequest.class))).willReturn(response);
-            given(response.groupResponse()).willReturn(groupResponse);
-            given(groupResponse.id()).willReturn(groupId);
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/groups", accessToken, params);

@@ -7,7 +7,6 @@ import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.exception.CommentNotFoundException;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.domain.content.Content;
-import sleepy.mollu.server.content.report.controller.dto.CommentReportResponse;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.exception.ReportBadRequestException;
@@ -59,7 +58,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CommentReportResponse reportComment(String memberId, String contentId, String commentId, String reason) {
+    public Long reportComment(String memberId, String contentId, String commentId, String reason) {
 
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
@@ -70,7 +69,7 @@ public class ReportServiceImpl implements ReportService {
         authorizeMemberForComment(content, comment);
 
         final CommentReport commentReport = saveCommentReport(reason, member, comment);
-        return getCommentReportResponse(commentReport);
+        return commentReport.getId();
     }
 
     private Comment getComment(String commentId) {
@@ -96,13 +95,5 @@ public class ReportServiceImpl implements ReportService {
                 .member(member)
                 .comment(comment)
                 .build());
-    }
-
-    private CommentReportResponse getCommentReportResponse(CommentReport commentReport) {
-        return new CommentReportResponse(
-                commentReport.getId(),
-                commentReport.getReason(),
-                commentReport.getMember().getId(),
-                commentReport.getComment().getId());
     }
 }

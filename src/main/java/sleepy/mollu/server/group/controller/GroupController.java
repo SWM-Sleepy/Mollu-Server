@@ -56,12 +56,12 @@ public class GroupController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @PostMapping
-    public ResponseEntity<CreateGroupResponse> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
+    public ResponseEntity<Void> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
 
-        final CreateGroupResponse response = groupService.createGroup(memberId, request);
-        final URI uri = URI.create("/groups/" + response.groupResponse().id());
+        final String groupId = groupService.createGroup(memberId, request);
+        final URI uri = URI.create("/groups/" + groupId);
 
-        return ResponseEntity.created(uri).body(response);
+        return ResponseEntity.created(uri).build();
     }
 
     @Operation(summary = "그룹 초대 코드 조회")
@@ -95,10 +95,11 @@ public class GroupController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @PostMapping("/code")
-    public ResponseEntity<JoinGroupResponse> joinGroupByCode(@Login String memberId,
+    public ResponseEntity<Void> joinGroupByCode(@Login String memberId,
                                                              @RequestBody @Valid JoinGroupByCodeRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(groupService.joinGroupByCode(memberId, request.code()));
+        groupService.joinGroupByCode(memberId, request.code());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "그룹 탈퇴")
