@@ -5,11 +5,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
-import sleepy.mollu.server.content.report.controller.dto.CommentReportResponse;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,16 +37,11 @@ class ContentReportControllerTest extends ControllerTest {
     @DisplayName("[댓글 신고 API 호출시] ")
     class ReportCommentTest {
 
-        final CommentReportResponse response = mock(CommentReportResponse.class);
-
         @Test
         @DisplayName("신고 사유를 적지 않아도 201을 응답한다.")
         void reportCommentTest() throws Exception {
             // given
             final String accessToken = getAccessToken("memberId");
-            given(reportService.reportComment("memberId", "contentId", "commentId", ""))
-                    .willReturn(response);
-            given(response.id()).willReturn(1L);
 
             // when
             final ResultActions result = post("/contents/contentId/comments/commentId/report", accessToken);

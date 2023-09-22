@@ -1,6 +1,8 @@
 package sleepy.mollu.server.group.service;
 
-import sleepy.mollu.server.group.controller.dto.*;
+import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
+import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
 
