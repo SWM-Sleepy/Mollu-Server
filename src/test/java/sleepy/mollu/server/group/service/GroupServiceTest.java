@@ -9,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.domain.handler.FileHandler;
-import sleepy.mollu.server.group.controller.dto.CreateGroupResponse;
-import sleepy.mollu.server.group.controller.dto.JoinGroupResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
 import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.domain.group.Group;
@@ -156,12 +154,10 @@ class GroupServiceTest {
             given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
 
             // when
-            final CreateGroupResponse response = groupService.createGroup(memberId, 그룹_생성_요청_데이터);
+            groupService.createGroup(memberId, 그룹_생성_요청_데이터);
 
             // then
             assertAll(
-                    () -> assertThat(response.groupResponse().id()).isEqualTo(groupId),
-                    () -> assertThat(response.groupMemberResponse().id()).isEqualTo(groupMemberId),
                     () -> then(groupRepository).should(times(1)).save(any(Group.class)),
                     () -> then(groupMemberRepository).should(times(1)).save(any(GroupMember.class))
             );
@@ -281,14 +277,10 @@ class GroupServiceTest {
             given(groupMemberRepository.save(any(GroupMember.class))).willAnswer(invocation -> invocation.getArgument(0));
 
             // when
-            final JoinGroupResponse response = groupService.joinGroupByCode(memberId, code);
+            groupService.joinGroupByCode(memberId, code);
 
             // then
-            assertAll(
-                    () -> assertThat(response.id()).isEqualTo(groupMemberId),
-                    () -> then(groupMemberRepository).should(times(1)).save(any(GroupMember.class))
-            );
-
+            then(groupMemberRepository).should(times(1)).save(any(GroupMember.class));
         }
     }
 }

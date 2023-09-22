@@ -78,7 +78,7 @@ public class OAuth2Controller {
     @UnAuthorizedResponse
     @InternalServerErrorResponse
     @PostMapping("/logout")
-    public ResponseEntity<TokenResponse> logout(@Login String memberId) {
+    public ResponseEntity<Void> logout(@Login String memberId) {
 
         oauth2Service.logout(memberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();

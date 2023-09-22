@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sleepy.mollu.server.group.controller.dto.*;
+import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
+import sleepy.mollu.server.group.controller.dto.JoinGroupByCodeRequest;
+import sleepy.mollu.server.group.controller.dto.SearchGroupCodeResponse;
+import sleepy.mollu.server.group.controller.dto.SearchGroupResponse;
 import sleepy.mollu.server.group.dto.GroupMemberSearchResponse;
 import sleepy.mollu.server.group.dto.MyGroupResponse;
 import sleepy.mollu.server.group.service.GroupService;
@@ -56,12 +59,12 @@ public class GroupController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @PostMapping
-    public ResponseEntity<CreateGroupResponse> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
+    public ResponseEntity<Void> createGroup(@Login String memberId, @ModelAttribute @Valid CreateGroupRequest request) {
 
-        final CreateGroupResponse response = groupService.createGroup(memberId, request);
-        final URI uri = URI.create("/groups/" + response.groupResponse().id());
+        final String groupId = groupService.createGroup(memberId, request);
+        final URI uri = URI.create("/groups/" + groupId);
 
-        return ResponseEntity.created(uri).body(response);
+        return ResponseEntity.created(uri).build();
     }
 
     @Operation(summary = "그룹 초대 코드 조회")
@@ -95,10 +98,11 @@ public class GroupController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @PostMapping("/code")
-    public ResponseEntity<JoinGroupResponse> joinGroupByCode(@Login String memberId,
-                                                             @RequestBody @Valid JoinGroupByCodeRequest request) {
+    public ResponseEntity<Void> joinGroupByCode(@Login String memberId,
+                                                @RequestBody @Valid JoinGroupByCodeRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(groupService.joinGroupByCode(memberId, request.code()));
+        groupService.joinGroupByCode(memberId, request.code());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "그룹 탈퇴")

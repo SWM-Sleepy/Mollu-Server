@@ -15,7 +15,6 @@ import sleepy.mollu.server.content.reaction.controller.dto.SearchReactionRespons
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.emoji.domain.EmojiType;
 import sleepy.mollu.server.member.emoji.exception.EmojiNotFoundException;
