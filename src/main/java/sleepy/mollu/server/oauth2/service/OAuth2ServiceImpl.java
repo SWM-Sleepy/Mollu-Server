@@ -82,10 +82,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
         final JwtToken jwtToken = jwtGenerator.generate(memberId);
-        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
+        saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
 
-        // FIXME: 2023/07/25 MVP 이후 삭제
-        joinGroup(member);
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
     }
 
@@ -95,8 +93,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         }
     }
 
-    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
-        return memberRepository.save(Member.builder()
+    private void saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
+        memberRepository.save(Member.builder()
                 .id(memberId)
                 .name(name)
                 .birthday(birthday)
@@ -111,20 +109,6 @@ public class OAuth2ServiceImpl implements OAuth2Service {
                 .molluAlarm(false)
                 .contentAlarm(false)
                 .build();
-    }
-
-    private void joinGroup(Member member) {
-        groupMemberRepository.save(GroupMember.builder()
-                .id(idConstructor.create())
-                .group(getGroup())
-                .member(member)
-                .role(GroupMemberRole.MEMBER)
-                .build());
-    }
-
-    private Group getGroup() {
-        return groupRepository.findDefaultGroup()
-                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹을 찾을 수 없습니다."));
     }
 
     @Override
