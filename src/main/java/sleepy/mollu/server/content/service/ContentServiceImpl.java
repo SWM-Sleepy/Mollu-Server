@@ -199,10 +199,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private SearchContentResponse getSearchContentResponse(String contentId, Content content) {
-        // TODO: 그룹 이름 가져오는 로직 수정
-        final Group group = getGroup();
         return new SearchContentResponse(
-                contentId, content.getLocation(), group.getName(),
+                contentId, content.getLocation(),
                 content.getMolluDateTime(), content.getUploadDateTime(),
                 content.getContentTag(), content.getFrontContentSource(), content.getBackContentSource());
     }
