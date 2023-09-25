@@ -51,36 +51,32 @@ public class ContentServiceImpl implements ContentService {
     private final IdConstructor idConstructor;
     private final FileHandler fileHandler;
 
-    // TODO: 로직 수정 및 테스트 코드 작성
     @Override
     public GroupSearchFeedResponse searchGroupFeed(String memberId, String cursorId, LocalDateTime cursorEndDate) {
 
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final List<Group> groups = getGroups(member);
-        final List<ContentGroup> contentGroups = getContentGroups(groups, cursorId, cursorEndDate);
-        final List<Content> contents = getContents(contentGroups, member);
-        final Cursor cursor = getCursor(contentGroups);
+        final FeedResponse feed = getFeed(member, cursorId, cursorEndDate);
 
-        return getGroupSearchFeedResponse(cursor, contents);
+        return getGroupSearchFeedResponse(feed.cursor, feed.contents);
+    }
+
+    private FeedResponse getFeed(Member member, String cursorId, LocalDateTime cursorEndDate) {
+        final List<Group> groups = getGroups(member);
+        final List<ContentGroup> contentGroups = contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
+        final List<Content> notReportedContents = getNotReportedContents(contentGroups, member);
+        final Cursor cursor = getCursor(contentGroups);
+        return new FeedResponse(notReportedContents, cursor);
     }
 
     private List<Group> getGroups(Member member) {
         final List<GroupMember> groupMembers = groupMemberRepository.findAllWithGroupByMember(member);
-
         return groupMembers.stream()
                 .map(GroupMember::getGroup)
                 .toList();
     }
 
-    private List<ContentGroup> getContentGroups(List<Group> groups, String cursorId, LocalDateTime cursorEndDate) {
-        return contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
-    }
-
-    private List<Content> getContents(List<ContentGroup> contentGroups, Member member) {
-        final List<ContentReport> contentReports = getContentReports(member);
-        final List<Content> reportedContents = contentReports.stream()
-                .map(ContentReport::getContent)
-                .toList();
+    private List<Content> getNotReportedContents(List<ContentGroup> contentGroups, Member member) {
+        final List<Content> reportedContents = getReportedContents(member);
 
         return contentGroups.stream()
                 .map(ContentGroup::getContent)
@@ -88,8 +84,11 @@ public class ContentServiceImpl implements ContentService {
                 .toList();
     }
 
-    private List<ContentReport> getContentReports(Member member) {
-        return contentReportRepository.findAllByMember(member);
+    private List<Content> getReportedContents(Member member) {
+        final List<ContentReport> contentReports = contentReportRepository.findAllByMember(member);
+        return contentReports.stream()
+                .map(ContentReport::getContent)
+                .toList();
     }
 
     private Cursor getCursor(List<ContentGroup> contentGroups) {
@@ -103,12 +102,11 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private GroupSearchFeedResponse getGroupSearchFeedResponse(Cursor cursor, List<Content> contents) {
-        final Group group = getGroup();
         return new GroupSearchFeedResponse(cursor.cursorId, cursor.cursorEndDate,
                 contents.stream()
                         .map(content -> new GroupSearchContentResponse(
                                 getMemberResponse(content.getMember()),
-                                getContentResponse(content, group.getName())))
+                                getContentResponse(content)))
                         .toList());
     }
 
@@ -116,8 +114,8 @@ public class ContentServiceImpl implements ContentService {
         return new GroupSearchContentResponse.Member(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource());
     }
 
-    private GroupSearchContentResponse.Content getContentResponse(Content content, String groupName) {
-        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), groupName, content.getMolluDateTime(),
+    private GroupSearchContentResponse.Content getContentResponse(Content content) {
+        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), content.getMolluDateTime(),
                 content.getCreatedAt(), content.getContentTag(),
                 content.getFrontContentSource(), content.getBackContentSource());
     }
@@ -185,6 +183,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public SearchContentResponse searchContent(String memberId, String contentId) {
+
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         validateOwner(memberId, contentId, member, content);
@@ -206,5 +205,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private record Cursor(String cursorId, LocalDateTime cursorEndDate) {
+    }
+
+    private record FeedResponse(List<Content> contents, Cursor cursor) {
     }
 }
