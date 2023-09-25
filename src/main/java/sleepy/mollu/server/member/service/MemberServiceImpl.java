@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.repository.ContentRepository;
-import sleepy.mollu.server.group.domain.group.Group;
-import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.controller.dto.MyCalendarResponse;
 import sleepy.mollu.server.member.controller.dto.MyContentsResponse;
@@ -43,23 +41,16 @@ public class MemberServiceImpl implements MemberService {
         return getMyContentsResponse(contents);
     }
 
-    private Group getGroup() {
-        return groupRepository.findDefaultGroup()
-                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
-    }
-
     private MyContentsResponse getMyContentsResponse(List<Content> contents) {
-        final Group group = getGroup();
         return new MyContentsResponse(contents.stream()
-                .map(content -> getMyContent(content, group.getName()))
+                .map(this::getMyContent)
                 .toList());
     }
 
-    private MyContentsResponse.MyContent getMyContent(Content content, String groupName) {
+    private MyContentsResponse.MyContent getMyContent(Content content) {
         return new MyContentsResponse.MyContent(
                 content.getId(),
                 content.getLocation(),
-                groupName,
                 content.getMolluDateTime(),
                 content.getUploadDateTime(),
                 content.getContentTag(),
