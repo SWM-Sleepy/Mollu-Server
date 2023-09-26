@@ -23,6 +23,7 @@ import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.exception.GroupBadRequestException;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
@@ -128,7 +129,7 @@ public class ContentServiceImpl implements ContentService {
         final OriginThumbnail frontSource = uploadContent(request.frontContentFile());
         final OriginThumbnail backSource = uploadContent(request.backContentFile());
         final Content content = saveContent(request, frontSource, backSource, member);
-        saveContentGroup(content, request.groups());
+        saveContentGroups(content, request.groups());
 
         return content.getId();
     }
@@ -152,14 +153,14 @@ public class ContentServiceImpl implements ContentService {
                 .build());
     }
 
-    private void saveContentGroup(Content content, List<String> groupIds) {
-        if (groupIds.isEmpty()) {
+    private void saveContentGroups(Content content, List<String> groupIds) {
+        if (groupIds == null) {
             final Group defaultGroup = getDefaultGroup();
             contentGroupRepository.save(createContentGroup(content, defaultGroup));
             return;
         }
 
-        final List<Group> groups = groupRepository.findByIdIn(groupIds);
+        final List<Group> groups = getGroups(groupIds);
         contentGroupRepository.saveAll(groups.stream()
                 .map(group -> createContentGroup(content, group))
                 .toList());
@@ -168,6 +169,18 @@ public class ContentServiceImpl implements ContentService {
     private Group getDefaultGroup() {
         return groupRepository.findDefaultGroup()
                 .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
+    }
+
+    private List<Group> getGroups(List<String> groupIds) {
+        final List<Group> groups = groupRepository.findByIdIn(groupIds);
+        validateGroups(groups);
+        return groups;
+    }
+
+    private void validateGroups(List<Group> groups) {
+        if (groups.isEmpty()) {
+            throw new GroupBadRequestException("요청 받은 groupId로 그룹을 찾을 수 없습니다.");
+        }
     }
 
     private ContentGroup createContentGroup(Content content, Group group) {
