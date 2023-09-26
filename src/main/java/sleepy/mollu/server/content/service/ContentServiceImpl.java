@@ -120,7 +120,6 @@ public class ContentServiceImpl implements ContentService {
                 content.getFrontContentSource(), content.getBackContentSource());
     }
 
-    // TODO: 로직 수정 및 테스트 코드 작성
     @Transactional
     @Override
     public String createContent(String memberId, CreateContentRequest request) {
@@ -129,14 +128,13 @@ public class ContentServiceImpl implements ContentService {
         final OriginThumbnail frontSource = uploadContent(request.frontContentFile());
         final OriginThumbnail backSource = uploadContent(request.backContentFile());
         final Content content = saveContent(request, frontSource, backSource, member);
-        saveContentGroup(content);
+        saveContentGroup(content, request.groups());
 
         return content.getId();
     }
 
     private OriginThumbnail uploadContent(MultipartFile file) {
         final ContentFile frontContentFile = new ImageContentFile(file, ContentType.CONTENTS);
-
         return fileHandler.uploadWithThumbnail(frontContentFile);
     }
 
@@ -154,18 +152,30 @@ public class ContentServiceImpl implements ContentService {
                 .build());
     }
 
-    private void saveContentGroup(Content content) {
-        final Group group = getGroup();
-        contentGroupRepository.save(ContentGroup.builder()
+    private void saveContentGroup(Content content, List<String> groupIds) {
+        if (groupIds.isEmpty()) {
+            final Group defaultGroup = getDefaultGroup();
+            contentGroupRepository.save(createContentGroup(content, defaultGroup));
+            return;
+        }
+
+        final List<Group> groups = groupRepository.findByIdIn(groupIds);
+        contentGroupRepository.saveAll(groups.stream()
+                .map(group -> createContentGroup(content, group))
+                .toList());
+    }
+
+    private Group getDefaultGroup() {
+        return groupRepository.findDefaultGroup()
+                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
+    }
+
+    private ContentGroup createContentGroup(Content content, Group group) {
+        return ContentGroup.builder()
                 .id(idConstructor.create())
                 .content(content)
                 .group(group)
-                .build());
-    }
-
-    private Group getGroup() {
-        return groupRepository.findDefaultGroup()
-                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
+                .build();
     }
 
     @Transactional
