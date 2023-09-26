@@ -1,6 +1,7 @@
 package sleepy.mollu.server.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,14 +13,22 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 import sleepy.mollu.server.config.TestConfig;
+import sleepy.mollu.server.fixture.GroupMemberFixture;
+import sleepy.mollu.server.fixture.MemberFixture;
 import sleepy.mollu.server.group.controller.dto.JoinGroupByCodeRequest;
 import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
+import sleepy.mollu.server.member.domain.Member;
+import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
+import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,6 +58,12 @@ public class AcceptanceTest {
     private DBCleaner dbCleaner;
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private GroupMemberRepository groupMemberRepository;
+    @Autowired
+    private JwtGenerator jwtGenerator;
 
     @BeforeEach
     public void setUp() {
@@ -131,20 +146,29 @@ public class AcceptanceTest {
         return delete(GROUP_URL + "/" + groupId + "/members", accessToken);
     }
 
-    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime) {
-        return thenExtract(RestAssured.given()
-                .headers(Map.of("Authorization", "Bearer " + accessToken))
-                .multiPart("location", "location")
-                .multiPart("tag", "tag")
-                .multiPart("uploadDateTime", uploadDateTime.toString())
-                .multiPart("frontContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
-                .multiPart("backContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, LocalDateTime uploadDateTime, List<String> groups) {
+        final RequestSpecBuilder builder = new RequestSpecBuilder();
+        builder.addHeader("Authorization", "Bearer " + accessToken)
+                .addMultiPart("location", "location")
+                .addMultiPart("tag", "tag")
+                .addMultiPart("uploadDateTime", uploadDateTime.toString())
+                .addMultiPart("frontContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE)
+                .addMultiPart("backContentFile", "test_file.jpg", "Something".getBytes(), MediaType.IMAGE_PNG_VALUE);
+
+        if (groups != null) {
+            builder.addMultiPart("groups", String.join(",", groups));
+        }
+        return thenExtract(RestAssured.given(builder.build())
                 .when()
                 .post(CONTENT_URL));
     }
 
     protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken) {
-        return 컨텐츠_업로드_요청(accessToken, NOW);
+        return 컨텐츠_업로드_요청(accessToken, NOW, null);
+    }
+
+    protected ExtractableResponse<Response> 컨텐츠_업로드_요청(String accessToken, List<String> groups) {
+        return 컨텐츠_업로드_요청(accessToken, NOW, groups);
     }
 
     protected ExtractableResponse<Response> 그룹원_피드_조회_요청(String accessToken) {
@@ -202,6 +226,15 @@ public class AcceptanceTest {
 
     protected ExtractableResponse<Response> 댓글_신고_요청(String accessToken, String contentId, String commentId) {
         return post(CONTENT_URL + "/" + contentId + "/comments/" + commentId + "/report", accessToken);
+    }
+
+    protected String 회원가입_및_디폴트_그룹_가입_요청_및_응답(String memberId, String molluId) {
+        final Member member = MemberFixture.create(memberId, molluId);
+        memberRepository.save(member);
+        final Group group = groupRepository.findDefaultGroup().orElseThrow();
+        groupMemberRepository.save(GroupMemberFixture.create(memberId, group, member));
+        final JwtToken jwtToken = jwtGenerator.generate(memberId);
+        return jwtToken.accessToken();
     }
 
     protected String 회원가입_요청_및_응답(String type) {
