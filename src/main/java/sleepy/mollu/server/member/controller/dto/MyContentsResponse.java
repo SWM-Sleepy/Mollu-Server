@@ -7,7 +7,6 @@ public record MyContentsResponse(List<MyContent> feed) {
 
     public record MyContent(String contentId,
                             String location,
-                            String groupName,
                             LocalDateTime molluDateTime,
                             LocalDateTime uploadDateTime,
                             String tag,

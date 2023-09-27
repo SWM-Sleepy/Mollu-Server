@@ -121,7 +121,6 @@ class OAuth2ServiceTest {
         final SignupRequest request = new SignupRequest("name", LocalDate.now(), "mollu");
         final String memberId = "memberId";
 
-
         @Test
         @DisplayName("회원가입을 했으면 예외를 던진다")
         void SocialSignupTest1() throws GeneralSecurityException, IOException {
@@ -144,8 +143,6 @@ class OAuth2ServiceTest {
             OAuth2Client oAuth2Client = mock(OAuth2Client.class);
             final String accessToken = "accessToken";
             final String refreshToken = "refreshToken";
-            final Member member = mock(Member.class);
-            final Group group = mock(Group.class);
 
             given(oAuth2ClientMap.get(anyString())).willReturn(oAuth2Client);
             given(oAuth2Client.getMemberId(anyString())).willReturn(memberId);
@@ -154,9 +151,6 @@ class OAuth2ServiceTest {
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build());
-            given(memberRepository.save(any(Member.class))).willReturn(member);
-            given(groupRepository.findDefaultGroup()).willReturn(Optional.of(group));
-            given(idConstructor.create()).willReturn("id");
 
             // when
             final TokenResponse tokenResponse = oAuth2Service.signup(type, socialToken, request);

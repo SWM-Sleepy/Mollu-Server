@@ -23,6 +23,7 @@ import sleepy.mollu.server.content.report.domain.ContentReport;
 import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
+import sleepy.mollu.server.group.exception.GroupBadRequestException;
 import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
@@ -51,36 +52,32 @@ public class ContentServiceImpl implements ContentService {
     private final IdConstructor idConstructor;
     private final FileHandler fileHandler;
 
-    // TODO: 로직 수정 및 테스트 코드 작성
     @Override
     public GroupSearchFeedResponse searchGroupFeed(String memberId, String cursorId, LocalDateTime cursorEndDate) {
 
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
-        final List<Group> groups = getGroups(member);
-        final List<ContentGroup> contentGroups = getContentGroups(groups, cursorId, cursorEndDate);
-        final List<Content> contents = getContents(contentGroups, member);
-        final Cursor cursor = getCursor(contentGroups);
+        final FeedResponse feed = getFeed(member, cursorId, cursorEndDate);
 
-        return getGroupSearchFeedResponse(cursor, contents);
+        return getGroupSearchFeedResponse(feed.cursor, feed.contents);
+    }
+
+    private FeedResponse getFeed(Member member, String cursorId, LocalDateTime cursorEndDate) {
+        final List<Group> groups = getGroups(member);
+        final List<ContentGroup> contentGroups = contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
+        final List<Content> notReportedContents = getNotReportedContents(contentGroups, member);
+        final Cursor cursor = getCursor(contentGroups);
+        return new FeedResponse(notReportedContents, cursor);
     }
 
     private List<Group> getGroups(Member member) {
         final List<GroupMember> groupMembers = groupMemberRepository.findAllWithGroupByMember(member);
-
         return groupMembers.stream()
                 .map(GroupMember::getGroup)
                 .toList();
     }
 
-    private List<ContentGroup> getContentGroups(List<Group> groups, String cursorId, LocalDateTime cursorEndDate) {
-        return contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
-    }
-
-    private List<Content> getContents(List<ContentGroup> contentGroups, Member member) {
-        final List<ContentReport> contentReports = getContentReports(member);
-        final List<Content> reportedContents = contentReports.stream()
-                .map(ContentReport::getContent)
-                .toList();
+    private List<Content> getNotReportedContents(List<ContentGroup> contentGroups, Member member) {
+        final List<Content> reportedContents = getReportedContents(member);
 
         return contentGroups.stream()
                 .map(ContentGroup::getContent)
@@ -88,8 +85,11 @@ public class ContentServiceImpl implements ContentService {
                 .toList();
     }
 
-    private List<ContentReport> getContentReports(Member member) {
-        return contentReportRepository.findAllByMember(member);
+    private List<Content> getReportedContents(Member member) {
+        final List<ContentReport> contentReports = contentReportRepository.findAllByMember(member);
+        return contentReports.stream()
+                .map(ContentReport::getContent)
+                .toList();
     }
 
     private Cursor getCursor(List<ContentGroup> contentGroups) {
@@ -103,12 +103,11 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private GroupSearchFeedResponse getGroupSearchFeedResponse(Cursor cursor, List<Content> contents) {
-        final Group group = getGroup();
         return new GroupSearchFeedResponse(cursor.cursorId, cursor.cursorEndDate,
                 contents.stream()
                         .map(content -> new GroupSearchContentResponse(
                                 getMemberResponse(content.getMember()),
-                                getContentResponse(content, group.getName())))
+                                getContentResponse(content)))
                         .toList());
     }
 
@@ -116,13 +115,12 @@ public class ContentServiceImpl implements ContentService {
         return new GroupSearchContentResponse.Member(member.getId(), member.getMolluId(), member.getName(), member.getProfileSource());
     }
 
-    private GroupSearchContentResponse.Content getContentResponse(Content content, String groupName) {
-        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), groupName, content.getMolluDateTime(),
+    private GroupSearchContentResponse.Content getContentResponse(Content content) {
+        return new GroupSearchContentResponse.Content(content.getId(), content.getLocation(), content.getMolluDateTime(),
                 content.getCreatedAt(), content.getContentTag(),
                 content.getFrontContentSource(), content.getBackContentSource());
     }
 
-    // TODO: 로직 수정 및 테스트 코드 작성
     @Transactional
     @Override
     public String createContent(String memberId, CreateContentRequest request) {
@@ -131,14 +129,13 @@ public class ContentServiceImpl implements ContentService {
         final OriginThumbnail frontSource = uploadContent(request.frontContentFile());
         final OriginThumbnail backSource = uploadContent(request.backContentFile());
         final Content content = saveContent(request, frontSource, backSource, member);
-        saveContentGroup(content);
+        saveContentGroups(content, request.groups());
 
         return content.getId();
     }
 
     private OriginThumbnail uploadContent(MultipartFile file) {
         final ContentFile frontContentFile = new ImageContentFile(file, ContentType.CONTENTS);
-
         return fileHandler.uploadWithThumbnail(frontContentFile);
     }
 
@@ -156,18 +153,42 @@ public class ContentServiceImpl implements ContentService {
                 .build());
     }
 
-    private void saveContentGroup(Content content) {
-        final Group group = getGroup();
-        contentGroupRepository.save(ContentGroup.builder()
+    private void saveContentGroups(Content content, List<String> groupIds) {
+        if (groupIds == null) {
+            final Group defaultGroup = getDefaultGroup();
+            contentGroupRepository.save(createContentGroup(content, defaultGroup));
+            return;
+        }
+
+        final List<Group> groups = getGroups(groupIds);
+        contentGroupRepository.saveAll(groups.stream()
+                .map(group -> createContentGroup(content, group))
+                .toList());
+    }
+
+    private Group getDefaultGroup() {
+        return groupRepository.findDefaultGroup()
+                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
+    }
+
+    private List<Group> getGroups(List<String> groupIds) {
+        final List<Group> groups = groupRepository.findByIdIn(groupIds);
+        validateGroups(groups);
+        return groups;
+    }
+
+    private void validateGroups(List<Group> groups) {
+        if (groups.isEmpty()) {
+            throw new GroupBadRequestException("요청 받은 groupId로 그룹을 찾을 수 없습니다.");
+        }
+    }
+
+    private ContentGroup createContentGroup(Content content, Group group) {
+        return ContentGroup.builder()
                 .id(idConstructor.create())
                 .content(content)
                 .group(group)
-                .build());
-    }
-
-    private Group getGroup() {
-        return groupRepository.findDefaultGroup()
-                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
+                .build();
     }
 
     @Transactional
@@ -185,6 +206,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public SearchContentResponse searchContent(String memberId, String contentId) {
+
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         validateOwner(memberId, contentId, member, content);
@@ -199,14 +221,15 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private SearchContentResponse getSearchContentResponse(String contentId, Content content) {
-        // TODO: 그룹 이름 가져오는 로직 수정
-        final Group group = getGroup();
         return new SearchContentResponse(
-                contentId, content.getLocation(), group.getName(),
+                contentId, content.getLocation(),
                 content.getMolluDateTime(), content.getUploadDateTime(),
                 content.getContentTag(), content.getFrontContentSource(), content.getBackContentSource());
     }
 
     private record Cursor(String cursorId, LocalDateTime cursorEndDate) {
+    }
+
+    private record FeedResponse(List<Content> contents, Cursor cursor) {
     }
 }

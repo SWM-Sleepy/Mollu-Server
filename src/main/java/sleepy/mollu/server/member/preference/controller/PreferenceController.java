@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import sleepy.mollu.server.swagger.*;
 @RestController
 @RequestMapping("/members/preference")
 @RequiredArgsConstructor
+@Slf4j
 public class PreferenceController {
 
     private final PreferenceService preferenceService;
@@ -57,6 +59,7 @@ public class PreferenceController {
     @PostMapping("/token")
     public ResponseEntity<Void> updatePhoneToken(@Login String memberId, @RequestBody @Valid PhoneTokenRequest request) {
 
+        log.info("memberId: {}, phoneToken: {}, platform: {}", memberId, request.phoneToken(), request.platform());
         preferenceService.updatePhoneToken(memberId, request.phoneToken(), request.platform());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

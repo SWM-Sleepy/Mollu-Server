@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record CreateContentRequest(
 
@@ -18,6 +19,8 @@ public record CreateContentRequest(
 
         @NotNull
         LocalDateTime uploadDateTime,
+
+        List<String> groups,
 
         @NotNull
         MultipartFile frontContentFile,
