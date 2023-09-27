@@ -3,9 +3,10 @@ version: 0.2
 phases:
   build:
     commands:
+      - ./gradlew --stop
       - echo Build started on $(TZ=Asia/Seoul date)
       - chmod +x ./gradlew
-      - ./gradlew build --info
+      - ./gradlew build -Dspring.profiles.active=test --info
 
   post_build:
     commands:
