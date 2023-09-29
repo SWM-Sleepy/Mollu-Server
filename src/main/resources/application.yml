@@ -32,11 +32,13 @@ spring:
   main:
     allow-bean-definition-overriding: true
   profiles:
-    active: test
+    active: local
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 100MB
+  flyway:
+    enabled: false
 
 alarm:
   fcm:
