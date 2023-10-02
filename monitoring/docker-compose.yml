@@ -1,0 +1,23 @@
+volumes:
+  prometheus-volume:
+  grafana-volume:
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml/:/etc/prometheus/prometheus.yml
+      - prometheus-volume:/prometheus
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-volume:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: always
