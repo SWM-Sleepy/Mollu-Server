@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.member.domain.Member;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class GroupMember {
+public class GroupMember extends BaseEntity {
 
     @Id
     @Column(name = "group_member_id")
@@ -34,15 +35,15 @@ public class GroupMember {
     public GroupMember(String id, Group group, Member member, GroupMemberRole role) {
         this.id = id;
         this.group = group;
-        setMember(member);
+        this.member = member;
         this.role = role;
     }
 
-    private void setMember(Member member) {
-        this.member = member;
+    public String getGroupId() {
+        return this.group.getId();
     }
 
-    public boolean isSameMember(Member member) {
-        return this.member.equals(member);
+    public String getMemberId() {
+        return this.member.getId();
     }
 }

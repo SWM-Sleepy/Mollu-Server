@@ -15,7 +15,6 @@ import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.domain.Preference;
 import sleepy.mollu.server.member.dto.MemberBadRequestException;
 import sleepy.mollu.server.member.dto.SignupRequest;
-import sleepy.mollu.server.member.exception.MemberNotFoundException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.dto.CheckResponse;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
@@ -61,7 +60,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     public TokenResponse login(String type, String socialToken) throws GeneralSecurityException, IOException {
 
         final String memberId = getOAuth2MemberId(type, socialToken);
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         final JwtToken token = jwtGenerator.generate(memberId);
         member.updateRefreshToken(token.refreshToken());
@@ -83,10 +82,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
         final JwtToken jwtToken = jwtGenerator.generate(memberId);
-        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
+        saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
 
-        // FIXME: 2023/07/25 MVP 이후 삭제
-        joinGroup(member);
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
     }
 
@@ -96,8 +93,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         }
     }
 
-    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
-        return memberRepository.save(Member.builder()
+    private void saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
+        memberRepository.save(Member.builder()
                 .id(memberId)
                 .name(name)
                 .birthday(birthday)
@@ -114,20 +111,6 @@ public class OAuth2ServiceImpl implements OAuth2Service {
                 .build();
     }
 
-    private void joinGroup(Member member) {
-        groupMemberRepository.save(GroupMember.builder()
-                .id(idConstructor.create())
-                .group(getGroup())
-                .member(member)
-                .role(GroupMemberRole.MEMBER)
-                .build());
-    }
-
-    private Group getGroup() {
-        return groupRepository.findDefaultGroup()
-                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹을 찾을 수 없습니다."));
-    }
-
     @Override
     public CheckResponse checkId(String molluId) {
 
@@ -140,7 +123,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Override
     public TokenResponse refresh(String refreshToken) {
         final String memberId = getMemberIdFrom(refreshToken);
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         checkRefreshTokenValid(refreshToken, member);
 
@@ -152,11 +135,6 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         return payload.id();
     }
 
-    private Member getMember(String memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("ID가 [" + memberId + "]인 멤버를 찾을 수 없습니다."));
-    }
-
     private String getNewAccessToken(String refreshToken) {
         return jwtRefresher.refresh(refreshToken);
     }
@@ -164,7 +142,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Transactional
     @Override
     public void logout(String memberId) {
-        final Member member = getMember(memberId);
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
 
         member.updatePhoneToken(null, null);
         member.updateRefreshToken(null);

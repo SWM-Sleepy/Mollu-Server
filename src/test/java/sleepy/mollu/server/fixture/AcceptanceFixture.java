@@ -1,12 +1,14 @@
 package sleepy.mollu.server.fixture;
 
+import sleepy.mollu.server.content.comment.controller.dto.CreateCommentRequest;
 import sleepy.mollu.server.content.reaction.controller.dto.CreateReactionRequest;
 import sleepy.mollu.server.content.report.dto.ReportRequest;
+import sleepy.mollu.server.group.controller.dto.CreateGroupRequest;
+import sleepy.mollu.server.group.controller.dto.JoinGroupByCodeRequest;
 import sleepy.mollu.server.member.dto.SignupRequest;
 import sleepy.mollu.server.member.preference.dto.PhoneTokenRequest;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class AcceptanceFixture {
 
@@ -17,4 +19,7 @@ public class AcceptanceFixture {
     public static final PhoneTokenRequest 알림_토큰_설정_요청_데이터 = new PhoneTokenRequest("phoneToken", null);
     public static final ReportRequest 신고_요청_데이터 = new ReportRequest("신고 사유");
     public static final CreateReactionRequest 컨텐츠_반응_추가_요청_데이터 = new CreateReactionRequest("emoticon1");
+    public static final CreateCommentRequest 댓글_등록_요청_데이터 = new CreateCommentRequest("김".repeat(200));
+    public static final CreateGroupRequest 그룹_생성_요청_데이터 = new CreateGroupRequest("그룹명", null, null);
+    public static final JoinGroupByCodeRequest 초대_코드로_그룹_참여_요청_데이터 = new JoinGroupByCodeRequest("a1B2c3D4");
 }

@@ -16,8 +16,6 @@ import sleepy.mollu.server.group.repository.GroupRepository;
 import sleepy.mollu.server.member.exception.MemberUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -56,7 +54,7 @@ class ContentServiceTest {
         @DisplayName("컨텐츠가 존재하지 않는다면 NotFound 예외를 던진다")
         void deleteContentTest1() {
             // given
-            given(contentRepository.findById(contentId)).willReturn(Optional.empty());
+            given(contentRepository.findByIdOrElseThrow(contentId)).willThrow(ContentNotFoundException.class);
 
             // when & then
             assertThatThrownBy(() -> contentService.deleteContent(memberId, contentId))
@@ -70,7 +68,7 @@ class ContentServiceTest {
             final Content content = mock(Content.class);
 
             given(content.isOwner(memberId)).willReturn(false);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
 
             // when & then
             assertThatThrownBy(() -> contentService.deleteContent(memberId, contentId))
@@ -84,7 +82,7 @@ class ContentServiceTest {
             final Content content = mock(Content.class);
 
             given(content.isOwner(memberId)).willReturn(true);
-            given(contentRepository.findById(contentId)).willReturn(Optional.of(content));
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
 
             // when
             contentService.deleteContent(memberId, contentId);

@@ -33,4 +33,8 @@ public abstract class Report extends BaseEntity {
         this.reason = new Reason(reason);
         this.member = member;
     }
+
+    public String getReason() {
+        return this.reason.getValue();
+    }
 }

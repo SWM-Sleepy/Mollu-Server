@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.exception.ContentNotFoundException;
 import sleepy.mollu.server.member.domain.Member;
 
 import java.time.LocalDateTime;
@@ -19,4 +20,12 @@ public interface ContentRepository extends JpaRepository<Content, String> {
     List<Content> findAllByMemberAndDate(@Param("member") Member member,
                                          @Param("from") LocalDateTime from,
                                          @Param("to") LocalDateTime to);
+
+    @Query("select c from Content c where c.member = :member order by c.contentTime.uploadDateTime desc")
+    List<Content> findAllByMember(@Param("member") Member member);
+
+    default Content findByIdOrElseThrow(String contentId) {
+        return findById(contentId)
+                .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
+    }
 }

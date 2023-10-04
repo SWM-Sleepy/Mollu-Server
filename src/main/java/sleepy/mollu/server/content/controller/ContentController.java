@@ -7,14 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sleepy.mollu.server.content.controller.dto.SearchContentResponse;
 import sleepy.mollu.server.content.dto.CreateContentRequest;
 import sleepy.mollu.server.content.dto.GroupSearchFeedResponse;
 import sleepy.mollu.server.content.service.ContentService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
-import sleepy.mollu.server.swagger.CreatedResponse;
-import sleepy.mollu.server.swagger.InternalServerErrorResponse;
-import sleepy.mollu.server.swagger.NoContentResponse;
-import sleepy.mollu.server.swagger.OkResponse;
+import sleepy.mollu.server.swagger.*;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -59,5 +57,18 @@ public class ContentController {
         contentService.deleteContent(memberId, contentId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Operation(summary = "컨텐츠 자세히 보기")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @ForbiddenResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping("/{contentId}")
+    public ResponseEntity<SearchContentResponse> searchContent(@Login String memberId, @PathVariable String contentId) {
+
+        return ResponseEntity.ok(contentService.searchContent(memberId, contentId));
     }
 }

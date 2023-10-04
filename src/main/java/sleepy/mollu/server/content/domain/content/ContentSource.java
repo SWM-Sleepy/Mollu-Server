@@ -18,21 +18,41 @@ public class ContentSource {
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "front_content_source"))
-    private FileSource frontContentSource;
+    private FileSource frontSource;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "back_content_source"))
-    private FileSource backContentSource;
+    private FileSource backSource;
 
-    public static ContentSource of(String frontContentSource, String backContentSource) {
-        return new ContentSource(new FileSource(frontContentSource), new FileSource(backContentSource));
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "thumbnail_front_content_source"))
+    private FileSource thumbnailFrontSource;
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "thumbnail_back_content_source"))
+    private FileSource thumbnailBackSource;
+
+    public static ContentSource of(String frontSource, String backSource, String thumbnailFrontSource, String thumbnailBackSource) {
+        return new ContentSource(
+                new FileSource(frontSource),
+                new FileSource(backSource),
+                new FileSource(thumbnailFrontSource),
+                new FileSource(thumbnailBackSource));
     }
 
-    public String getFrontContentSource() {
-        return frontContentSource.getValue();
+    public String getFrontSource() {
+        return this.frontSource.getValue();
     }
 
-    public String getBackContentSource() {
-        return backContentSource.getValue();
+    public String getBackSource() {
+        return this.backSource.getValue();
+    }
+
+    public String getThumbnailFrontSource() {
+        if (this.thumbnailFrontSource == null) {
+            return this.frontSource.getValue();
+        }
+
+        return this.thumbnailFrontSource.getValue();
     }
 }

@@ -32,4 +32,23 @@ class ContentReportControllerTest extends ControllerTest {
             then(reportService).should().reportContent("memberId", "contentId", "");
         }
     }
+
+    @Nested
+    @DisplayName("[댓글 신고 API 호출시] ")
+    class ReportCommentTest {
+
+        @Test
+        @DisplayName("신고 사유를 적지 않아도 201을 응답한다.")
+        void reportCommentTest() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+
+            // when
+            final ResultActions result = post("/contents/contentId/comments/commentId/report", accessToken);
+
+            // then
+            result.andExpect(status().isCreated())
+                    .andDo(print());
+        }
+    }
 }

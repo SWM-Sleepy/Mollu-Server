@@ -62,15 +62,18 @@ public class Content extends BaseEntity {
     }
 
     public String getQuestion() {
-        return question.getValue();
+        if (this.question == null) {
+            return "";
+        }
+        return this.question.getValue();
     }
 
     public String getFrontContentSource() {
-        return contentSource.getFrontContentSource();
+        return contentSource.getFrontSource();
     }
 
     public String getBackContentSource() {
-        return contentSource.getBackContentSource();
+        return contentSource.getBackSource();
     }
 
     public LocalDateTime getMolluDateTime() {
@@ -93,7 +96,8 @@ public class Content extends BaseEntity {
         return contentTime.isUploadedBefore(localDateTime);
     }
 
-    public boolean hasSameId(Content content) {
-        return id.equals(content.id);
+    public String getThumbnailFrontSource() {
+        return this.contentSource.getThumbnailFrontSource();
     }
 }
+

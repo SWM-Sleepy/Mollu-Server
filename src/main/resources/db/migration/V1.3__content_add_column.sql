@@ -1,0 +1,2 @@
+alter table content add column thumbnail_front_content_source varchar(255) null after back_content_source;
+alter table content add column thumbnail_back_content_source varchar(255) null after thumbnail_front_content_source;
