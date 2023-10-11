@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingResponseWrapper;
+import sleepy.mollu.server.oauth2.controller.parser.AuthorizationHeaderParser;
+import sleepy.mollu.server.oauth2.jwt.dto.ExtractType;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtPayload;
+import sleepy.mollu.server.oauth2.jwt.service.JwtExtractor;
 
 import java.util.List;
 import java.util.Map;
@@ -25,10 +29,12 @@ public class WebInterceptor implements HandlerInterceptor {
     private static final List<String> UPDATE_METHODS = List.of(HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name());
 
     private final ObjectMapper objectMapper;
+    private final JwtExtractor jwtExtractor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        MDC.put("uuid", UUID.randomUUID().toString());
+        MDC.put("userId", getUserId(request));
+        MDC.put("requestId", UUID.randomUUID().toString());
 
         final long start = System.currentTimeMillis();
         request.setAttribute(ATTRIBUTE_TIME, start);
@@ -55,7 +61,17 @@ public class WebInterceptor implements HandlerInterceptor {
 
         log.info("[" + handler + "] executeTime : " + (end - start) + "ms");
 
-        MDC.remove("uuid");
+        MDC.clear();
+    }
+
+    private String getUserId(HttpServletRequest request) {
+        try {
+            final String accessToken = AuthorizationHeaderParser.parse(request);
+            final JwtPayload payload = jwtExtractor.extract(accessToken, ExtractType.ACCESS);
+            return payload.id();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private boolean canLogResponse(HttpServletRequest request, ContentCachingResponseWrapper response) {
