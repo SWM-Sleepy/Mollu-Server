@@ -35,7 +35,7 @@ public class GroupController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @GetMapping("/{groupId}/members")
-    public ResponseEntity<GroupMemberSearchResponse> groupSearchFeedResponse(@Login String memberId, @PathVariable String groupId) {
+    public ResponseEntity<GroupMemberSearchResponse> searchGroupMembers(@Login String memberId, @PathVariable String groupId) {
 
         return ResponseEntity.ok(groupService.searchGroupMembers(memberId, groupId));
     }
