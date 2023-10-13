@@ -89,7 +89,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
                 .map(comment -> new CommentResponse(
                         comment.getId(),
                         comment.getMessage(),
-                        comment.getMemberId(),
+                        comment.getMolluId(),
                         comment.getMemberName(),
                         comment.getMemberProfileSource(),
                         comment.getCreatedAt()))
