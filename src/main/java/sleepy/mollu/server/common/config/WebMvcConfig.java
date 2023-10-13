@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import sleepy.mollu.server.alarm.admin.interceptor.AdminInterceptor;
+import sleepy.mollu.server.admin.interceptor.AdminInterceptor;
 import sleepy.mollu.server.common.interceptor.WebInterceptor;
 import sleepy.mollu.server.oauth2.controller.interceptor.LoginInterceptor;
 import sleepy.mollu.server.oauth2.controller.resolver.LoginArgumentResolver;

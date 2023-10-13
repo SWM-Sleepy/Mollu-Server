@@ -13,7 +13,7 @@ import sleepy.mollu.server.swagger.OkResponse;
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-public class AdminController1 {
+public class AdminController {
 
     @Operation(summary = "관리자 로그인 페이지")
     @OkResponse
