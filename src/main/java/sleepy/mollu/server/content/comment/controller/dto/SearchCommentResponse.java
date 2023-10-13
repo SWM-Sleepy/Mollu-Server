@@ -5,7 +5,7 @@ import java.util.List;
 
 public record SearchCommentResponse(List<CommentResponse> comments) {
 
-    public record CommentResponse(String commentId, String comment, String memberId, String userName,
+    public record CommentResponse(String commentId, String comment, String molluId, String userName,
                                   String profileSource, LocalDateTime createdAt) {
     }
 }
