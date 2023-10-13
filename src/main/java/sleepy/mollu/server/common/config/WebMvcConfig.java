@@ -34,7 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/swagger", "/swagger-ui/**", "/v3/api-docs/**")
-                .excludePathPatterns("/auth/**", "/admin/**", "/actuator/**");
+                .excludePathPatterns("/auth/**", "/admin/**", "/actuator/**", "/bootstrap/**");
 
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**", "/bootstrap/**")
