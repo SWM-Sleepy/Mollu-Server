@@ -58,6 +58,10 @@ public class ContentCommentServiceImpl implements ContentCommentService {
 
     @Override
     public SearchCommentPreviewResponse searchCommentPreview(String memberId, String contentId) {
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
+        authorizationService.authorizeMemberForContent(member, content);
+
         return null;
     }
 

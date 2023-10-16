@@ -11,6 +11,7 @@ import sleepy.mollu.server.common.domain.IdConstructor;
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.member.domain.Member;
@@ -18,9 +19,13 @@ import sleepy.mollu.server.member.exception.MemberContentUnAuthorizedException;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.member.service.AuthorizationService;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
@@ -39,6 +44,9 @@ class ContentCommentServiceImplTest {
 
     @Mock
     private CommentRepository commentRepository;
+
+    @Mock
+    private CommentReportRepository commentReportRepository;
 
     @Mock
     private IdConstructor idConstructor;
@@ -91,6 +99,33 @@ class ContentCommentServiceImplTest {
 
             // then
             assertThat(commentId).isEqualTo(savedCommentId);
+        }
+    }
+
+    @Nested
+    @DisplayName("[댓글 미리 보기 서비스 호출시] ")
+    class SearchCommentPreview {
+
+        final String memberId = "memberId";
+        final String contentId = "contentId";
+
+        final Member member = mock(Member.class);
+        final Content content = mock(Content.class);
+
+        @Test
+        @DisplayName("댓글이 없다면 comment 변수가 null인 SearchCommentPreviewResponse를 반환한다.")
+        void SearchCommentPreview() {
+            // given
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
+            given(commentReportRepository.findAllByMember(member)).willReturn(List.of());
+            given(commentRepository.countByContent(content, anyList())).willReturn(0L);
+            given(commentRepository.findTop(content, anyList())).willReturn(Optional.empty());
+
+            // when
+
+
+            // then
         }
     }
 }
