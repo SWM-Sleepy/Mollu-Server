@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentPreviewResponse;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.CommentResponse;
 import sleepy.mollu.server.content.comment.domain.Comment;
@@ -53,6 +54,11 @@ public class ContentCommentServiceImpl implements ContentCommentService {
                 .content(content)
                 .build());
         return newComment.getId();
+    }
+
+    @Override
+    public SearchCommentPreviewResponse searchCommentPreview(String memberId, String contentId) {
+        return null;
     }
 
     @Override
