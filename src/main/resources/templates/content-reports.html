@@ -370,12 +370,12 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Contents</h1>
+                    <h1 class="h3 mb-2 text-gray-800">Content Reports</h1>
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">컨텐츠 조회</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">신고 컨텐츠 조회</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -383,19 +383,17 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>몰루 타임</th>
-                                            <th>업로드 타임</th>
+                                            <th>신고 횟수</th>
                                             <th>전면 사진</th>
                                             <th>후면 사진</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="content: ${contents}">
-                                            <td th:text="${content.contentId}"></td>
-                                            <td th:text="${content.molluDateTime}"></td>
-                                            <td th:text="${content.uploadDateTime}"></td>
-                                            <td><a th:href="${content.frontContentSource}" th:text="${content.frontContentSource}"></a></td>
-                                            <td><a th:href="${content.backContentSource}" th:text="${content.backContentSource}"></a></td>
+                                        <tr th:each="contentReport: ${contentReports}">
+                                            <td th:text="${contentReport.contentId}"></td>
+                                            <td th:text="${contentReport.reportNum}"></td>
+                                            <td><a th:href="${contentReport.frontContentSource}" th:text="${contentReport.frontContentSource}"></a></td>
+                                            <td><a th:href="${contentReport.backContentSource}" th:text="${contentReport.backContentSource}"></a></td>
                                         </tr>
                                     </tbody>
                                 </table>

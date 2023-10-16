@@ -7,9 +7,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import sleepy.mollu.server.admin.controller.model.CommentReportModel;
 import sleepy.mollu.server.admin.controller.model.ContentModel;
+import sleepy.mollu.server.admin.controller.model.ContentReportModel;
 import sleepy.mollu.server.admin.controller.model.UserModel;
+import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.report.domain.CommentReport;
+import sleepy.mollu.server.content.report.domain.ContentReport;
+import sleepy.mollu.server.content.report.repository.CommentReportRepository;
+import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.repository.MemberRepository;
@@ -19,6 +26,9 @@ import sleepy.mollu.server.swagger.OkResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Tag(name = "관리자")
 @Controller
@@ -28,6 +38,8 @@ public class AdminController {
 
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
+    private final ContentReportRepository contentReportRepository;
+    private final CommentReportRepository commentReportRepository;
 
     @Operation(summary = "관리자 로그인 페이지")
     @OkResponse
@@ -81,5 +93,63 @@ public class AdminController {
 
     private String convertLocalDateTime(LocalDateTime localDateTime) {
         return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    @Operation(summary = "신고된 게시글 조회 페이지")
+    @OkResponse
+    @InternalServerErrorResponse
+    @GetMapping("/content-reports")
+    public String getContentReports(Model model) {
+        final List<ContentReport> contentReports = contentReportRepository.findAll();
+        final Set<Map.Entry<Content, List<ContentReport>>> entries = contentReports.stream()
+                .collect(Collectors.groupingBy(ContentReport::getContent))
+                .entrySet();
+
+        final List<ContentReportModel> contentReportModels = entries.stream()
+                .map(entry -> {
+                    final Content content = entry.getKey();
+                    final int reportNum = entry.getValue().size();
+
+                    return new ContentReportModel(
+                            content.getId(),
+                            reportNum,
+                            content.getFrontContentSource(),
+                            content.getBackContentSource()
+                    );
+                })
+                .toList();
+
+        model.addAttribute("contentReports", contentReportModels);
+
+        return "content-reports";
+    }
+
+    @Operation(summary = "신고된 댓글 조회 페이지")
+    @OkResponse
+    @InternalServerErrorResponse
+    @GetMapping("/comment-reports")
+    public String getCommentReports(Model model) {
+        final List<CommentReport> commentReports = commentReportRepository.findAll();
+        final Set<Map.Entry<Comment, List<CommentReport>>> entries = commentReports.stream()
+                .collect(Collectors.groupingBy(CommentReport::getComment))
+                .entrySet();
+
+        final List<CommentReportModel> commentReportModels = entries.stream()
+                .map(entry -> {
+                    final Comment comment = entry.getKey();
+                    final int reportNum = entry.getValue().size();
+
+                    return new CommentReportModel(
+                            comment.getId(),
+                            reportNum,
+                            comment.getMessage(),
+                            comment.getCreatedAt()
+                    );
+                })
+                .toList();
+
+        model.addAttribute("commentReports", commentReportModels);
+
+        return "comment-reports";
     }
 }
