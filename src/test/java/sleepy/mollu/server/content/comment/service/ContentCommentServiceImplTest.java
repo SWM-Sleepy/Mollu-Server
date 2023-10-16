@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentPreviewResponse;
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.comment.repository.CommentRepository;
 import sleepy.mollu.server.content.domain.content.Content;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
@@ -111,6 +113,7 @@ class ContentCommentServiceImplTest {
 
         final Member member = mock(Member.class);
         final Content content = mock(Content.class);
+        final Comment comment = mock(Comment.class);
 
         @Test
         @DisplayName("댓글이 없다면 comment 변수가 null인 SearchCommentPreviewResponse를 반환한다.")
@@ -119,13 +122,37 @@ class ContentCommentServiceImplTest {
             given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
             given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
             given(commentReportRepository.findAllByMember(member)).willReturn(List.of());
-            given(commentRepository.countByContent(content, anyList())).willReturn(0L);
-            given(commentRepository.findTop(content, anyList())).willReturn(Optional.empty());
+            given(commentRepository.countByContent(any(Content.class), anyList())).willReturn(0L);
+            given(commentRepository.findTop(any(Content.class), anyList())).willReturn(Optional.empty());
 
             // when
-
+            final SearchCommentPreviewResponse response = contentCommentService.searchCommentPreview(memberId, contentId);
 
             // then
+            assertAll(
+                    () -> assertThat(response.commentNum()).isZero(),
+                    () -> assertThat(response.comment()).isNull()
+            );
+        }
+
+        @Test
+        @DisplayName("댓글이 있다면 comment 변수가 null이 아닌 SearchCommentPreviewResponse를 반환한다.")
+        void SearchCommentPreview1() {
+            // given
+            given(memberRepository.findByIdOrElseThrow(memberId)).willReturn(member);
+            given(contentRepository.findByIdOrElseThrow(contentId)).willReturn(content);
+            given(commentReportRepository.findAllByMember(member)).willReturn(List.of());
+            given(commentRepository.countByContent(any(Content.class), anyList())).willReturn(2L);
+            given(commentRepository.findTop(any(Content.class), anyList())).willReturn(Optional.of(comment));
+
+            // when
+            final SearchCommentPreviewResponse response = contentCommentService.searchCommentPreview(memberId, contentId);
+
+            // then
+            assertAll(
+                    () -> assertThat(response.commentNum()).isEqualTo(2L),
+                    () -> assertThat(response.comment()).isNotNull()
+            );
         }
     }
 }

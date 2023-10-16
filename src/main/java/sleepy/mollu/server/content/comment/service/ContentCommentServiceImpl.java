@@ -20,6 +20,7 @@ import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.member.service.AuthorizationService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,7 +63,26 @@ public class ContentCommentServiceImpl implements ContentCommentService {
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
         authorizationService.authorizeMemberForContent(member, content);
 
-        return null;
+        final List<Comment> reportedComments = getReportedComments(member);
+        final Long commentNumber = commentRepository.countByContent(content, reportedComments);
+        final Optional<Comment> newestComment = commentRepository.findTop(content, reportedComments);
+
+        return getSearchCommentPreviewResponse(commentNumber, newestComment);
+    }
+
+    private SearchCommentPreviewResponse getSearchCommentPreviewResponse(Long commentNumber, Optional<Comment> newestComment) {
+        if (newestComment.isEmpty()) {
+            return new SearchCommentPreviewResponse(commentNumber, null);
+        }
+
+        final Comment comment = newestComment.get();
+        return new SearchCommentPreviewResponse(commentNumber, new SearchCommentPreviewResponse.CommentResponse(
+                comment.getId(),
+                comment.getMessage(),
+                comment.getMolluId(),
+                comment.getMemberName(),
+                comment.getMemberProfileSource(),
+                comment.getCreatedAt()));
     }
 
     @Override

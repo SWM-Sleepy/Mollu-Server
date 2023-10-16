@@ -60,7 +60,7 @@ class ContentCommentControllerTest extends ControllerTest {
             // given
             final String accessToken = getAccessToken("memberId");
             given(contentCommentService.searchCommentPreview("memberId", "contentId"))
-                    .willReturn(new SearchCommentPreviewResponse(0, null));
+                    .willReturn(new SearchCommentPreviewResponse(0L, null));
 
             // when
             final ResultActions resultActions = get("/contents/contentId/comments/preview", accessToken);
@@ -77,7 +77,7 @@ class ContentCommentControllerTest extends ControllerTest {
             // given
             final String accessToken = getAccessToken("memberId");
             given(contentCommentService.searchCommentPreview("memberId", "contentId"))
-                    .willReturn(new SearchCommentPreviewResponse(1, mock(CommentResponse.class)));
+                    .willReturn(new SearchCommentPreviewResponse(1L, mock(CommentResponse.class)));
 
             // when
             final ResultActions resultActions = get("/contents/contentId/comments/preview", accessToken);
