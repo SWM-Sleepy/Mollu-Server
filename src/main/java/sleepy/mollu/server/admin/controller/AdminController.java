@@ -7,12 +7,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import sleepy.mollu.server.admin.controller.model.ContentModel;
 import sleepy.mollu.server.admin.controller.model.UserModel;
+import sleepy.mollu.server.content.domain.content.Content;
+import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Tag(name = "관리자")
@@ -22,6 +27,7 @@ import java.util.List;
 public class AdminController {
 
     private final MemberRepository memberRepository;
+    private final ContentRepository contentRepository;
 
     @Operation(summary = "관리자 로그인 페이지")
     @OkResponse
@@ -36,7 +42,7 @@ public class AdminController {
     @OkResponse
     @InternalServerErrorResponse
     @GetMapping("/users")
-    public String getTable(Model model) {
+    public String getUsers(Model model) {
         final List<Member> members = memberRepository.findAll();
         final List<UserModel> users = members.stream()
                 .map(member -> new UserModel(
@@ -53,5 +59,27 @@ public class AdminController {
         return "users";
     }
 
+    @Operation(summary = "사용자 조회 페이지")
+    @OkResponse
+    @InternalServerErrorResponse
+    @GetMapping("/contents")
+    public String getContents(Model model) {
+        final List<Content> contents = contentRepository.findAllByOrderByContentTime_UploadDateTimeDesc();
+        final List<ContentModel> contentModels = contents.stream()
+                .map(content -> new ContentModel(
+                        content.getId(),
+                        convertLocalDateTime(content.getMolluDateTime()),
+                        convertLocalDateTime(content.getUploadDateTime()),
+                        content.getFrontContentSource(),
+                        content.getBackContentSource())
+                )
+                .toList();
+        model.addAttribute("contents", contentModels);
 
+        return "contents";
+    }
+
+    private String convertLocalDateTime(LocalDateTime localDateTime) {
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }
