@@ -20,11 +20,7 @@ import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.domain.ContentReport;
-import sleepy.mollu.server.content.report.repository.CommentReportRepository;
-import sleepy.mollu.server.content.report.repository.ContentReportRepository;
-import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
-import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
 import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
 import sleepy.mollu.server.swagger.CreatedResponse;
@@ -47,10 +43,6 @@ public class AdminController {
 
     private final AdminService adminService;
     private final JwtGenerator jwtGenerator;
-    private final MemberRepository memberRepository;
-    private final ContentRepository contentRepository;
-    private final ContentReportRepository contentReportRepository;
-    private final CommentReportRepository commentReportRepository;
 
     @Operation(summary = "관리자 로그인 페이지")
     @OkResponse
@@ -86,7 +78,7 @@ public class AdminController {
     @InternalServerErrorResponse
     @GetMapping("/users")
     public String getUsers(Model model) {
-        final List<Member> members = memberRepository.findAll();
+        final List<Member> members = adminService.getMembers();
         final List<UserModel> users = members.stream()
                 .map(member -> new UserModel(
                         member.getId(),
@@ -107,7 +99,7 @@ public class AdminController {
     @InternalServerErrorResponse
     @GetMapping("/contents")
     public String getContents(Model model) {
-        final List<Content> contents = contentRepository.findAllByOrderByContentTime_UploadDateTimeDesc();
+        final List<Content> contents = adminService.getContents();
         final List<ContentModel> contentModels = contents.stream()
                 .map(content -> new ContentModel(
                         content.getId(),
@@ -131,7 +123,7 @@ public class AdminController {
     @InternalServerErrorResponse
     @GetMapping("/content-reports")
     public String getContentReports(Model model) {
-        final List<ContentReport> contentReports = contentReportRepository.findAll();
+        final List<ContentReport> contentReports = adminService.getContentReports();
         final Set<Map.Entry<Content, List<ContentReport>>> entries = contentReports.stream()
                 .collect(Collectors.groupingBy(ContentReport::getContent))
                 .entrySet();
@@ -160,7 +152,7 @@ public class AdminController {
     @InternalServerErrorResponse
     @GetMapping("/comment-reports")
     public String getCommentReports(Model model) {
-        final List<CommentReport> commentReports = commentReportRepository.findAll();
+        final List<CommentReport> commentReports = adminService.getCommentReports();
         final Set<Map.Entry<Comment, List<CommentReport>>> entries = commentReports.stream()
                 .collect(Collectors.groupingBy(CommentReport::getComment))
                 .entrySet();
