@@ -2,15 +2,20 @@ package sleepy.mollu.server.admin.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import sleepy.mollu.server.admin.controller.model.CommentReportModel;
 import sleepy.mollu.server.admin.controller.model.ContentModel;
 import sleepy.mollu.server.admin.controller.model.ContentReportModel;
 import sleepy.mollu.server.admin.controller.model.UserModel;
+import sleepy.mollu.server.admin.service.AdminService;
 import sleepy.mollu.server.content.comment.domain.Comment;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.CommentReport;
@@ -20,9 +25,13 @@ import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.member.domain.Member;
 import sleepy.mollu.server.member.repository.MemberRepository;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtToken;
+import sleepy.mollu.server.oauth2.jwt.service.JwtGenerator;
+import sleepy.mollu.server.swagger.CreatedResponse;
 import sleepy.mollu.server.swagger.InternalServerErrorResponse;
 import sleepy.mollu.server.swagger.OkResponse;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -36,6 +45,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private final AdminService adminService;
+    private final JwtGenerator jwtGenerator;
     private final MemberRepository memberRepository;
     private final ContentRepository contentRepository;
     private final ContentReportRepository contentReportRepository;
@@ -44,10 +55,30 @@ public class AdminController {
     @Operation(summary = "관리자 로그인 페이지")
     @OkResponse
     @InternalServerErrorResponse
-    @GetMapping("/dashboard")
-    public String getDashboard() {
+    @GetMapping("/login")
+    public String getLogin() {
 
-        return "index";
+        return "login";
+    }
+
+    @Operation(summary = "관리자 로그인 요청")
+    @CreatedResponse
+    @InternalServerErrorResponse
+    @PostMapping("/login")
+    public String postLogin(@RequestParam String id, @RequestParam String password, HttpServletResponse response) throws NoSuchAlgorithmException {
+
+        if (adminService.isAdmin(id, password)) {
+            final JwtToken jwtToken = jwtGenerator.generate("admin");
+            final Cookie cookie = new Cookie("admin", jwtToken.accessToken());
+            cookie.setMaxAge(60 * 60);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+
+            return "redirect:/admin/users";
+        }
+
+        return "redirect:/admin/login";
     }
 
     @Operation(summary = "사용자 조회 페이지")
