@@ -212,6 +212,10 @@ public class AcceptanceTest {
         return delete(CONTENT_URL + "/" + contentId + "/reactions/" + reactionId, accessToken);
     }
 
+    protected ExtractableResponse<Response> 댓글_미리_보기_요청(String accessToken, String contentId) {
+        return get(CONTENT_URL + "/" + contentId + "/comments/preview", accessToken);
+    }
+
     protected ExtractableResponse<Response> 댓글_등록_요청(String accessToken, String contentId) {
         return post(CONTENT_URL + "/" + contentId + "/comments", accessToken, 댓글_등록_요청_데이터);
     }

@@ -5,8 +5,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import sleepy.mollu.server.ControllerTest;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentPreviewResponse;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentPreviewResponse.CommentResponse;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static sleepy.mollu.server.fixture.AcceptanceFixture.댓글_등록_요청_데이터;
 
@@ -41,6 +46,45 @@ class ContentCommentControllerTest extends ControllerTest {
 
             // then
             resultActions.andExpect(status().isCreated())
+                    .andDo(print());
+        }
+    }
+
+    @Nested
+    @DisplayName("[댓글 미리 보기 API 호출시] ")
+    class SearchCommentPreview {
+
+        @Test
+        @DisplayName("댓글이 없으면 comment 필드가 null이다.")
+        void SearchCommentPreview0() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+            given(contentCommentService.searchCommentPreview("memberId", "contentId"))
+                    .willReturn(new SearchCommentPreviewResponse(0L, null));
+
+            // when
+            final ResultActions resultActions = get("/contents/contentId/comments/preview", accessToken);
+
+            // then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.comment").isEmpty())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("댓글이 있다면 comment 필드가 null이 아니다.")
+        void SearchCommentPreview1() throws Exception {
+            // given
+            final String accessToken = getAccessToken("memberId");
+            given(contentCommentService.searchCommentPreview("memberId", "contentId"))
+                    .willReturn(new SearchCommentPreviewResponse(1L, mock(CommentResponse.class)));
+
+            // when
+            final ResultActions resultActions = get("/contents/contentId/comments/preview", accessToken);
+
+            // then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.comment").isNotEmpty())
                     .andDo(print());
         }
     }

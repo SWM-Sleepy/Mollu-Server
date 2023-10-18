@@ -14,6 +14,8 @@ import sleepy.mollu.server.content.contentgroup.repository.ContentGroupRepositor
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.reaction.domain.Reaction;
 import sleepy.mollu.server.content.reaction.repository.ReactionRepository;
+import sleepy.mollu.server.content.report.domain.CommentReport;
+import sleepy.mollu.server.content.report.repository.CommentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.fixture.*;
 import sleepy.mollu.server.group.domain.group.Group;
@@ -47,6 +49,8 @@ public class RepositoryTest {
     protected ReactionRepository reactionRepository;
     @Autowired
     protected CommentRepository commentRepository;
+    @Autowired
+    protected CommentReportRepository commentReportRepository;
     @Autowired
     protected EntityManager em;
 
@@ -82,6 +86,10 @@ public class RepositoryTest {
 
     protected Comment saveComment(String commentId, Member member, Content content) {
         return commentRepository.save(CommentFixture.create(commentId, member, content));
+    }
+
+    protected CommentReport saveCommentReport(Member member, Comment comment) {
+        return commentReportRepository.save(CommentReportFixture.create(member, comment));
     }
 
     protected void reflect(Object object, Object value) throws NoSuchFieldException, IllegalAccessException {

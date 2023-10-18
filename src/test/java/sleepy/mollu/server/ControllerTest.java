@@ -70,7 +70,7 @@ public class ControllerTest {
     @MockBean
     private ContentReactionService contentReactionService;
     @MockBean
-    private ContentCommentService contentCommentService;
+    protected ContentCommentService contentCommentService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();
