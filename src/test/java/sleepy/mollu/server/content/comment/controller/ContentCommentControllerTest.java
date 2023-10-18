@@ -55,7 +55,7 @@ class ContentCommentControllerTest extends ControllerTest {
     class SearchCommentPreview {
 
         @Test
-        @DisplayName("댓글이 없으면 comment 필드가 비어 있어야 한다.")
+        @DisplayName("댓글이 없으면 comment 필드가 null이다.")
         void SearchCommentPreview0() throws Exception {
             // given
             final String accessToken = getAccessToken("memberId");
@@ -67,12 +67,12 @@ class ContentCommentControllerTest extends ControllerTest {
 
             // then
             resultActions.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.comment").doesNotExist())
+                    .andExpect(jsonPath("$.comment").isEmpty())
                     .andDo(print());
         }
 
         @Test
-        @DisplayName("댓글이 있다면 comment 필드가 있어야 한다.")
+        @DisplayName("댓글이 있다면 comment 필드가 null이 아니다.")
         void SearchCommentPreview1() throws Exception {
             // given
             final String accessToken = getAccessToken("memberId");
@@ -84,7 +84,7 @@ class ContentCommentControllerTest extends ControllerTest {
 
             // then
             resultActions.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.comment").exists())
+                    .andExpect(jsonPath("$.comment").isNotEmpty())
                     .andDo(print());
         }
     }
