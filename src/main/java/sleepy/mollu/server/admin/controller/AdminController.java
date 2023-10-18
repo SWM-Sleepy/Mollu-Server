@@ -102,7 +102,7 @@ public class AdminController {
         return "users";
     }
 
-    @Operation(summary = "사용자 조회 페이지")
+    @Operation(summary = "컨텐츠 조회 페이지")
     @OkResponse
     @InternalServerErrorResponse
     @GetMapping("/contents")
