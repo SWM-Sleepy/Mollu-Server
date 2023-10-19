@@ -28,4 +28,6 @@ public interface ContentRepository extends JpaRepository<Content, String> {
         return findById(contentId)
                 .orElseThrow(() -> new ContentNotFoundException("ID가 [" + contentId + "]인 컨텐츠를 찾을 수 없습니다."));
     }
+
+    List<Content> findAllByOrderByContentTime_UploadDateTimeDesc();
 }

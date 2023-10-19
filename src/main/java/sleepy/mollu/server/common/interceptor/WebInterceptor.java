@@ -26,9 +26,7 @@ import java.util.UUID;
 public class WebInterceptor implements HandlerInterceptor {
 
     private static final String ATTRIBUTE_TIME = "time";
-    private static final List<String> UPDATE_METHODS = List.of(HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name());
 
-    private final ObjectMapper objectMapper;
     private final JwtExtractor jwtExtractor;
 
     @Override
@@ -50,12 +48,6 @@ public class WebInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         log.info("Response Status: {}", response.getStatus());
 
-        ContentCachingResponseWrapper responseWrapper = (ContentCachingResponseWrapper) response;
-        if (canLogResponse(request, responseWrapper)) {
-            log.info("Response Body: {}", objectMapper.readTree(responseWrapper.getContentAsByteArray()));
-        }
-
-
         final long start = (long) request.getAttribute(ATTRIBUTE_TIME);
         final long end = System.currentTimeMillis();
 
@@ -72,29 +64,5 @@ public class WebInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private boolean canLogResponse(HttpServletRequest request, ContentCachingResponseWrapper response) {
-        if (!UPDATE_METHODS.contains(request.getMethod())) {
-            return false;
-        }
-
-        if (!isSuccess(response.getStatus())) {
-            return false;
-        }
-
-        if (response.getContentType() == null) {
-            return false;
-        }
-
-        if (!response.getContentType().contains("application/json")) {
-            return false;
-        }
-
-        return response.getContentAsByteArray().length != 0;
-    }
-
-    private boolean isSuccess(int status) {
-        return HttpStatus.valueOf(status).is2xxSuccessful();
     }
 }
