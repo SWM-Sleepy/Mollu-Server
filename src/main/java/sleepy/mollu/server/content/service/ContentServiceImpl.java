@@ -1,6 +1,7 @@
 package sleepy.mollu.server.content.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +39,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class ContentServiceImpl implements ContentService {
 
     private static final int PAGE_SIZE = 15;
@@ -103,6 +105,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private GroupSearchFeedResponse getGroupSearchFeedResponse(Cursor cursor, List<Content> contents) {
+        log.info("응답한 피드 개수: {}", contents.size());
         return new GroupSearchFeedResponse(cursor.cursorId, cursor.cursorEndDate,
                 contents.stream()
                         .map(content -> new GroupSearchContentResponse(

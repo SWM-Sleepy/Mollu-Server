@@ -14,8 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.MultiValueMap;
-import sleepy.mollu.server.alarm.admin.service.AdminAlarmService;
-import sleepy.mollu.server.alarm.admin.service.AdminService;
+import sleepy.mollu.server.admin.service.AdminService;
 import sleepy.mollu.server.content.comment.service.ContentCommentService;
 import sleepy.mollu.server.content.mollutime.service.MolluTimeService;
 import sleepy.mollu.server.content.reaction.service.ContentReactionService;
@@ -62,15 +61,13 @@ public class ControllerTest {
     @MockBean
     protected MemberEmojiService memberEmojiService;
     @MockBean
-    private MemberService memberService;
-    @MockBean
     private AdminService adminService;
     @MockBean
-    private AdminAlarmService adminAlarmService;
+    private MemberService memberService;
     @MockBean
     private ContentReactionService contentReactionService;
     @MockBean
-    private ContentCommentService contentCommentService;
+    protected ContentCommentService contentCommentService;
 
     private static HttpHeaders getHeaders(String accessToken) {
         final HttpHeaders headers = new HttpHeaders();

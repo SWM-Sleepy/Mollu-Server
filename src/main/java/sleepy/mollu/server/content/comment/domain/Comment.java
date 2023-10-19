@@ -47,8 +47,8 @@ public class Comment extends BaseEntity {
         return this.message.getValue();
     }
 
-    public String getMemberId() {
-        return this.member.getId();
+    public String getMolluId() {
+        return this.member.getMolluId();
     }
 
     public String getMemberName() {
