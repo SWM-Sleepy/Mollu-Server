@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingResponseWrapper;
+import sleepy.mollu.server.oauth2.controller.parser.AuthorizationHeaderParser;
+import sleepy.mollu.server.oauth2.jwt.dto.ExtractType;
+import sleepy.mollu.server.oauth2.jwt.dto.JwtPayload;
+import sleepy.mollu.server.oauth2.jwt.service.JwtExtractor;
 
 import java.util.List;
 import java.util.Map;
@@ -22,13 +26,13 @@ import java.util.UUID;
 public class WebInterceptor implements HandlerInterceptor {
 
     private static final String ATTRIBUTE_TIME = "time";
-    private static final List<String> UPDATE_METHODS = List.of(HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name());
 
-    private final ObjectMapper objectMapper;
+    private final JwtExtractor jwtExtractor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        MDC.put("uuid", UUID.randomUUID().toString());
+        MDC.put("userId", getUserId(request));
+        MDC.put("requestId", UUID.randomUUID().toString());
 
         final long start = System.currentTimeMillis();
         request.setAttribute(ATTRIBUTE_TIME, start);
@@ -44,41 +48,21 @@ public class WebInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         log.info("Response Status: {}", response.getStatus());
 
-        ContentCachingResponseWrapper responseWrapper = (ContentCachingResponseWrapper) response;
-        if (canLogResponse(request, responseWrapper)) {
-            log.info("Response Body: {}", objectMapper.readTree(responseWrapper.getContentAsByteArray()));
-        }
-
-
         final long start = (long) request.getAttribute(ATTRIBUTE_TIME);
         final long end = System.currentTimeMillis();
 
         log.info("[" + handler + "] executeTime : " + (end - start) + "ms");
 
-        MDC.remove("uuid");
+        MDC.clear();
     }
 
-    private boolean canLogResponse(HttpServletRequest request, ContentCachingResponseWrapper response) {
-        if (!UPDATE_METHODS.contains(request.getMethod())) {
-            return false;
+    private String getUserId(HttpServletRequest request) {
+        try {
+            final String accessToken = AuthorizationHeaderParser.parse(request);
+            final JwtPayload payload = jwtExtractor.extract(accessToken, ExtractType.ACCESS);
+            return payload.id();
+        } catch (Exception e) {
+            return null;
         }
-
-        if (!isSuccess(response.getStatus())) {
-            return false;
-        }
-
-        if (response.getContentType() == null) {
-            return false;
-        }
-
-        if (!response.getContentType().contains("application/json")) {
-            return false;
-        }
-
-        return response.getContentAsByteArray().length != 0;
-    }
-
-    private boolean isSuccess(int status) {
-        return HttpStatus.valueOf(status).is2xxSuccessful();
     }
 }

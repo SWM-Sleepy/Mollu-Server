@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleepy.mollu.server.content.comment.controller.dto.CreateCommentRequest;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentPreviewResponse;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.comment.service.ContentCommentService;
 import sleepy.mollu.server.oauth2.controller.annotation.Login;
@@ -37,6 +38,20 @@ public class ContentCommentController {
         final String commentId = contentCommentService.createComment(memberId, contentId, request.comment());
         final URI uri = URI.create("/contents/" + contentId + "/comments/" + commentId);
         return ResponseEntity.created(uri).build();
+    }
+
+    @Operation(summary = "댓글 미리 보기")
+    @OkResponse
+    @BadRequestResponse
+    @UnAuthorizedResponse
+    @ForbiddenResponse
+    @NotFoundResponse
+    @InternalServerErrorResponse
+    @GetMapping("/preview")
+    public ResponseEntity<SearchCommentPreviewResponse> searchCommentPreview(@Login String memberId,
+                                                                             @PathVariable String contentId) {
+
+        return ResponseEntity.ok(contentCommentService.searchCommentPreview(memberId, contentId));
     }
 
     @Operation(summary = "댓글 조회")

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.common.domain.IdConstructor;
+import sleepy.mollu.server.content.comment.controller.dto.SearchCommentPreviewResponse;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse;
 import sleepy.mollu.server.content.comment.controller.dto.SearchCommentResponse.CommentResponse;
 import sleepy.mollu.server.content.comment.domain.Comment;
@@ -19,6 +20,7 @@ import sleepy.mollu.server.member.repository.MemberRepository;
 import sleepy.mollu.server.member.service.AuthorizationService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +58,34 @@ public class ContentCommentServiceImpl implements ContentCommentService {
     }
 
     @Override
+    public SearchCommentPreviewResponse searchCommentPreview(String memberId, String contentId) {
+        final Member member = memberRepository.findByIdOrElseThrow(memberId);
+        final Content content = contentRepository.findByIdOrElseThrow(contentId);
+        authorizationService.authorizeMemberForContent(member, content);
+
+        final List<Comment> reportedComments = getReportedComments(member);
+        final Long commentNumber = commentRepository.countByContent(content, reportedComments);
+        final Optional<Comment> newestComment = commentRepository.findTop(content, reportedComments);
+
+        return getSearchCommentPreviewResponse(commentNumber, newestComment);
+    }
+
+    private SearchCommentPreviewResponse getSearchCommentPreviewResponse(Long commentNumber, Optional<Comment> newestComment) {
+        if (newestComment.isEmpty()) {
+            return new SearchCommentPreviewResponse(commentNumber, null);
+        }
+
+        final Comment comment = newestComment.get();
+        return new SearchCommentPreviewResponse(commentNumber, new SearchCommentPreviewResponse.CommentResponse(
+                comment.getId(),
+                comment.getMessage(),
+                comment.getMolluId(),
+                comment.getMemberName(),
+                comment.getMemberProfileSource(),
+                comment.getCreatedAt()));
+    }
+
+    @Override
     public SearchCommentResponse searchComment(String memberId, String contentId) {
         final Member member = memberRepository.findByIdOrElseThrow(memberId);
         final Content content = contentRepository.findByIdOrElseThrow(contentId);
@@ -89,7 +119,7 @@ public class ContentCommentServiceImpl implements ContentCommentService {
                 .map(comment -> new CommentResponse(
                         comment.getId(),
                         comment.getMessage(),
-                        comment.getMemberId(),
+                        comment.getMolluId(),
                         comment.getMemberName(),
                         comment.getMemberProfileSource(),
                         comment.getCreatedAt()))
