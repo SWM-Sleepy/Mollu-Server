@@ -28,7 +28,7 @@ public class ContentReportController {
     @NotFoundResponse
     @InternalServerErrorResponse
     @PostMapping("/{contentId}/report")
-    public ResponseEntity<Void> groupSearchFeedResponse(@Login String memberId, @PathVariable String contentId,
+    public ResponseEntity<Void> reportContent(@Login String memberId, @PathVariable String contentId,
                                                         @RequestBody(required = false) ReportRequest request) {
 
         final String reason = getReason(request);
