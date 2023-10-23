@@ -67,8 +67,10 @@ public class ContentServiceImpl implements ContentService {
         final List<Group> groups = getGroups(member);
         final List<ContentGroup> contentGroups = contentGroupRepository.findGroupFeed(groups, PAGE_SIZE, cursorId, cursorEndDate);
         final List<Content> notReportedContents = getNotReportedContents(contentGroups, member);
+        final List<Content> uniqueContents = getUniqueContents(notReportedContents);
         final Cursor cursor = getCursor(contentGroups);
-        return new FeedResponse(notReportedContents, cursor);
+
+        return new FeedResponse(uniqueContents, cursor);
     }
 
     private List<Group> getGroups(Member member) {
@@ -91,6 +93,12 @@ public class ContentServiceImpl implements ContentService {
         final List<ContentReport> contentReports = contentReportRepository.findAllByMember(member);
         return contentReports.stream()
                 .map(ContentReport::getContent)
+                .toList();
+    }
+
+    private List<Content> getUniqueContents(List<Content> contents) {
+        return contents.stream()
+                .distinct()
                 .toList();
     }
 
