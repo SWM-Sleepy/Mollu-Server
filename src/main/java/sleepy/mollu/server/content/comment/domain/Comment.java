@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import sleepy.mollu.server.common.domain.BaseEntity;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.member.domain.Member;
@@ -25,10 +27,12 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Content content;
 
     @ManyToOne(fetch = FetchType.LAZY)

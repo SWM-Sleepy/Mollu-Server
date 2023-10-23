@@ -90,11 +90,9 @@
         <secretAccessKey>${AWS_SECRET_KEY}</secretAccessKey>
     </appender>
 
-    <springProfile name="local">
+    <springProfile name="local, val">
         <root level="INFO">
-            <springProfile name="local">
-                <appender-ref ref="STDOUT"/>
-            </springProfile>
+            <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
 
