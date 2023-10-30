@@ -420,5 +420,23 @@ class ContentAcceptanceTest extends AcceptanceTest {
             // then
             assertThat(댓글_조회_응답.comments()).isEmpty();
         }
+        
+        @Test
+        void 사용자는_컨텐츠를_여러_그룹에_공유할_수_있다() {
+            // given
+            final String me = 회원가입_요청_및_응답("google");
+            final String groupId1 = getGroupId(그룹_생성_요청(me));
+            final String groupId2 = getGroupId(그룹_생성_요청(me));
+            컨텐츠_업로드_요청(me, List.of(groupId1, groupId2));
+
+            // when
+            final ExtractableResponse<Response> 그룹원_피드_조회_응답 = 그룹원_피드_조회_요청(me);
+
+            // then
+            assertAll(
+                    () -> assertThat(그룹원_피드_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                    () -> assertThat(그룹원_피드_조회_응답.jsonPath().getList("feed")).hasSize(1)
+            );
+        }
     }
 }

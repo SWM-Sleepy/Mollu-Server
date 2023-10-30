@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private static final String EMPTY_TIME = "";
+
     private final AdminService adminService;
     private final JwtGenerator jwtGenerator;
 
@@ -115,6 +117,10 @@ public class AdminController {
     }
 
     private String convertLocalDateTime(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return EMPTY_TIME;
+        }
+
         return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
