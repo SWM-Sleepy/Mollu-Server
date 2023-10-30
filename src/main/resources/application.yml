@@ -49,8 +49,6 @@ management:
     web:
       exposure:
         include: "*"
-  server:
-    port: 8081
 
 ---
 
