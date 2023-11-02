@@ -24,9 +24,8 @@ public class ActuatorFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         final HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        final String remoteAddr = getClientIpAddr(httpServletRequest);
+        final String remoteAddr = httpServletRequest.getRemoteAddr();
 
-        log.info("Remote address: {}", remoteAddr);
         if (!ALLOWED_IP_ADDRESSES.contains(remoteAddr)) {
             httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
         }
@@ -37,33 +36,5 @@ public class ActuatorFilter implements Filter {
     @Override
     public void destroy() {
         Filter.super.destroy();
-    }
-
-    private String getClientIpAddr(HttpServletRequest request) {
-
-        if (request == null) {
-            return "";
-        }
-
-        String ip = request.getHeader("X-Forwarded-For");
-
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-
-        return ip;
-
     }
 }
