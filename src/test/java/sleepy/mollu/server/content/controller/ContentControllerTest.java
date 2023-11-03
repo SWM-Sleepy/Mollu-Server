@@ -3,6 +3,8 @@ package sleepy.mollu.server.content.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
@@ -69,13 +71,14 @@ class ContentControllerTest extends ControllerTest {
     @DisplayName("[컨텐츠 업로드 API 호출시] ")
     class ContentUploadTest {
 
-        @Test
-        @DisplayName("uploadDateTime이 비어있으면 400을 반환한다.")
-        void ContentUploadTest3() throws Exception {
+        @ParameterizedTest
+        @DisplayName("uploadDateTime 혹은 groups 필드가 비어있으면 400을 반환한다.")
+        @ValueSource(strings = {"uploadDateTime", "groups"})
+        void ContentUploadTest3(String field) throws Exception {
             // given
             final String accessToken = getAccessToken();
             final String[] files = {"frontContentFile", "backContentFile"};
-            final MultiValueMap<String, String> params = getParams(List.of("location", "tag"));
+            final MultiValueMap<String, String> params = getParams(List.of("location", "tag", field));
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/contents", files, accessToken, params);
@@ -91,7 +94,7 @@ class ContentControllerTest extends ControllerTest {
             // given
             final String accessToken = getAccessToken();
             final String[] files = {"frontContentFile", "backContentFile"};
-            final MultiValueMap<String, String> params = getParams(List.of("location", "uploadDateTime"));
+            final MultiValueMap<String, String> params = getParams(List.of("location", "uploadDateTime", "groups"));
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/contents", files, accessToken, params);
@@ -107,7 +110,7 @@ class ContentControllerTest extends ControllerTest {
             // given
             final String accessToken = getAccessToken();
             final String[] files = {"frontContentFile", "backContentFile"};
-            final MultiValueMap<String, String> params = getParams(List.of("location", "tag", "question", "molluDateTime", "uploadDateTime"));
+            final MultiValueMap<String, String> params = getParams(List.of("location", "tag", "question", "molluDateTime", "uploadDateTime", "groups"));
 
             // when
             final ResultActions resultActions = multipart(HttpMethod.POST, "/contents", files, accessToken, params);
@@ -126,7 +129,8 @@ class ContentControllerTest extends ControllerTest {
                     "tag", "태그",
                     "question", "질문",
                     "molluDateTime", "2023-07-06T11:45:00",
-                    "uploadDateTime", "2023-07-06T11:45:00"
+                    "uploadDateTime", "2023-07-06T11:45:00",
+                    "groups", "groupId1"
             );
 
             keys.forEach(key -> params.add(key, map.get(key)));

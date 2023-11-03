@@ -20,6 +20,7 @@ public record CreateContentRequest(
         @NotNull
         LocalDateTime uploadDateTime,
 
+        @NotNull
         List<String> groups,
 
         @NotNull
