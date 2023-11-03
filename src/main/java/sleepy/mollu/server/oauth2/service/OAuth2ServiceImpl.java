@@ -82,7 +82,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         final String memberId = getOAuth2MemberId(type, socialToken);
         validateMemberExists(memberId);
         final JwtToken jwtToken = jwtGenerator.generate(memberId);
-        saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
+        final Member member = saveMember(memberId, request.name(), request.birthday(), request.molluId(), jwtToken.refreshToken());
+        joinDefaultGroup(member);
 
         return new TokenResponse(jwtToken.accessToken(), jwtToken.refreshToken());
     }
@@ -93,8 +94,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
         }
     }
 
-    private void saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
-        memberRepository.save(Member.builder()
+    private Member saveMember(String memberId, String name, LocalDate birthday, String molluId, String refreshToken) {
+        return memberRepository.save(Member.builder()
                 .id(memberId)
                 .name(name)
                 .birthday(birthday)
@@ -109,6 +110,21 @@ public class OAuth2ServiceImpl implements OAuth2Service {
                 .molluAlarm(false)
                 .contentAlarm(false)
                 .build();
+    }
+
+    private void joinDefaultGroup(Member member) {
+        final Group defaultGroup = getDefaultGroup();
+        groupMemberRepository.save(GroupMember.builder()
+                .id(idConstructor.create())
+                .member(member)
+                .group(defaultGroup)
+                .role(GroupMemberRole.MEMBER)
+                .build());
+    }
+
+    private Group getDefaultGroup() {
+        return groupRepository.findDefaultGroup()
+                .orElseThrow(() -> new GroupNotFoundException("기본 그룹이 존재하지 않습니다."));
     }
 
     @Override

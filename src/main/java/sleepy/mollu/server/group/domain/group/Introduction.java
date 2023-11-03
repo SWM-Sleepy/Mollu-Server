@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class Introduction {
 
     private static final String DEFAULT_INTRODUCTION = "";
-    private static final int INTRODUCTION_MAX_LENGTH = 20;
+    private static final int INTRODUCTION_MAX_LENGTH = 50;
 
     @Column(name = "introduction")
     private String value = DEFAULT_INTRODUCTION;

@@ -25,7 +25,6 @@ import sleepy.mollu.server.content.report.repository.ContentReportRepository;
 import sleepy.mollu.server.content.repository.ContentRepository;
 import sleepy.mollu.server.group.domain.group.Group;
 import sleepy.mollu.server.group.exception.GroupBadRequestException;
-import sleepy.mollu.server.group.exception.GroupNotFoundException;
 import sleepy.mollu.server.group.groupmember.domain.GroupMember;
 import sleepy.mollu.server.group.groupmember.repository.GroupMemberRepository;
 import sleepy.mollu.server.group.repository.GroupRepository;
@@ -165,21 +164,10 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private void saveContentGroups(Content content, List<String> groupIds) {
-        if (groupIds == null) {
-            final Group defaultGroup = getDefaultGroup();
-            contentGroupRepository.save(createContentGroup(content, defaultGroup));
-            return;
-        }
-
         final List<Group> groups = getGroups(groupIds);
         contentGroupRepository.saveAll(groups.stream()
                 .map(group -> createContentGroup(content, group))
                 .toList());
-    }
-
-    private Group getDefaultGroup() {
-        return groupRepository.findDefaultGroup()
-                .orElseThrow(() -> new GroupNotFoundException("디폴트 그룹이 존재하지 않습니다."));
     }
 
     private List<Group> getGroups(List<String> groupIds) {

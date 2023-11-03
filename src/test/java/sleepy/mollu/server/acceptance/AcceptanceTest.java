@@ -122,6 +122,10 @@ public class AcceptanceTest {
         return get(CONTENT_URL + "/mollu-time", accessToken);
     }
 
+    protected ExtractableResponse<Response> 소속_그룹_조회(String accessToken) {
+        return get(GROUP_URL + "/my", accessToken);
+    }
+
     protected ExtractableResponse<Response> 그룹_생성_요청(String accessToken) {
         return thenExtract(RestAssured.given()
                 .headers(Map.of("Authorization", "Bearer " + accessToken))

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import sleepy.mollu.server.oauth2.dto.TokenResponse;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static sleepy.mollu.server.acceptance.SimpleRestAssured.toObject;
@@ -52,6 +54,24 @@ class AuthAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(애플_회원가입_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 회원가입_시_디폴트_그룹에_속한다() {
+        // given
+        final String accessToken = 회원가입_요청_및_응답("google");
+
+        // when
+        final ExtractableResponse<Response> 소속_그룹_응답 = 소속_그룹_조회(accessToken);
+
+        // then
+        assertAll(
+                () -> assertThat(소속_그룹_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(소속_그룹_응답.body().jsonPath().getList("groups")).hasSize(1),
+                () -> assertThat(소속_그룹_응답.body().jsonPath().getList("groups.groupId")).isNotNull(),
+                () -> assertThat(소속_그룹_응답.body().jsonPath().getList("groups.groupName")).isEqualTo(List.of("디폴트 그룹")),
+                () -> assertThat(소속_그룹_응답.body().jsonPath().getList("groups.groupMemberCount")).isEqualTo(List.of(1))
+        );
     }
 
     @Test

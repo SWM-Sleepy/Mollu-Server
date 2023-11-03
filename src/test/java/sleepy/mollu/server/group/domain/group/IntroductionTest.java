@@ -15,13 +15,13 @@ class IntroductionTest {
     public static Stream<Arguments> validSource() {
         return Stream.of(
                 Arguments.of("소"),
-                Arguments.of("소".repeat(20))
+                Arguments.of("소".repeat(50))
         );
     }
 
     public static Stream<Arguments> inValidSource() {
         return Stream.of(
-                Arguments.of("소".repeat(21))
+                Arguments.of("소".repeat(51))
         );
     }
 

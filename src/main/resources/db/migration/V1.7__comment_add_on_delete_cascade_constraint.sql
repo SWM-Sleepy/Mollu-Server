@@ -1,0 +1,5 @@
+ALTER TABLE comment
+    ADD CONSTRAINT FOREIGN KEY (content_id) REFERENCES content (content_id) ON DELETE CASCADE;
+
+ALTER TABLE comment
+    ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE;
