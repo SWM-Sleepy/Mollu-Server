@@ -181,4 +181,23 @@ public class AdminController {
 
         return "comment-reports";
     }
+
+
+    @Operation(summary = "알림 전송 페이지")
+    @OkResponse
+    @InternalServerErrorResponse
+    @GetMapping("/notification")
+    public String getNotificationPage() {
+        return "notification";
+    }
+
+    @Operation(summary = "알림 전송 요청")
+    @CreatedResponse
+    @InternalServerErrorResponse
+    @PostMapping("/notification")
+    public String sendNotification() {
+        adminService.sendNotification();
+
+        return "redirect:/admin/notification";
+    }
 }

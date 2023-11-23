@@ -2,6 +2,9 @@ package sleepy.mollu.server.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import sleepy.mollu.server.alarm.domain.MolluAlarm;
+import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
+import sleepy.mollu.server.common.domain.NotificationHandler;
 import sleepy.mollu.server.content.domain.content.Content;
 import sleepy.mollu.server.content.report.domain.CommentReport;
 import sleepy.mollu.server.content.report.domain.ContentReport;
@@ -14,6 +17,7 @@ import sleepy.mollu.server.member.repository.MemberRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
@@ -21,6 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
+    public static final String MOLLU_TIME_TITLE = "It's MOLLU Time!";
+    public static final String MOLLU_TIME_BODY = "지금 뭐하고 있어요?";
     private static final String SALT = "mollu";
     private static final String ADMIN_ID = "admin";
     private static final String ADMIN_HASHED_PASSWORD = "2JAzegyW2vS0T3WycIntGUz7hodNmQIzeN3nkfVxgY6bPtXBnU9QHsrzBnYB0OwLGUf721Nj/TcLNJXkYGhAfw==";
@@ -29,6 +35,8 @@ public class AdminServiceImpl implements AdminService {
     private final ContentRepository contentRepository;
     private final ContentReportRepository contentReportRepository;
     private final CommentReportRepository commentReportRepository;
+    private final MolluAlarmRepository molluAlarmRepository;
+    private final NotificationHandler notificationHandler;
 
     @Override
     public boolean isAdmin(String id, String password) throws NoSuchAlgorithmException {
@@ -63,5 +71,30 @@ public class AdminServiceImpl implements AdminService {
         final byte[] hashedPassword = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
 
         return Base64.getEncoder().encodeToString(hashedPassword);
+    }
+
+    @Override
+    public void sendNotification() {
+        updateMolluAlarm();
+        final List<Member> members = memberRepository.findAll();
+        notificationHandler.send(members, MOLLU_TIME_TITLE, MOLLU_TIME_BODY);
+    }
+
+    private void updateMolluAlarm() {
+        final MolluAlarm molluAlarm = molluAlarmRepository.findTop().orElseThrow();
+        final LocalDateTime now = LocalDateTime.now();
+
+        if (molluAlarm.isToday(now)) {
+            molluAlarm.updateTime(now);
+            return;
+        }
+
+        final MolluAlarm newMolluAlarm = MolluAlarm.builder()
+                .molluTime(now)
+                .question(MOLLU_TIME_BODY)
+                .send(false)
+                .build();
+
+        molluAlarmRepository.save(newMolluAlarm);
     }
 }

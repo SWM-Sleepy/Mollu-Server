@@ -153,4 +153,8 @@ public class Member extends BaseEntity {
     public boolean hasEmojiFrom(EmojiType emojiType) {
         return this.emoji.hasFrom(emojiType);
     }
+
+    public boolean hasSamePlatform(Platform platform) {
+        return this.platform.equals(platform);
+    }
 }
