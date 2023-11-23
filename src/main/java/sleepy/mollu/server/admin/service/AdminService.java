@@ -19,4 +19,6 @@ public interface AdminService {
     List<ContentReport> getContentReports();
 
     List<CommentReport> getCommentReports();
+
+    void sendNotification();
 }

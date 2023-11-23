@@ -42,4 +42,8 @@ public class MolluAlarm extends BaseEntity {
     public void updateSend() {
         this.send = true;
     }
+
+    public void updateTime(LocalDateTime molluTime) {
+        this.molluTime = molluTime;
+    }
 }
