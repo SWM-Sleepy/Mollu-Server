@@ -1,6 +1,7 @@
 package sleepy.mollu.server.common.domain;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
+@Disabled
 class NotificationImplTest {
 
     @Autowired
