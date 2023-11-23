@@ -29,10 +29,14 @@ public class NotificationImpl implements NotificationHandler {
     }
 
     private void send(List<String> tokens, String title, String body, String osType) {
+        if (tokens.isEmpty()) {
+            return;
+        }
+
         final LambdaRequest payload = new LambdaRequest(tokens, title, body, osType);
         final InvokeRequest request = new InvokeRequest()
                 .withFunctionName("notification-service")
-                .withPayload(toJson(payload));
+                .withPayload(objectToString(payload));
         awsLambda.invoke(request);
     }
 
@@ -43,7 +47,7 @@ public class NotificationImpl implements NotificationHandler {
                 .toList();
     }
 
-    private String toJson(LambdaRequest payload) {
+    private String objectToString(LambdaRequest payload) {
         try {
             return OBJECT_MAPPER.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
