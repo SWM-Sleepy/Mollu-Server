@@ -3,6 +3,8 @@ package sleepy.mollu.server.common.config;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.lambda.AWSLambda;
+import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,13 @@ public class AwsConfig {
         return AmazonS3ClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+    }
+
+    @Bean
+    public AWSLambda awsLambda() {
+        return AWSLambdaClientBuilder.standard()
+                .withRegion(region)
                 .build();
     }
 }
