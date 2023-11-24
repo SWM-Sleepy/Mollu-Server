@@ -2,6 +2,7 @@ package sleepy.mollu.server.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 import sleepy.mollu.server.common.domain.NotificationHandler;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminServiceImpl implements AdminService {
 
     public static final String MOLLU_TIME_TITLE = "It's MOLLU Time!";
@@ -73,6 +75,7 @@ public class AdminServiceImpl implements AdminService {
         return Base64.getEncoder().encodeToString(hashedPassword);
     }
 
+    @Transactional
     @Override
     public void sendNotification() {
         updateMolluAlarm();
@@ -81,20 +84,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void updateMolluAlarm() {
-        final MolluAlarm molluAlarm = molluAlarmRepository.findTop().orElseThrow();
-        final LocalDateTime now = LocalDateTime.now();
+        final MolluAlarm tomorrowAlarm = molluAlarmRepository.findTop().orElseThrow();
+        final MolluAlarm todayAlarm = molluAlarmRepository.findSecondTop().orElseThrow();
+        final LocalDateTime today = LocalDateTime.now();
+        final LocalDateTime tomorrow = today.plusDays(1);
 
-        if (molluAlarm.isToday(now)) {
-            molluAlarm.updateTime(now);
-            return;
-        }
-
-        final MolluAlarm newMolluAlarm = MolluAlarm.builder()
-                .molluTime(now)
-                .question(MOLLU_TIME_BODY)
-                .send(false)
-                .build();
-
-        molluAlarmRepository.save(newMolluAlarm);
+        todayAlarm.updateTime(today);
+        tomorrowAlarm.updateTime(tomorrow);
     }
 }
