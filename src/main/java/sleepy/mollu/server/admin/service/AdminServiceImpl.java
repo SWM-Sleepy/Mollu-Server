@@ -81,20 +81,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void updateMolluAlarm() {
-        final MolluAlarm molluAlarm = molluAlarmRepository.findTop().orElseThrow();
-        final LocalDateTime now = LocalDateTime.now();
+        final MolluAlarm tomorrowAlarm = molluAlarmRepository.findTop().orElseThrow();
+        final MolluAlarm todayAlarm = molluAlarmRepository.findSecondTop().orElseThrow();
+        final LocalDateTime today = LocalDateTime.now();
+        final LocalDateTime tomorrow = today.plusDays(1);
 
-        if (molluAlarm.isToday(now)) {
-            molluAlarm.updateTime(now);
-            return;
-        }
-
-        final MolluAlarm newMolluAlarm = MolluAlarm.builder()
-                .molluTime(now)
-                .question(MOLLU_TIME_BODY)
-                .send(false)
-                .build();
-
-        molluAlarmRepository.save(newMolluAlarm);
+        todayAlarm.updateTime(today);
+        tomorrowAlarm.updateTime(tomorrow);
     }
 }
