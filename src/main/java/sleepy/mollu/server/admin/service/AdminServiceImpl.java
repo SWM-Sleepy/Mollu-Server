@@ -2,6 +2,7 @@ package sleepy.mollu.server.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sleepy.mollu.server.alarm.domain.MolluAlarm;
 import sleepy.mollu.server.alarm.repository.MolluAlarmRepository;
 import sleepy.mollu.server.common.domain.NotificationHandler;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminServiceImpl implements AdminService {
 
     public static final String MOLLU_TIME_TITLE = "It's MOLLU Time!";
@@ -73,6 +75,7 @@ public class AdminServiceImpl implements AdminService {
         return Base64.getEncoder().encodeToString(hashedPassword);
     }
 
+    @Transactional
     @Override
     public void sendNotification() {
         updateMolluAlarm();
